@@ -611,7 +611,7 @@
         </div>
 
         <footer class="footer">
-            <p><a href="https://github.com/kalidade-br" target="_blank">web-br</a> · Dados via GitHub API · <span id="fetchTime"></span></p>
+            <p><a href="https://github.com/kalidade-br" target="_blank">kalidade-br</a> · Dados via GitHub API · <span id="fetchTime"></span></p>
         </footer>
     </div>
 
@@ -619,8 +619,8 @@
     <div class="overlay" id="overlay">
         <div class="overlay-head">
             <div class="overlay-info">
-                <div class="overlay-fav" id="oFav">W</div>
-                <span class="overlay-url" id="oUrl">https://web-br.github.io/</span>
+                <div class="overlay-fav" id="oFav">KALIDADE</div>
+                <span class="overlay-url" id="oUrl">https://kalidade.github.io/</span>
             </div>
             <div class="overlay-btns">
                 <a href="#" class="obtn" id="oOpen" target="_blank">
@@ -739,7 +739,7 @@
         function getRepoInfo(repo) {
             const info = infoData[repo.name];
             const title = info?.title || repo.name;
-            const description = info?.description || repo.description || 'Repositório web-br/' + repo.name;
+            const description = info?.description || repo.description || 'Repositório kalidade-br/' + repo.name;
             const category = info?.category || 'Geral';
             const tags = info?.tags || [];
             const icon = info?.icon || repo.name.charAt(0).toUpperCase();
