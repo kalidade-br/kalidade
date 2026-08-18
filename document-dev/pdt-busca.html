@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KALIDADE API — PDT Busca</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Inter, Arial, sans-serif;
+    background: #080808;
+    color: #f5f5f5;
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.container {
+    width: min(1150px, 92%);
+    margin: auto;
+}
+
+/* HEADER */
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(8,8,8,.92);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid #202020;
+}
+
+.nav {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #777;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.nav-links a {
+    transition: .2s;
+}
+
+.nav-links a:hover {
+    color: #fff;
+}
+
+/* HERO */
+
+.hero {
+    padding: 90px 0 60px;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    padding: 7px 14px;
+    border: 1px solid #292929;
+    border-radius: 50px;
+    color: #aaa;
+    font-size: 13px;
+    margin-bottom: 20px;
+    background: #111;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: 1;
+    letter-spacing: -4px;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    color: #777;
+}
+
+.hero p {
+    max-width: 750px;
+    margin: auto;
+    color: #999;
+    font-size: 17px;
+}
+
+/* ENDPOINT */
+
+.endpoint-box {
+    margin: 45px auto;
+    max-width: 1000px;
+    display: flex;
+    align-items: center;
+    background: #101010;
+    border: 1px solid #252525;
+    border-radius: 14px;
+    overflow: hidden;
+    text-align: left;
+}
+
+.method {
+    padding: 16px 18px;
+    background: #171717;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.endpoint {
+    flex: 1;
+    padding: 16px;
+    color: #bbb;
+    font-family: monospace;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.copy {
+    border: 0;
+    border-left: 1px solid #252525;
+    background: transparent;
+    color: #aaa;
+    padding: 16px;
+    cursor: pointer;
+}
+
+.copy:hover {
+    color: #fff;
+}
+
+/* SECTIONS */
+
+section {
+    padding: 55px 0;
+}
+
+.section-title {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.section-description {
+    color: #888;
+    margin-bottom: 25px;
+}
+
+/* CARDS */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.card {
+    background: #101010;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    padding: 25px;
+}
+
+.card h3 {
+    margin-bottom: 8px;
+}
+
+.card p {
+    color: #888;
+    font-size: 14px;
+}
+
+/* CODE */
+
+.code-wrapper {
+    margin-top: 22px;
+    border: 1px solid #252525;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #0d0d0d;
+}
+
+.code-header {
+    height: 45px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #131313;
+    border-bottom: 1px solid #252525;
+    color: #888;
+    font-size: 13px;
+}
+
+.code-copy {
+    cursor: pointer;
+    color: #999;
+}
+
+.code-copy:hover {
+    color: #fff;
+}
+
+pre {
+    padding: 22px;
+    overflow-x: auto;
+    color: #ddd;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* TABLE */
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #222;
+    border-radius: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #222;
+}
+
+th {
+    background: #111;
+    color: #aaa;
+    font-size: 13px;
+}
+
+td {
+    color: #ccc;
+    font-size: 14px;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+/* RESPONSE */
+
+.response {
+    background: #050505;
+    border: 1px solid #222;
+    border-radius: 14px;
+    margin-top: 25px;
+}
+
+.note {
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid #252525;
+    background: #101010;
+    border-radius: 12px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* FOOTER */
+
+footer {
+    border-top: 1px solid #202020;
+    margin-top: 50px;
+    padding: 35px 0;
+    color: #666;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* MOBILE */
+
+@media(max-width:800px) {
+
+    .nav-links {
+        display: none;
+    }
+
+    .hero {
+        padding-top: 65px;
+    }
+
+    .hero h1 {
+        letter-spacing: -2px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .endpoint-box {
+        display: block;
+    }
+
+    .method {
+        border-bottom: 1px solid #252525;
+    }
+
+    .copy {
+        width: 100%;
+        border-left: 0;
+        border-top: 1px solid #252525;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="container nav">
+
+    <div class="logo">
+        KALIDADE <span>API</span>
+    </div>
+
+    <nav class="nav-links">
+        <a href="#inicio">Início</a>
+        <a href="#uso">Uso</a>
+        <a href="#codigo">Códigos</a>
+        <a href="#cors">CORS</a>
+        <a href="#parametros">Parâmetros</a>
+        <a href="#resposta">Resposta</a>
+    </nav>
+
+</div>
+
+</header>
+
+
+<main>
+
+<!-- HERO -->
+
+<section class="hero" id="inicio">
+
+<div class="container">
+
+    <div class="badge">
+        KALIDADE API • PDT • GET • JSON
+    </div>
+
+    <h1>
+        PDT <span>BUSCA</span>
+    </h1>
+
+    <p>
+        Consulte dados públicos relacionados ao Portal da
+        Transparência utilizando um termo de busca.
+    </p>
+
+    <div class="endpoint-box">
+
+        <div class="method">
+            GET
+        </div>
+
+        <div class="endpoint" id="endpoint">
+            https://api-kalidade.vercel.app/api/pdt-busca.js?busca=joao%20vitor%20da%20silva
+        </div>
+
+        <button class="copy" onclick="copyEndpoint()">
+            Copiar
+        </button>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- SOBRE -->
+
+<section>
+
+<div class="container">
+
+    <h2 class="section-title">
+        Sobre a API
+    </h2>
+
+    <p class="section-description">
+        A <b>PDT Busca</b> é uma interface da KALIDADE API
+        para consultas no contexto de dados públicos do
+        Portal da Transparência.
+    </p>
+
+    <p class="section-description">
+        O parâmetro <b>busca</b> aceita um termo de pesquisa.
+        Dependendo da fonte consultada, podem ser utilizados
+        valores como nome, CPF, CNPJ, identificadores ou outros
+        termos disponíveis na pesquisa.
+    </p>
+
+    <div class="grid">
+
+        <div class="card">
+            <h3>Método</h3>
+            <p>GET</p>
+        </div>
+
+        <div class="card">
+            <h3>Formato</h3>
+            <p>JSON</p>
+        </div>
+
+        <div class="card">
+            <h3>Origem</h3>
+            <p>Portal da Transparência</p>
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- USO -->
+
+<section id="uso">
+
+<div class="container">
+
+    <h2 class="section-title">
+        Como utilizar
+    </h2>
+
+    <p class="section-description">
+        Envie o termo desejado no parâmetro <b>busca</b>.
+        Sempre utilize <b>encodeURIComponent()</b> quando
+        o valor possuir espaços ou caracteres especiais.
+    </p>
+
+
+    <div class="code-wrapper">
+
+        <div class="code-header">
+
+            <span>Nome</span>
+
+            <span
+                class="code-copy"
+                onclick="copyText('https://api-kalidade.vercel.app/api/pdt-busca.js?busca=joao%20vitor%20da%20silva')">
+                Copiar
+            </span>
+
+        </div>
+
+<pre>https://api-kalidade.vercel.app/api/pdt-busca.js?busca=joao%20vitor%20da%20silva</pre>
+
+    </div>
+
+
+    <div class="code-wrapper">
+
+        <div class="code-header">
+
+            <span>CPF</span>
+
+            <span
+                class="code-copy"
+                onclick="copyText('https://api-kalidade.vercel.app/api/pdt-busca.js?busca=12345678909')">
+                Copiar
+            </span>
+
+        </div>
+
+<pre>https://api-kalidade.vercel.app/api/pdt-busca.js?busca=12345678909</pre>
+
+    </div>
+
+
+    <div class="code-wrapper">
+
+        <div class="code-header">
+
+            <span>CNPJ</span>
+
+            <span
+                class="code-copy"
+                onclick="copyText('https://api-kalidade.vercel.app/api/pdt-busca.js?busca=12345678000199')">
+                Copiar
+            </span>
+
+        </div>
+
+<pre>https://api-kalidade.vercel.app/api/pdt-busca.js?busca=12345678000199</pre>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- CÓDIGOS -->
+
+<section id="codigo">
+
+<div class="container">
+
+    <h2 class="section-title">
+        Exemplos de código
+    </h2>
+
+    <p class="section-description">
+        Exemplos prontos para integração.
+    </p>
+
+
+<!-- FETCH -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+    <span>JavaScript — Fetch</span>
+
+    <span
+        class="code-copy"
+        onclick="copyCode('fetchCode')">
+        Copiar
+    </span>
+
+</div>
+
+<pre id="fetchCode">const busca = "joao vitor da silva";
+
+const url =
+    `https://api-kalidade.vercel.app/api/pdt-busca.js?busca=${encodeURIComponent(busca)}`;
+
+fetch(url)
+.then(response => {
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    return response.json();
+
+})
+.then(data => {
+
+    console.log(data);
+
+})
+.catch(error => {
+
+    console.error("Erro:", error);
+
+});</pre>
+
+</div>
+
+
+<!-- ASYNC -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+    <span>JavaScript — Async/Await</span>
+
+    <span
+        class="code-copy"
+        onclick="copyCode('asyncCode')">
+        Copiar
+    </span>
+
+</div>
+
+<pre id="asyncCode">async function consultarPDT(busca) {
+
+    const url =
+        `https://api-kalidade.vercel.app/api/pdt-busca.js?busca=${encodeURIComponent(busca)}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    console.log(data);
+
+    return data;
+}
+
+consultarPDT("joao vitor da silva");</pre>
+
+</div>
+
+
+<!-- CURL -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+    <span>cURL</span>
+
+    <span
+        class="code-copy"
+        onclick="copyCode('curlCode')">
+        Copiar
+    </span>
+
+</div>
+
+<pre id="curlCode">curl "https://api-kalidade.vercel.app/api/pdt-busca.js?busca=joao%20vitor%20da%20silva"</pre>
+
+</div>
+
+
+<!-- NODE -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+    <span>Node.js</span>
+
+    <span
+        class="code-copy"
+        onclick="copyCode('nodeCode')">
+        Copiar
+    </span>
+
+</div>
+
+<pre id="nodeCode">const busca = "joao vitor da silva";
+
+async function consultarPDT() {
+
+    const url =
+        `https://api-kalidade.vercel.app/api/pdt-busca.js?busca=${encodeURIComponent(busca)}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    console.log(data);
+}
+
+consultarPDT();</pre>
+
+</div>
+
+
+<!-- PYTHON -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+    <span>Python</span>
+
+    <span
+        class="code-copy"
+        onclick="copyCode('pythonCode')">
+        Copiar
+    </span>
+
+</div>
+
+<pre id="pythonCode">import requests
+
+busca = "joao vitor da silva"
+
+url = "https://api-kalidade.vercel.app/api/pdt-busca.js"
+
+response = requests.get(
+    url,
+    params={
+        "busca": busca
+    }
+)
+
+response.raise_for_status()
+
+data = response.json()
+
+print(data)</pre>
+
+</div>
+
+
+<!-- PHP -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+    <span>PHP</span>
+
+    <span
+        class="code-copy"
+        onclick="copyCode('phpCode')">
+        Copiar
+    </span>
+
+</div>
+
+<pre id="phpCode">&lt;?php
+
+$busca = "joao vitor da silva";
+
+$url =
+    "https://api-kalidade.vercel.app/api/pdt-busca.js?busca="
+    . urlencode($busca);
+
+$response = file_get_contents($url);
+
+if ($response === false) {
+    die("Erro ao consultar a API.");
+}
+
+echo $response;</pre>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CORS -->
+
+<section id="cors">
+
+<div class="container">
+
+    <h2 class="section-title">
+        CORS
+    </h2>
+
+    <p class="section-description">
+        O endpoint pode ser consumido por aplicações web
+        quando a configuração CORS da API estiver habilitada.
+    </p>
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+    <span>Fetch + CORS</span>
+
+    <span
+        class="code-copy"
+        onclick="copyCode('corsCode')">
+        Copiar
+    </span>
+
+</div>
+
+<pre id="corsCode">const busca = "joao vitor da silva";
+
+const url =
+    `https://api-kalidade.vercel.app/api/pdt-busca.js?busca=${encodeURIComponent(busca)}`;
+
+fetch(url)
+.then(response => response.json())
+.then(data => {
+
+    console.log(data);
+
+})
+.catch(error => {
+
+    console.error("Erro:", error);
+
+});</pre>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- PARÂMETROS -->
+
+<section id="parametros">
+
+<div class="container">
+
+    <h2 class="section-title">
+        Parâmetros
+    </h2>
+
+    <p class="section-description">
+        Parâmetros disponíveis no endpoint.
+    </p>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Parâmetro</th>
+                    <th>Obrigatório</th>
+                    <th>Tipo</th>
+                    <th>Exemplo</th>
+                    <th>Descrição</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>busca</td>
+                    <td>Sim</td>
+                    <td>String</td>
+                    <td>joao vitor da silva</td>
+                    <td>Termo utilizado na pesquisa</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- TIPOS DE BUSCA -->
+
+<section>
+
+<div class="container">
+
+    <h2 class="section-title">
+        Exemplos de pesquisa
+    </h2>
+
+    <p class="section-description">
+        O mesmo parâmetro pode receber diferentes tipos
+        de termos de consulta.
+    </p>
+
+    <div class="grid">
+
+        <div class="card">
+            <h3>Nome</h3>
+            <p>joao vitor da silva</p>
+        </div>
+
+        <div class="card">
+            <h3>CPF</h3>
+            <p>12345678909</p>
+        </div>
+
+        <div class="card">
+            <h3>CNPJ</h3>
+            <p>12345678000199</p>
+        </div>
+
+        <div class="card">
+            <h3>Identificador</h3>
+            <p>Utilize o código disponível na base consultada.</p>
+        </div>
+
+        <div class="card">
+            <h3>Palavra-chave</h3>
+            <p>Termos relacionados aos dados públicos.</p>
+        </div>
+
+        <div class="card">
+            <h3>Texto</h3>
+            <p>Qualquer termo compatível com a pesquisa de origem.</p>
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- RESPOSTA -->
+
+<section id="resposta">
+
+<div class="container">
+
+    <h2 class="section-title">
+        Resposta JSON
+    </h2>
+
+    <p class="section-description">
+        O endpoint retorna os dados recebidos da consulta
+        em formato JSON.
+    </p>
+
+    <div class="response">
+
+<pre>{
+  "dados": [
+    {
+      "...": "..."
+    }
+  ]
+}</pre>
+
+    </div>
+
+    <div class="note">
+        A estrutura exata da resposta depende dos resultados
+        encontrados pelo termo pesquisado e da resposta
+        disponibilizada pela fonte de dados.
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- FONTE -->
+
+<section>
+
+<div class="container">
+
+    <h2 class="section-title">
+        Fonte dos dados
+    </h2>
+
+    <p class="section-description">
+        O PDT está relacionado ao Portal da Transparência
+        do Governo Federal. A plataforma disponibiliza APIs
+        e dados abertos para diversas categorias, incluindo
+        pessoas físicas, pessoas jurídicas, servidores,
+        benefícios, sanções, despesas e contratos.
+    </p>
+
+    <div class="note">
+        Consulte sempre as condições de uso e a documentação
+        oficial do Portal da Transparência ao desenvolver
+        aplicações que utilizem esses dados.
+    </div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+    KALIDADE API © 2026 — Documentação para desenvolvedores
+</footer>
+
+
+<script>
+
+function copyText(text) {
+
+    navigator.clipboard.writeText(text);
+
+    alert("Copiado!");
+
+}
+
+function copyEndpoint() {
+
+    const endpoint =
+        document
+        .getElementById("endpoint")
+        .textContent
+        .trim();
+
+    copyText(endpoint);
+
+}
+
+function copyCode(id) {
+
+    const element =
+        document.getElementById(id);
+
+    copyText(element.textContent);
+
+}
+
+</script>
+
+</body>
+</html>
