@@ -1,40 +1,68 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "apis": [
     {
-      "name": "Consulta Pública",
-      "description": "Ferramenta para consultas em bases públicas.",
+      "name": "Consulta CEP",
+      "description": "Consulte informações de endereço através de um CEP.",
+      "category": "Utilidades",
+      "status": "ONLINE",
+      "url": "/api/cep.html"
+    },
+    {
+      "name": "Consulta CNPJ",
+      "description": "Consulte informações públicas relacionadas a CNPJ.",
       "category": "Consultas",
-      "status": "online",
-      "url": "/api/consulta"
+      "status": "ONLINE",
+      "url": "/api/cnpj.html"
     },
     {
-      "name": "API de CEP",
-      "description": "Consulta informações de endereço através do CEP.",
-      "category": "APIs",
-      "status": "online",
-      "url": "/api/cep"
+      "name": "CORS Proxy",
+      "description": "Ferramenta para intermediar requisições HTTP e facilitar integrações com APIs.",
+      "category": "Desenvolvimento",
+      "status": "ONLINE",
+      "url": "/api/cors-proxy.html"
     },
     {
-      "name": "Gerador de CPF",
-      "description": "Geração de números de CPF para testes.",
-      "category": "Utilidades",
-      "status": "online",
-      "url": "/api/gerador-cpf"
+      "name": "CPF Parentes",
+      "description": "Ferramenta de consulta de informações públicas relacionadas a vínculos familiares.",
+      "category": "Consultas",
+      "status": "ONLINE",
+      "url": "/api/cpf-parentes.html"
     },
     {
-      "name": "Free fire ID",
-      "description": "api consultar jogador free fire pelo id",
-      "category": "Utilidades",
-      "status": "online",
+      "name": "Consulta CPF",
+      "description": "Consulte informações públicas relacionadas a CPF.",
+      "category": "Consultas",
+      "status": "ONLINE",
+      "url": "/api/cpf.html"
+    },
+    {
+      "name": "Free Fire ID",
+      "description": "Consulte informações públicas de um perfil do Free Fire através do ID.",
+      "category": "Free Fire",
+      "status": "ONLINE",
       "url": "/api/freefire-id.html"
     },
     {
-      "name": "Ferramentas de Segurança",
-      "description": "Utilitários voltados para segurança e análise.",
-      "category": "Segurança",
-      "status": "online",
-      "url": "/seguranca"
+      "name": "IP WHOIS",
+      "description": "Consulte informações de rede e dados públicos relacionados a um endereço IP.",
+      "category": "Rede",
+      "status": "ONLINE",
+      "url": "/api/ip-whois.html"
+    },
+    {
+      "name": "PDT Busca",
+      "description": "Ferramenta de busca e consulta de informações públicas portal da transparencia.",
+      "category": "Consultas",
+      "status": "ONLINE",
+      "url": "/api/pdt-busca.html"
+    },
+    {
+      "name": "Portal da Transparência",
+      "description": "Consulta informações públicas disponibilizadas pelo Portal da Transparência busca.",
+      "category": "Consultas",
+      "status": "ONLINE",
+      "url": "/api/pdt.html"
     }
   ]
 }
