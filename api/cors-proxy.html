@@ -1,1 +1,901 @@
+<!DOCTYPE html>
 
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE API — Proxy</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Inter,Arial,sans-serif;
+    background:#080808;
+    color:#f5f5f5;
+    line-height:1.6;
+}
+
+.container{
+    width:min(1150px,92%);
+    margin:auto;
+}
+
+header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:rgba(8,8,8,.92);
+    backdrop-filter:blur(15px);
+    border-bottom:1px solid #202020;
+}
+
+.nav{
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:800;
+}
+
+.logo span{
+    color:#777;
+}
+
+.nav-links{
+    display:flex;
+    gap:25px;
+    color:#aaa;
+    font-size:14px;
+}
+
+.nav-links a:hover{
+    color:#fff;
+}
+
+.hero{
+    padding:90px 0 60px;
+    text-align:center;
+}
+
+.badge{
+    display:inline-block;
+    padding:7px 14px;
+    border:1px solid #292929;
+    border-radius:50px;
+    color:#aaa;
+    font-size:13px;
+    margin-bottom:20px;
+    background:#111;
+}
+
+.hero h1{
+    font-size:clamp(42px,7vw,76px);
+    line-height:1;
+    letter-spacing:-4px;
+    margin-bottom:22px;
+}
+
+.hero h1 span{
+    color:#777;
+}
+
+.hero p{
+    max-width:700px;
+    margin:auto;
+    color:#999;
+    font-size:17px;
+}
+
+.endpoint-box{
+    margin:45px auto;
+    max-width:950px;
+    display:flex;
+    align-items:center;
+    background:#101010;
+    border:1px solid #252525;
+    border-radius:14px;
+    overflow:hidden;
+    text-align:left;
+}
+
+.method{
+    padding:16px 18px;
+    background:#171717;
+    font-weight:bold;
+    font-size:13px;
+}
+
+.endpoint{
+    flex:1;
+    padding:16px;
+    color:#bbb;
+    font-family:monospace;
+    overflow-x:auto;
+    white-space:nowrap;
+}
+
+.copy{
+    border:0;
+    border-left:1px solid #252525;
+    background:transparent;
+    color:#aaa;
+    padding:16px;
+    cursor:pointer;
+}
+
+.copy:hover{
+    color:#fff;
+}
+
+section{
+    padding:55px 0;
+}
+
+.section-title{
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.section-description{
+    color:#888;
+    margin-bottom:25px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.card{
+    background:#101010;
+    border:1px solid #202020;
+    border-radius:14px;
+    padding:25px;
+}
+
+.card h3{
+    margin-bottom:8px;
+}
+
+.card p{
+    color:#888;
+    font-size:14px;
+}
+
+.code-wrapper{
+    margin-top:22px;
+    border:1px solid #252525;
+    border-radius:14px;
+    overflow:hidden;
+    background:#0d0d0d;
+}
+
+.code-header{
+    height:45px;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#131313;
+    border-bottom:1px solid #252525;
+    color:#888;
+    font-size:13px;
+}
+
+.code-copy{
+    cursor:pointer;
+    color:#999;
+}
+
+.code-copy:hover{
+    color:#fff;
+}
+
+pre{
+    padding:22px;
+    overflow-x:auto;
+    color:#ddd;
+    font-family:"Courier New",monospace;
+    font-size:13px;
+    line-height:1.7;
+}
+
+.table-wrapper{
+    overflow-x:auto;
+    border:1px solid #222;
+    border-radius:14px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:600px;
+}
+
+th,td{
+    padding:15px;
+    text-align:left;
+    border-bottom:1px solid #222;
+}
+
+th{
+    background:#111;
+    color:#aaa;
+    font-size:13px;
+}
+
+td{
+    color:#ccc;
+    font-size:14px;
+}
+
+tr:last-child td{
+    border-bottom:0;
+}
+
+.response{
+    background:#050505;
+    border:1px solid #222;
+    border-radius:14px;
+    margin-top:25px;
+}
+
+.note{
+    margin-top:20px;
+    padding:18px;
+    border:1px solid #252525;
+    background:#101010;
+    border-radius:12px;
+    color:#888;
+    font-size:14px;
+}
+
+.warning{
+    margin-top:20px;
+    padding:18px;
+    border:1px solid #252525;
+    background:#101010;
+    border-radius:12px;
+    color:#aaa;
+}
+
+footer{
+    border-top:1px solid #202020;
+    margin-top:50px;
+    padding:35px 0;
+    color:#666;
+    text-align:center;
+    font-size:13px;
+}
+
+@media(max-width:800px){
+
+    .nav-links{
+        display:none;
+    }
+
+    .hero{
+        padding-top:65px;
+    }
+
+    .hero h1{
+        letter-spacing:-2px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .endpoint-box{
+        display:block;
+    }
+
+    .method{
+        border-bottom:1px solid #252525;
+    }
+
+    .copy{
+        width:100%;
+        border-left:0;
+        border-top:1px solid #252525;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="container nav">
+
+```
+<div class="logo">
+    KALIDADE <span>API</span>
+</div>
+
+<nav class="nav-links">
+    <a href="#inicio">Início</a>
+    <a href="#uso">Uso</a>
+    <a href="#codigo">Códigos</a>
+    <a href="#cors">CORS</a>
+    <a href="#parametros">Parâmetros</a>
+    <a href="#resposta">Resposta</a>
+</nav>
+```
+
+</div>
+
+</header>
+
+<main>
+
+<!-- HERO -->
+
+<section class="hero" id="inicio">
+
+<div class="container">
+
+```
+<div class="badge">
+    KALIDADE API • PROXY • GET
+</div>
+
+<h1>
+    PROXY <span>API</span>
+</h1>
+
+<p>
+    Proxy HTTP da KALIDADE API para encaminhar requisições
+    para uma URL de destino através de um único endpoint.
+</p>
+
+<div class="endpoint-box">
+
+    <div class="method">
+        GET
+    </div>
+
+    <div class="endpoint" id="endpoint">
+        https://api-web-br.vercel.app/api/proxy.js?url=URL_DESTINO
+    </div>
+
+    <button class="copy" onclick="copyEndpoint()">
+        Copiar
+    </button>
+
+</div>
+```
+
+</div>
+
+</section>
+
+<!-- SOBRE -->
+
+<section>
+
+<div class="container">
+
+```
+<h2 class="section-title">
+    Sobre a API
+</h2>
+
+<p class="section-description">
+    O endpoint recebe uma URL através do parâmetro
+    <b>url</b> e realiza a requisição para o destino informado.
+</p>
+
+<div class="grid">
+
+    <div class="card">
+        <h3>Método</h3>
+        <p>GET</p>
+    </div>
+
+    <div class="card">
+        <h3>Parâmetro</h3>
+        <p>url</p>
+    </div>
+
+    <div class="card">
+        <h3>Função</h3>
+        <p>Proxy HTTP</p>
+    </div>
+
+</div>
+```
+
+</div>
+
+</section>
+
+<!-- USO -->
+
+<section id="uso">
+
+<div class="container">
+
+```
+<h2 class="section-title">
+    Como utilizar
+</h2>
+
+<p class="section-description">
+    Informe a URL de destino no parâmetro <b>url</b>.
+</p>
+
+<div class="code-wrapper">
+
+    <div class="code-header">
+        <span>Endpoint</span>
+
+        <span
+            class="code-copy"
+            onclick="copyText('https://api-web-br.vercel.app/api/proxy.js?url=URL_DESTINO')">
+            Copiar
+        </span>
+    </div>
+```
+
+<pre>https://api-web-br.vercel.app/api/proxy.js?url=URL_DESTINO</pre>
+
+```
+</div>
+
+
+<div class="code-wrapper">
+
+    <div class="code-header">
+        <span>Exemplo</span>
+
+        <span
+            class="code-copy"
+            onclick="copyText('https://api-web-br.vercel.app/api/proxy.js?url=https%3A%2F%2Fexample.com')">
+            Copiar
+        </span>
+    </div>
+```
+
+<pre>https://api-web-br.vercel.app/api/proxy.js?url=https%3A%2F%2Fexample.com</pre>
+
+```
+</div>
+```
+
+</div>
+
+</section>
+
+<!-- CÓDIGOS -->
+
+<section id="codigo">
+
+<div class="container">
+
+```
+<h2 class="section-title">
+    Exemplos de código
+</h2>
+
+<p class="section-description">
+    Exemplos para integração com diferentes linguagens.
+</p>
+```
+
+<!-- FETCH -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+```
+<span>JavaScript — Fetch</span>
+
+<span
+    class="code-copy"
+    onclick="copyCode('fetchCode')">
+    Copiar
+</span>
+```
+
+</div>
+
+<pre id="fetchCode">const destino = "https://example.com";
+
+const url =
+    "https://api-web-br.vercel.app/api/proxy.js?url="
+    + encodeURIComponent(destino);
+
+fetch(url)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        return response.text();
+    })
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error("Erro:", error);
+    });</pre>
+
+</div>
+
+<!-- ASYNC -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+```
+<span>JavaScript — Async/Await</span>
+
+<span
+    class="code-copy"
+    onclick="copyCode('asyncCode')">
+    Copiar
+</span>
+```
+
+</div>
+
+<pre id="asyncCode">async function proxy(urlDestino) {
+
+    const url =
+        "https://api-web-br.vercel.app/api/proxy.js?url="
+        + encodeURIComponent(urlDestino);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    return await response.text();
+}
+
+proxy("https://example.com")
+    .then(data => console.log(data))
+    .catch(error => console.error(error));</pre>
+
+</div>
+
+<!-- CURL -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+```
+<span>cURL</span>
+
+<span
+    class="code-copy"
+    onclick="copyCode('curlCode')">
+    Copiar
+</span>
+```
+
+</div>
+
+<pre id="curlCode">curl "https://api-web-br.vercel.app/api/proxy.js?url=https%3A%2F%2Fexample.com"</pre>
+
+</div>
+
+<!-- NODE -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+```
+<span>Node.js</span>
+
+<span
+    class="code-copy"
+    onclick="copyCode('nodeCode')">
+    Copiar
+</span>
+```
+
+</div>
+
+<pre id="nodeCode">const destino = "https://example.com";
+
+async function proxy() {
+
+    const url =
+        "https://api-web-br.vercel.app/api/proxy.js?url="
+        + encodeURIComponent(destino);
+
+    const response = await fetch(url);
+
+    const data = await response.text();
+
+    console.log(data);
+}
+
+proxy();</pre>
+
+</div>
+
+<!-- PYTHON -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+```
+<span>Python</span>
+
+<span
+    class="code-copy"
+    onclick="copyCode('pythonCode')">
+    Copiar
+</span>
+```
+
+</div>
+
+<pre id="pythonCode">import requests
+
+destino = "https://example.com"
+
+url = "https://api-web-br.vercel.app/api/proxy.js"
+
+response = requests.get(
+    url,
+    params={
+        "url": destino
+    }
+)
+
+response.raise_for_status()
+
+print(response.text)</pre>
+
+</div>
+
+<!-- PHP -->
+
+<div class="code-wrapper">
+
+<div class="code-header">
+
+```
+<span>PHP</span>
+
+<span
+    class="code-copy"
+    onclick="copyCode('phpCode')">
+    Copiar
+</span>
+```
+
+</div>
+
+<pre id="phpCode">&lt;?php
+
+$destino = "https://example.com";
+
+$url =
+    "https://api-web-br.vercel.app/api/proxy.js?url="
+    . urlencode($destino);
+
+$response = file_get_contents($url);
+
+if ($response === false) {
+    die("Erro ao consultar o proxy.");
+}
+
+echo $response;</pre>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- CORS -->
+
+<section id="cors">
+
+<div class="container">
+
+```
+<h2 class="section-title">
+    CORS
+</h2>
+
+<p class="section-description">
+    O proxy pode ser utilizado como intermediário quando
+    uma aplicação precisa acessar um recurso remoto.
+</p>
+
+<div class="code-wrapper">
+```
+
+<div class="code-header">
+
+```
+<span>Fetch</span>
+
+<span
+    class="code-copy"
+    onclick="copyCode('corsCode')">
+    Copiar
+</span>
+```
+
+</div>
+
+<pre id="corsCode">const destino =
+    "https://example.com";
+
+const proxy =
+    "https://api-web-br.vercel.app/api/proxy.js?url="
+    + encodeURIComponent(destino);
+
+fetch(proxy)
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+    });</pre>
+
+```
+</div>
+
+<div class="warning">
+    <b>Atenção:</b> utilize o proxy somente com URLs e serviços
+    que você tem autorização para acessar. O comportamento final
+    também depende das políticas e respostas do servidor de destino.
+</div>
+```
+
+</div>
+
+</section>
+
+<!-- PARÂMETROS -->
+
+<section id="parametros">
+
+<div class="container">
+
+```
+<h2 class="section-title">
+    Parâmetros
+</h2>
+
+<p class="section-description">
+    Parâmetros aceitos pelo endpoint.
+</p>
+
+<div class="table-wrapper">
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Parâmetro</th>
+                <th>Obrigatório</th>
+                <th>Tipo</th>
+                <th>Descrição</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>url</td>
+                <td>Sim</td>
+                <td>String</td>
+                <td>URL do servidor de destino</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+```
+
+</div>
+
+</section>
+
+<!-- RESPOSTA -->
+
+<section id="resposta">
+
+<div class="container">
+
+```
+<h2 class="section-title">
+    Resposta
+</h2>
+
+<p class="section-description">
+    A resposta depende do conteúdo retornado pelo servidor
+    de destino.
+</p>
+
+<div class="response">
+```
+
+<pre>Resposta do servidor de destino
+
+O conteúdo retornado pelo endpoint
+pode ser texto, JSON, HTML ou outro
+conteúdo compatível com a requisição.</pre>
+
+```
+</div>
+```
+
+</div>
+
+</section>
+
+</main>
+
+<footer>
+    KALIDADE API © 2026 — Documentação para desenvolvedores
+</footer>
+
+<script>
+
+function copyText(text){
+
+    navigator.clipboard.writeText(text);
+
+    alert("Copiado!");
+
+}
+
+function copyEndpoint(){
+
+    const endpoint =
+        document
+        .getElementById("endpoint")
+        .textContent
+        .trim();
+
+    copyText(endpoint);
+
+}
+
+function copyCode(id){
+
+    const element =
+        document.getElementById(id);
+
+    copyText(element.textContent);
+
+}
+
+</script>
+
+</body>
+</html>
