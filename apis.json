@@ -6,63 +6,63 @@
       "description": "Consulte informações de endereço através de um CEP.",
       "category": "Utilidades",
       "status": "ONLINE",
-      "url": "/api/cep.html"
+      "url": "/document-dev/cep.html"
     },
     {
       "name": "Consulta CNPJ",
       "description": "Consulte informações públicas relacionadas a CNPJ.",
       "category": "Consultas",
       "status": "ONLINE",
-      "url": "/api/cnpj.html"
+      "url": "/document-dev/cnpj.html"
     },
     {
       "name": "CORS Proxy",
       "description": "Ferramenta para intermediar requisições HTTP e facilitar integrações com APIs.",
       "category": "Desenvolvimento",
       "status": "ONLINE",
-      "url": "/api/cors-proxy.html"
+      "url": "/document-dev/cors-proxy.html"
     },
     {
       "name": "CPF Parentes",
       "description": "Ferramenta de consulta de informações públicas relacionadas a vínculos familiares.",
       "category": "Consultas",
       "status": "ONLINE",
-      "url": "/api/cpf-parentes.html"
+      "url": "/document-dev/cpf-parentes.html"
     },
     {
       "name": "Consulta CPF",
       "description": "Consulte informações públicas relacionadas a CPF.",
       "category": "Consultas",
       "status": "ONLINE",
-      "url": "/api/cpf.html"
+      "url": "/document-dev/cpf.html"
     },
     {
       "name": "Free Fire ID",
       "description": "Consulte informações públicas de um perfil do Free Fire através do ID.",
       "category": "Free Fire",
       "status": "ONLINE",
-      "url": "/api/freefire-id.html"
+      "url": "/document-dev/freefire-id.html"
     },
     {
       "name": "IP WHOIS",
       "description": "Consulte informações de rede e dados públicos relacionados a um endereço IP.",
       "category": "Rede",
       "status": "ONLINE",
-      "url": "/api/ip-whois.html"
+      "url": "/document-dev/ip-whois.html"
     },
     {
       "name": "PDT Busca",
       "description": "Ferramenta de busca e consulta de informações públicas portal da transparencia.",
       "category": "Consultas",
       "status": "ONLINE",
-      "url": "/api/pdt-busca.html"
+      "url": "/document-dev/pdt-busca.html"
     },
     {
       "name": "Portal da Transparência",
       "description": "Consulta informações públicas disponibilizadas pelo Portal da Transparência busca.",
       "category": "Consultas",
       "status": "ONLINE",
-      "url": "/api/pdt.html"
+      "url": "/document-dev/pdt.html"
     }
   ]
 }
