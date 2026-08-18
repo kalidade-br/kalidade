@@ -23,6 +23,13 @@
       "url": "/api/gerador-cpf"
     },
     {
+      "name": "Free fire ID",
+      "description": "api consultar jogador free fire pelo id",
+      "category": "Utilidades",
+      "status": "online",
+      "url": "/api/freefire-id.html"
+    },
+    {
       "name": "Ferramentas de Segurança",
       "description": "Utilitários voltados para segurança e análise.",
       "category": "Segurança",
