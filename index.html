@@ -854,5 +854,382 @@
 
         init();
     </script>
+    <script>
+        (async () => {
+    const BASE = "https://kalidade.vercel.app";
+
+    document.getElementById("kb-api-free")?.remove();
+    document.getElementById("kb-api-style")?.remove();
+
+    const style = document.createElement("style");
+    style.id = "kb-api-style";
+
+    style.textContent = `
+        #kb-api-free {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 2147483647;
+            font-family: Arial, sans-serif;
+        }
+
+        #kb-api-free-button {
+            border: 1px solid rgba(255,255,255,.12);
+            background: #111;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,.25);
+            transition: .2s;
+        }
+
+        #kb-api-free-button:hover {
+            background: #191919;
+            border-color: rgba(255,255,255,.25);
+            transform: translateY(-1px);
+        }
+
+        #kb-api-panel {
+            position: fixed;
+            top: 65px;
+            left: 18px;
+            width: 390px;
+            max-width: calc(100vw - 36px);
+            max-height: calc(100vh - 85px);
+            overflow-y: auto;
+            display: none;
+            z-index: 2147483646;
+
+            background: #0b0b0b;
+            color: #fff;
+
+            border: 1px solid #222;
+            border-radius: 14px;
+
+            box-shadow:
+                0 20px 70px rgba(0,0,0,.55);
+
+            font-family: Arial, sans-serif;
+        }
+
+        #kb-api-panel.kb-open {
+            display: block;
+        }
+
+        .kb-head {
+            padding: 18px;
+            border-bottom: 1px solid #1d1d1d;
+            position: sticky;
+            top: 0;
+            background: #0b0b0b;
+            z-index: 2;
+        }
+
+        .kb-head-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .kb-head-sub {
+            margin-top: 5px;
+            color: #777;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .kb-version {
+            display: inline-block;
+            margin-top: 9px;
+            padding: 4px 7px;
+            border-radius: 5px;
+            background: #151515;
+            color: #888;
+            font-size: 10px;
+        }
+
+        .kb-content {
+            padding: 12px;
+        }
+
+        .kb-api-card {
+            display: block;
+            width: 100%;
+            text-align: left;
+
+            padding: 14px;
+            margin-bottom: 8px;
+
+            background: #101010;
+            color: #fff;
+
+            border: 1px solid #1d1d1d;
+            border-radius: 10px;
+
+            cursor: pointer;
+            transition: .18s;
+        }
+
+        .kb-api-card:hover {
+            background: #151515;
+            border-color: #333;
+            transform: translateY(-1px);
+        }
+
+        .kb-api-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .kb-api-description {
+            margin-top: 5px;
+            color: #777;
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .kb-api-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .kb-api-category {
+            color: #666;
+            font-size: 10px;
+        }
+
+        .kb-api-status {
+            color: #75df96;
+            background: rgba(40,180,90,.08);
+            border: 1px solid rgba(40,180,90,.12);
+            border-radius: 5px;
+            padding: 3px 6px;
+            font-size: 9px;
+        }
+
+        .kb-empty {
+            padding: 25px 10px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .kb-loading {
+            padding: 25px 10px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media(max-width:600px) {
+            #kb-api-free {
+                top: 10px;
+                left: 10px;
+            }
+
+            #kb-api-panel {
+                top: 57px;
+                left: 10px;
+                width: calc(100vw - 20px);
+                max-width: none;
+            }
+        }
+    `;
+
+    document.head.appendChild(style);
+
+    const root = document.createElement("div");
+    root.id = "kb-api-free";
+
+    root.innerHTML = `
+        <button id="kb-api-free-button">
+            APIs FREE
+        </button>
+
+        <div id="kb-api-panel">
+
+            <div class="kb-head">
+
+                <div class="kb-head-title">
+                    Kalidade Brasil
+                </div>
+
+                <div class="kb-head-sub">
+                    APIs gratuitas, ferramentas e recursos
+                    para desenvolvedores.
+                </div>
+
+                <span class="kb-version">
+                    Versão: <b id="kb-version">...</b>
+                </span>
+
+            </div>
+
+            <div class="kb-content" id="kb-api-content">
+                <div class="kb-loading">
+                    Carregando APIs...
+                </div>
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(root);
+
+    const button = document.getElementById("kb-api-free-button");
+    const panel = document.getElementById("kb-api-panel");
+    const content = document.getElementById("kb-api-content");
+    const version = document.getElementById("kb-version");
+
+    button.addEventListener("click", () => {
+        panel.classList.toggle("kb-open");
+    });
+
+    function escapeHTML(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    try {
+        const response = await fetch(
+            BASE + "/apis.json",
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "HTTP " + response.status
+            );
+        }
+
+        const data = await response.json();
+
+        version.textContent =
+            data.version || "1.0.0";
+
+        const apis = Array.isArray(data.apis)
+            ? data.apis
+            : [];
+
+        if (!apis.length) {
+            content.innerHTML = `
+                <div class="kb-empty">
+                    Nenhuma API disponível.
+                </div>
+            `;
+
+            return;
+        }
+
+        content.innerHTML = apis.map((api, index) => {
+
+            /*
+             * Pode usar:
+             *
+             * "url": "/api/freefire-id.html"
+             *
+             * ou:
+             *
+             * "url": "https://kalidade.vercel.app/api/freefire-id.html"
+             */
+
+            let url = api.url || "";
+
+            if (url.startsWith("/")) {
+                url = BASE + url;
+            }
+
+            return `
+                <div
+                    class="kb-api-card"
+                    data-url="${escapeHTML(url)}"
+                >
+
+                    <div class="kb-api-name">
+                        ${escapeHTML(
+                            api.name ||
+                            "API sem nome"
+                        )}
+                    </div>
+
+                    <div class="kb-api-description">
+                        ${escapeHTML(
+                            api.description ||
+                            "API gratuita da Kalidade Brasil."
+                        )}
+                    </div>
+
+                    <div class="kb-api-bottom">
+
+                        <span class="kb-api-category">
+                            ${escapeHTML(
+                                api.category ||
+                                "API"
+                            )}
+                        </span>
+
+                        <span class="kb-api-status">
+                            ${escapeHTML(
+                                api.status ||
+                                "ONLINE"
+                            )}
+                        </span>
+
+                    </div>
+
+                </div>
+            `;
+        }).join("");
+
+        content
+            .querySelectorAll(".kb-api-card")
+            .forEach(card => {
+
+                card.addEventListener("click", () => {
+
+                    const url =
+                        card.dataset.url;
+
+                    if (!url) return;
+
+                    /*
+                     * Abre a documentação HTML
+                     * da API.
+                     */
+
+                    window.open(
+                        url,
+                        "_blank"
+                    );
+                });
+
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar APIs:",
+            error
+        );
+
+        content.innerHTML = `
+            <div class="kb-empty">
+                Não foi possível carregar
+                o arquivo /apis.json.
+            </div>
+        `;
+    }
+})();
+    </script>
 </body>
 </html>
