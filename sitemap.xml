@@ -8,58 +8,58 @@
         <priority>1.0</priority>
     </url>
 
-    <!-- Documentação das APIs -->
+    <!-- Documentação das APIs para Desenvolvedores -->
 
     <url>
-        <loc>https://kalidade.vercel.app/api/cep.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/cep.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/cnpj.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/cnpj.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/cors-proxy.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/cors-proxy.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/cpf-parentes.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/cpf-parentes.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/cpf.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/cpf.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/freefire-id.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/freefire-id.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/ip-whois.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/ip-whois.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/pdt-busca.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/pdt-busca.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
 
     <url>
-        <loc>https://kalidade.vercel.app/api/pdt.html</loc>
+        <loc>https://kalidade.vercel.app/document-dev/pdt.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
