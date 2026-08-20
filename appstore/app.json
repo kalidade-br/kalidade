@@ -1,0 +1,27 @@
+[
+    {
+        "nome": "BLUESTACKS LITE",
+        "link": "bluestacks-5.1020-win.zip",
+        "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfkhkf-B_2bX0VPxES0NU9HTDhkhLgoUx0mTH9d8eaQQ&s=10",
+        "plataforma": "windows"
+    },
+    {
+        "nome": "WEB-BR TOOLS",
+        "link": "web-br.apk",
+        "icon": "https://avatars.githubusercontent.com/u/286726470?v=4",
+        "plataforma": "android"
+    },
+    {
+        "nome": "SNAPTUBE COMPACTADO 7z",
+        "link": "snaptube.7z",
+        "icon": "https://web-br.github.io/pinterest-lite/snaptube.png",
+        "plataforma": "android"
+    },
+    {
+        "nome": "ZARCHIVE",
+        "link": "zarchive.apk",
+        "icon": "https://web-br.github.io/pinterest-lite/zarchive.png",
+        "plataforma": "android"
+    }
+    
+]

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppStore Universal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #242442;
+            --text: #e0e0ff;
+            --text-muted: #8a8ab5;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --border: rgba(255,255,255,0.06);
+            --radius: 16px;
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .bg-gradient {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 90%, rgba(236,72,153,0.08) 0%, transparent 50%);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        header h1 {
+            font-size: 2.8rem; font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header p { color: var(--text-muted); margin-top: 8px; font-size: 1.1rem; }
+        .search-box {
+            position: relative; max-width: 600px; margin: 0 auto 40px;
+        }
+        .search-box input {
+            width: 100%; padding: 16px 24px 16px 52px;
+            border-radius: 50px; border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text);
+            font-size: 1rem; outline: none; transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow);
+        }
+        .search-box input::placeholder { color: var(--text-muted); }
+        .search-box svg {
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            width: 20px; height: 20px; color: var(--text-muted);
+        }
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            display: flex; align-items: center; gap: 18px;
+            transition: all 0.3s ease;
+            cursor: pointer; text-decoration: none;
+        }
+        .app-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            border-color: rgba(99,102,241,0.2);
+        }
+        .app-card.hidden { display: none; }
+        .app-icon {
+            width: 64px; height: 64px; border-radius: 16px;
+            object-fit: cover; flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        .app-info { flex: 1; min-width: 0; }
+        .app-name {
+            font-size: 1.1rem; font-weight: 600; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .app-platform {
+            font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;
+            display: flex; gap: 8px;
+        }
+        .badge {
+            padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 500;
+        }
+        .badge.android { background: rgba(61,220,132,0.15); color: #3ddc84; }
+        .badge.windows { background: rgba(0,164,239,0.15); color: #00a4ef; }
+        .download-btn {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--accent); border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease; flex-shrink: 0;
+        }
+        .download-btn:hover { background: #818cf8; transform: scale(1.08); }
+        .download-btn svg { width: 18px; height: 18px; color: white; }
+        .no-results {
+            text-align: center; padding: 60px 20px; color: var(--text-muted);
+            display: none;
+        }
+        .no-results.show { display: block; }
+        .no-results svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.4; }
+        .no-results h3 { color: var(--text); margin-bottom: 8px; }
+        .count { text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; }
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .apps-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="container">
+        <header>
+            <h1>AppStore Universal</h1>
+            <p>Encontre e baixe seus aplicativos favoritos</p>
+        </header>
+        <div class="search-box">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar aplicativos..." autocomplete="off">
+        </div>
+        <div class="count" id="countText">Carregando...</div>
+        <div class="apps-grid" id="appsGrid"></div>
+        <div class="no-results" id="noResults">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <h3>Nenhum app encontrado</h3>
+            <p>Tente buscar com outro termo</p>
+        </div>
+    </div>
+    <script>
+        const BASE_URL = 'https://web-br.github.io/appstore';
+        let apps = [];
+        async function loadApps() {
+            try {
+                const res = await fetch('app.json');
+                apps = await res.json();
+                renderApps(apps);
+            } catch (e) {
+                document.getElementById('countText').textContent = 'Erro ao carregar apps';
+            }
+        }
+        function renderApps(list) {
+            const grid = document.getElementById('appsGrid');
+            const noResults = document.getElementById('noResults');
+            const countText = document.getElementById('countText');
+            grid.innerHTML = '';
+            if (list.length === 0) {
+                noResults.classList.add('show');
+                countText.textContent = '0 apps encontrados';
+                return;
+            }
+            noResults.classList.remove('show');
+            countText.textContent = `${list.length} app${list.length > 1 ? 's' : ''} encontrado${list.length > 1 ? 's' : ''}`;
+            list.forEach(app => {
+                const fullLink = app.link.startsWith('http') ? app.link : BASE_URL + '/' + app.link;
+                const card = document.createElement('a');
+                card.className = 'app-card';
+                card.href = fullLink;
+                card.target = '_blank';
+                card.innerHTML = `
+                    <img src="${app.icon}" alt="${app.nome}" class="app-icon" loading="lazy">
+                    <div class="app-info">
+                        <div class="app-name">${app.nome}</div>
+                        <div class="app-platform">
+                            ${app.plataforma === 'android' ? '<span class="badge android">Android</span>' : ''}
+                            ${app.plataforma === 'windows' ? '<span class="badge windows">Windows</span>' : ''}
+                            ${app.plataforma === 'ambos' ? '<span class="badge android">Android</span><span class="badge windows">Windows</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="download-btn" title="Baixar">
+                        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+            const filtered = apps.filter(a => a.nome.toLowerCase().includes(q));
+            renderApps(filtered);
+        });
+        loadApps();
+    </script>
+<script>
+(() => {
+  if (document.getElementById("webbr-watermark")) return;
+
+  const a = document.createElement("a");
+  a.id = "webbr-watermark";
+  a.href = "https://github.com/web-br";
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+
+  a.innerHTML = `
+    <style>
+      @keyframes webbrFloat {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+      }
+
+      @keyframes webbrGlow {
+        0%,100% { box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+        50% { box-shadow: 0 8px 24px rgba(255,255,255,.15); }
+      }
+
+      #webbr-watermark{
+        position:fixed;
+        right:16px;
+        bottom:16px;
+        display:flex;
+        align-items:center;
+        gap:7px;
+        padding:7px 10px;
+        border-radius:999px;
+        text-decoration:none;
+        background:rgba(25,25,25,.55);
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,.12);
+        color:#fff;
+        font:600 13px system-ui,sans-serif;
+        z-index:2147483647;
+        opacity:.75;
+        animation:webbrFloat 3s ease-in-out infinite,
+                  webbrGlow 3s ease-in-out infinite;
+        transition:.25s;
+      }
+
+      #webbr-watermark:hover{
+        opacity:1;
+        transform:scale(1.06);
+      }
+
+      #webbr-watermark img.avatar{
+        width:26px;
+        height:26px;
+        border-radius:50%;
+      }
+
+      #webbr-watermark img.github{
+        width:16px;
+        height:16px;
+        filter:invert(1);
+        opacity:.9;
+      }
+    </style>
+
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/286726470?v=4">
+    <span>@web-br</span>
+    <img class="github" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
+  `;
+
+  document.body.appendChild(a);
+})();
+</script>
+</body>
+</html>
