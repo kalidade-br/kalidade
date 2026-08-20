@@ -1,0 +1,1 @@
+javascript:(async()=>{try{const res=await fetch(location.href);const txt=await res.text();const name=location.pathname.split('/').pop()||'download.txt';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download=name;a.click();URL.revokeObjectURL(a.href);}catch(e){alert("Erro ao baixar: "+e);}})();

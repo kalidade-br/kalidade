@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDN JS</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      background:#0d1117;
+      color:#e6edf3;
+      font-family:Arial, sans-serif;
+      padding:40px 20px;
+      display:flex;
+      justify-content:center;
+    }
+
+    .container{
+      width:100%;
+      max-width:900px;
+      background:#161b22;
+      border:1px solid #30363d;
+      border-radius:16px;
+      padding:30px;
+      box-shadow:0 0 30px rgba(0,0,0,.45);
+    }
+
+    h1{
+      color:#58a6ff;
+      margin-bottom:20px;
+      font-size:34px;
+    }
+
+    .desc{
+      line-height:1.7;
+      font-size:17px;
+      margin-bottom:25px;
+      color:#c9d1d9;
+    }
+
+    .box{
+      background:#0d1117;
+      border:1px solid #30363d;
+      border-radius:12px;
+      padding:20px;
+    }
+
+    .item{
+      padding:14px;
+      margin-bottom:12px;
+      background:#21262d;
+      border-radius:10px;
+      border-left:4px solid #58a6ff;
+      transition:.2s;
+    }
+
+    .item:hover{
+      transform:translateX(5px);
+      background:#2d333b;
+    }
+
+    .file{
+      color:#7ee787;
+      font-weight:bold;
+      font-size:16px;
+    }
+
+    .url{
+      margin-top:6px;
+      color:#8b949e;
+      word-break:break-all;
+      font-size:14px;
+    }
+
+    .info{
+      margin-top:25px;
+      padding:16px;
+      background:#21262d;
+      border-radius:10px;
+      color:#c9d1d9;
+      line-height:1.6;
+    }
+
+    code{
+      color:#58a6ff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <h1>CDN JS</h1>
+
+    <div class="desc">
+      TODOS ARQUIVOS SAO EXECUTAVEL NO NAVEGADOR COMO UMA FERRAMENTA.<br>
+      USA JAVASCRIPT E PODE EXECUTAR NO CONSOLE, BOOKMARKLET OU DEVTOOLS.
+    </div>
+
+    <div class="box">
+
+      <div class="item">
+        <div class="file">baixar-conteudo-atual.js</div>
+        <div class="url">cdn/baixar-conteudo-atual.js</div>
+      </div>
+
+      <div class="item">
+        <div class="file">clear-all.js</div>
+        <div class="url">cdn/clear-all.js</div>
+      </div>
+
+      <div class="item">
+        <div class="file">console-execute.js</div>
+        <div class="url">cdn/console-execute.js</div>
+      </div>
+
+      <div class="item">
+        <div class="file">elvis-dev.js</div>
+        <div class="url">cdn/elvis-dev.js</div>
+      </div>
+
+      <div class="item">
+        <div class="file">file-js-execute.js</div>
+        <div class="url">cdn/file-js-execute.js</div>
+      </div>
+
+    </div>
+
+    <div class="info">
+      Exemplo de uso:
+      <br><br>
+      <code>https://web-br.github.io/cdn/elvis-dev.js</code>
+      <br><br>
+      Todos os arquivos ficam na raiz da pasta <code>cdn/</code>.
+    </div>
+
+  </div>
+
+</body>
+</html>
