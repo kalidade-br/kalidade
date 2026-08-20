@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPF HUB</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 550px;
+    text-align: center;
+}
+
+/* LOGO */
+.logo {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* TÍTULO */
+h1 {
+    color: #2c3e50;
+    font-size: 26px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 13px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    outline: none;
+    text-align: center;
+    letter-spacing: 2px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+input::placeholder {
+    color: #bdc3c7;
+}
+
+/* BOTÃO */
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background: #bdc3c7;
+    cursor: wait;
+    transform: none;
+}
+
+/* ERRO */
+.error {
+    color: #e74c3c;
+    margin-top: 15px;
+    font-size: 14px;
+    padding: 12px;
+    background: #fdeaea;
+    border-radius: 6px;
+    border-left: 4px solid #e74c3c;
+    display: none;
+}
+
+.error.show {
+    display: block;
+    animation: slideIn 0.3s ease;
+}
+
+/* RESULTADO */
+.result {
+    margin-top: 30px;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f5 100%);
+    border-radius: 10px;
+    text-align: left;
+    display: none;
+    border-left: 5px solid #667eea;
+}
+
+.result.show {
+    display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* CAMPOS DOS RESULTADOS */
+.result-group {
+    margin-bottom: 18px;
+}
+
+.result-group:last-of-type {
+    margin-bottom: 0;
+}
+
+.result-label {
+    display: block;
+    color: #7f8c8d;
+    font-size: 11px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.result-value {
+    font-weight: 600;
+    font-size: 16px;
+    color: #2c3e50;
+    padding: 10px;
+    background: #fff;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+}
+
+/* JSON */
+.json-section {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #ecf0f1;
+}
+
+.json-title {
+    color: #7f8c8d;
+    font-size: 11px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.json {
+    padding: 14px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Syntax highlighting básico para JSON */
+.json-key {
+    color: #ce9178;
+}
+
+.json-string {
+    color: #ce9178;
+}
+
+.json-number {
+    color: #b5cea8;
+}
+
+.json-boolean {
+    color: #569cd6;
+}
+
+.json-null {
+    color: #569cd6;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 20px;
+    }
+    
+    h1 {
+        font-size: 22px;
+    }
+    
+    .json {
+        font-size: 11px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        CPF
+    </div>
+
+    <h1>CPF HUB</h1>
+    <p class="subtitle">Consulte dados de CPF</p>
+
+    <input
+        type="text"
+        id="cpf"
+        placeholder="000.000.000-00"
+        maxlength="14"
+        autocomplete="off"
+    >
+
+    <button id="btn" onclick="consultar()">
+        CONSULTAR
+    </button>
+
+    <div id="error" class="error"></div>
+
+    <div id="result" class="result">
+
+        <div class="result-group">
+            <label class="result-label">📝 Nome</label>
+            <div class="result-value" id="rNome">-</div>
+        </div>
+
+        <div class="result-group">
+            <label class="result-label">🆔 CPF</label>
+            <div class="result-value" id="rCpf">-</div>
+        </div>
+
+        <div class="result-group">
+            <label class="result-label">👤 Gênero</label>
+            <div class="result-value" id="rGenero">-</div>
+        </div>
+
+        <div class="result-group">
+            <label class="result-label">📅 Data de Nascimento</label>
+            <div class="result-value" id="rNascimento">-</div>
+        </div>
+
+        <div class="json-section">
+            <div class="json-title">📋 Dados Brutos (JSON)</div>
+            <div id="rJson" class="json"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const cpf = document.getElementById('cpf');
+const btn = document.getElementById('btn');
+const error = document.getElementById('error');
+const result = document.getElementById('result');
+
+// FORMATAÇÃO AUTOMÁTICA DO CPF
+cpf.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '');
+    v = v.slice(0, 11);
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    e.target.value = v;
+});
+
+// FUNÇÕES DE FORMATAÇÃO
+function formatarData(data) {
+    if (!data) return '-';
+    
+    // Se já está em DD/MM/YYYY
+    if (data.includes('/')) {
+        const partes = data.split('/');
+        if (partes.length === 3) {
+            if (partes[0].length === 4) {
+                // YYYY/MM/DD para DD/MM/YYYY
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            // Já está em DD/MM/YYYY
+            return data;
+        }
+    }
+    
+    // Se está em YYYY-MM-DD (ISO)
+    if (data.includes('-')) {
+        const partes = data.split('-');
+        if (partes.length === 3 && partes[0].length === 4) {
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+    }
+    
+    return data;
+}
+
+function formatarGenero(genero) {
+    if (!genero) return '-';
+    
+    genero = genero.trim().toUpperCase();
+    
+    if (genero === 'M' || genero === 'MASCULINO') {
+        return '👨 Masculino';
+    } else if (genero === 'F' || genero === 'FEMININO') {
+        return '👩 Feminino';
+    } else if (genero === 'O' || genero === 'OUTRO') {
+        return '⚕️ Outro';
+    }
+    
+    return genero;
+}
+
+// FUNÇÃO DE CONSULTA
+async function consultar() {
+    const num = cpf.value.replace(/\D/g, '');
+
+    if (num.length !== 11) {
+        error.textContent = '❌ CPF inválido. Digite 11 dígitos.';
+        error.classList.add('show');
+        return;
+    }
+
+    error.classList.remove('show');
+    error.textContent = '';
+    btn.disabled = true;
+    btn.textContent = '⏳ CONSULTANDO...';
+    result.classList.remove('show');
+
+    try {
+        const response = await fetch(
+            `https://api-web-br.vercel.app/api/cpf.js?cpf=${num}`
+        );
+
+        const json = await response.json();
+
+        if (!json.data) {
+            throw new Error('CPF não encontrado');
+        }
+
+        // PREENCHENDO OS CAMPOS COM FORMATAÇÃO
+        document.getElementById('rNome').textContent = 
+            json.data.nome ? toTitleCase(json.data.nome) : '-';
+
+        document.getElementById('rCpf').textContent = 
+            json.data.cpf || '-';
+
+        document.getElementById('rGenero').textContent = 
+            formatarGenero(json.data.genero);
+
+        document.getElementById('rNascimento').textContent = 
+            formatarData(json.data.data_nascimento);
+
+        // JSON FORMATADO
+        document.getElementById('rJson').textContent =
+            JSON.stringify(json, null, 2);
+
+        result.classList.add('show');
+
+    } catch (err) {
+        error.textContent = '❌ CPF não encontrado ou erro na consulta.';
+        error.classList.add('show');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'CONSULTAR';
+}
+
+// FUNÇÃO AUXILIAR: CONVERTER PARA TITLE CASE
+function toTitleCase(str) {
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// ENTER PARA CONSULTAR
+cpf.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+        consultar();
+    }
+});
+
+</script>
+
+<!-- Scripts de limpeza de cache -->
+<script>
+    (() => {
+        try {
+            localStorage.clear();
+            sessionStorage.clear();
+
+            document.cookie.split(";").forEach(cookie => {
+                const name = cookie.split("=")[0].trim();
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${location.hostname}`;
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.${location.hostname}`;
+            });
+
+            if ("caches" in window) {
+                caches.keys().then(keys => {
+                    keys.forEach(key => caches.delete(key));
+                });
+            }
+
+            if (window.indexedDB && indexedDB.databases) {
+                indexedDB.databases().then(dbs => {
+                    dbs.forEach(db => {
+                        if (db.name) indexedDB.deleteDatabase(db.name);
+                    });
+                });
+            }
+        } catch (e) {}
+    })();
+</script>
+
+<script>
+    (() => {
+        if (document.getElementById("webbr-watermark")) return;
+
+        const a = document.createElement("a");
+        a.id = "webbr-watermark";
+        a.href = "https://github.com/web-br";
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+
+        a.innerHTML = `
+            <style>
+                @keyframes webbrFloat {
+                    0%,100% { transform: translateY(0); }
+                    50% { transform: translateY(-4px); }
+                }
+
+                @keyframes webbrGlow {
+                    0%,100% { box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+                    50% { box-shadow: 0 8px 24px rgba(255,255,255,.15); }
+                }
+
+                #webbr-watermark{
+                    position:fixed;
+                    right:16px;
+                    bottom:16px;
+                    display:flex;
+                    align-items:center;
+                    gap:7px;
+                    padding:7px 10px;
+                    border-radius:999px;
+                    text-decoration:none;
+                    background:rgba(25,25,25,.55);
+                    backdrop-filter:blur(10px);
+                    -webkit-backdrop-filter:blur(10px);
+                    border:1px solid rgba(255,255,255,.12);
+                    color:#fff;
+                    font:600 13px system-ui,sans-serif;
+                    z-index:2147483647;
+                    opacity:.75;
+                    animation:webbrFloat 3s ease-in-out infinite,
+                              webbrGlow 3s ease-in-out infinite;
+                    transition:.25s;
+                }
+
+                #webbr-watermark:hover{
+                    opacity:1;
+                    transform:scale(1.06);
+                }
+
+                #webbr-watermark img.avatar{
+                    width:26px;
+                    height:26px;
+                    border-radius:50%;
+                }
+
+                #webbr-watermark img.github{
+                    width:16px;
+                    height:16px;
+                    filter:invert(1);
+                    opacity:.9;
+                }
+            </style>
+
+            <img class="avatar" src="https://avatars.githubusercontent.com/u/286726470?v=4">
+            <span>@web-br</span>
+            <img class="github" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
+        `;
+
+        document.body.appendChild(a);
+    })();
+</script>
+
+</body>
+</html>
