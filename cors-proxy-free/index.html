@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="@WEB-BR API CORS PROXY FREE — Proxy CORS gratuito para desenvolvedores.">
+<title>@WEB-BR — API CORS PROXY FREE</title>
+<style>
+:root{
+  --bg:#070a12;--panel:#0d1220;--panel2:#101728;--text:#f4f7ff;--muted:#8994aa;
+  --line:#202a3d;--brand:#7c5cff;--brand2:#22d3ee;--green:#35e58a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:
+radial-gradient(circle at 75% -10%,#27316b55,transparent 35%),var(--bg);color:var(--text);line-height:1.6}
+a{color:inherit;text-decoration:none}
+.container{width:min(1120px,92%);margin:auto}
+nav{height:72px;border-bottom:1px solid #ffffff0b;background:#070a12cc;backdrop-filter:blur(18px);
+position:sticky;top:0;z-index:20}
+.navin{height:100%;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:900;letter-spacing:-.5px;font-size:19px}
+.logo span{color:var(--brand2)}
+.links{display:flex;gap:25px;color:#aab3c5;font-size:14px}
+.links a:hover{color:white}
+.github{border:1px solid var(--line);padding:9px 15px;border-radius:10px;font-size:14px}
+.hero{text-align:center;padding:92px 0 55px}
+.badge{display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff12;background:#ffffff06;
+padding:7px 12px;border-radius:999px;color:#b8c2d7;font-size:13px;margin-bottom:22px}
+.dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 14px var(--green)}
+h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-4px;margin-bottom:22px}
+.gradient{background:linear-gradient(100deg,#fff 25%,#9b87ff 60%,#38e4f5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:690px;margin:auto;color:var(--muted);font-size:18px}
+.actions{display:flex;justify-content:center;gap:12px;margin-top:30px;flex-wrap:wrap}
+.btn{padding:12px 19px;border-radius:11px;border:1px solid var(--line);font-weight:700;font-size:14px}
+.primary{background:var(--text);color:#080b13;border-color:white}
+.secondary{background:#ffffff06}
+.section{padding:62px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.card{background:linear-gradient(180deg,#111827aa,#0b101caa);border:1px solid var(--line);border-radius:16px;padding:23px}
+.icon{width:39px;height:39px;border-radius:10px;background:#7c5cff18;color:#9d8cff;display:grid;place-items:center;margin-bottom:15px;font-weight:900}
+.card h3{font-size:17px;margin-bottom:7px}.card p{color:var(--muted);font-size:14px}
+.title{text-align:center;margin-bottom:30px}
+.title h2{font-size:34px;letter-spacing:-1.5px}.title p{color:var(--muted);margin-top:7px}
+.endpoint{background:#090e19;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.ephead{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.method{background:#173b2b;color:#5df0a0;padding:5px 9px;border-radius:7px;font:700 12px monospace}
+.url{font-family:ui-monospace,SFMono-Regular,monospace;font-size:14px;color:#d7dceb;word-break:break-all}
+.tip{padding:17px 20px;color:var(--muted);font-size:14px}
+.tester{margin-top:18px;display:flex;gap:10px}
+.tester input{flex:1;background:#080c15;color:white;border:1px solid var(--line);border-radius:10px;padding:13px}
+.tester button{border:0;border-radius:10px;padding:0 18px;font-weight:800;cursor:pointer}
+.result{margin-top:12px;color:var(--muted);font-size:13px;min-height:20px}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.code{background:#080c15;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.codehead{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);font-size:13px;color:#aeb7c9}
+.copy{cursor:pointer;border:1px solid var(--line);background:#ffffff06;color:#dce3f2;padding:5px 9px;border-radius:7px;font-size:11px}
+pre{padding:17px;overflow:auto;font-size:13px;color:#cbd5e1;line-height:1.7}
+.kw{color:#b69cff}.str{color:#77e4ba}.fn{color:#67d8ff}
+.note{margin-top:18px;border:1px solid #7c5cff30;background:#7c5cff0b;border-radius:12px;padding:15px;color:#abb5c9;font-size:13px}
+footer{border-top:1px solid var(--line);padding:35px 0;color:#758095;font-size:13px}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:760px){
+ .links{display:none}.hero{padding-top:65px}h1{letter-spacing:-2.5px}
+ .grid,.docs{grid-template-columns:1fr}.tester{flex-direction:column}.tester button{height:45px}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="container navin">
+    <a class="logo" href="#">@WEB-BR <span>/ CORS PROXY</span></a>
+    <div class="links">
+      <a href="#docs">Docs</a><a href="#examples">Examples</a><a href="#test">Testar</a>
+      <a class="github" href="https://github.com/web-br" target="_blank" rel="noopener">@WEB-BR ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container">
+  <div class="badge"><i class="dot"></i> API CORS PROXY · FREE</div>
+  <h1>Seu proxy CORS.<br><span class="gradient">Simples e gratuito.</span></h1>
+  <p>Consuma APIs públicas no navegador mesmo quando o servidor de destino não libera CORS. Sem cadastro e sem complicação.</p>
+  <div class="actions">
+    <a class="btn primary" href="#test">Testar agora →</a>
+    <a class="btn secondary" href="#docs">Ver documentação</a>
+  </div>
+</header>
+
+<section class="section container">
+  <div class="grid">
+    <article class="card"><div class="icon">∞</div><h3>100% gratuito</h3><p>Use o endpoint público sem precisar criar uma conta para começar.</p></article>
+    <article class="card"><div class="icon">⚡</div><h3>Fácil de integrar</h3><p>Basta colocar a URL de destino no parâmetro <b>url</b>.</p></article>
+    <article class="card"><div class="icon">⌁</div><h3>Para qualquer stack</h3><p>Use com Fetch, Node.js, cURL e praticamente qualquer cliente HTTP.</p></article>
+  </div>
+</section>
+
+<section class="section container" id="docs">
+  <div class="title"><h2>Endpoint</h2><p>Uma URL. Um parâmetro. Pronto.</p></div>
+  <div class="endpoint">
+    <div class="ephead"><span class="method">GET</span><span class="url">https://api-web-br.vercel.app/api/proxy.js?url=URL_DESTINO</span></div>
+    <div class="tip">Substitua <b>URL_DESTINO</b> pela URL completa da API ou recurso que deseja acessar.</div>
+  </div>
+  <div class="note">💡 Dica: sempre use <code>encodeURIComponent()</code> no JavaScript quando montar a URL dinamicamente.</div>
+</section>
+
+<section class="section container" id="examples">
+  <div class="title"><h2>Exemplos de uso</h2><p>Copie, cole e adapte ao seu projeto.</p></div>
+  <div class="docs">
+    <div class="code">
+      <div class="codehead"><span>JavaScript · Fetch</span><button class="copy" data-code="fetch">Copiar</button></div>
+<pre id="fetch"><span class="kw">const</span> target = <span class="str">'https://api.example.com/data'</span>;
+<span class="kw">const</span> proxy = <span class="str">'https://api-web-br.vercel.app/api/proxy.js?url='</span>;
+
+<span class="fn">fetch</span>(proxy + <span class="fn">encodeURIComponent</span>(target))
+  .then(res =&gt; res.json())
+  .then(data =&gt; console.log(data))
+  .catch(err =&gt; console.error(err));</pre>
+    </div>
+
+    <div class="code">
+      <div class="codehead"><span>Node.js · Fetch</span><button class="copy" data-code="node">Copiar</button></div>
+<pre id="node"><span class="kw">const</span> target = <span class="str">'https://api.example.com/data'</span>;
+<span class="kw">const</span> proxy = <span class="str">'https://api-web-br.vercel.app/api/proxy.js?url='</span>;
+
+<span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(
+  proxy + <span class="fn">encodeURIComponent</span>(target)
+);
+
+<span class="kw">const</span> data = <span class="kw">await</span> response.json();
+console.log(data);</pre>
+    </div>
+
+    <div class="code">
+      <div class="codehead"><span>cURL</span><button class="copy" data-code="curl">Copiar</button></div>
+<pre id="curl">curl <span class="str">"https://api-web-br.vercel.app/api/proxy.js?url=https%3A%2F%2Fapi.example.com%2Fdata"</span></pre>
+    </div>
+
+    <div class="code">
+      <div class="codehead"><span>URL direta</span><button class="copy" data-code="direct">Copiar</button></div>
+<pre id="direct"><span class="str">https://api-web-br.vercel.app/api/proxy.js?url=</span>
+  + <span class="str">URL_DO_SEU_ENDPOINT</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section container" id="test">
+  <div class="title"><h2>Teste o proxy</h2><p>Informe uma URL pública para gerar a chamada.</p></div>
+  <div class="endpoint" style="padding:20px">
+    <div class="tester">
+      <input id="target" type="url" placeholder="https://api.example.com/data">
+      <button class="primary" onclick="testProxy()">Gerar URL</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot">
+    <span>© 2026 @WEB-BR API CORS PROXY FREE</span>
+    <a href="https://github.com/web-br" target="_blank" rel="noopener">@WEB-BR no GitHub ↗</a>
+  </div>
+</footer>
+
+<script>
+const proxyBase='https://api-web-br.vercel.app/api/proxy.js?url=';
+function testProxy(){
+  const input=document.getElementById('target');
+  const result=document.getElementById('result');
+  try{
+    const u=new URL(input.value);
+    const final=proxyBase+encodeURIComponent(u.href);
+    result.innerHTML='<b>URL gerada:</b> <a style="color:#77e4ba;word-break:break-all" target="_blank" rel="noopener" href="'+final+'">'+final+'</a>';
+  }catch(e){
+    result.textContent='Digite uma URL válida, por exemplo: https://api.example.com/data';
+  }
+}
+document.querySelectorAll('.copy').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id=btn.dataset.code;
+    let text=document.getElementById(id).innerText;
+    if(id==='direct') text=proxyBase+'URL_DO_SEU_ENDPOINT';
+    navigator.clipboard.writeText(text).then(()=>{
+      const old=btn.textContent;btn.textContent='Copiado ✓';
+      setTimeout(()=>btn.textContent=old,1200);
+    });
+  });
+});
+</script>
+</body>
+</html>
