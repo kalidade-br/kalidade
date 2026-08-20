@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultador Brasil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 18px 25px 18px 55px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 15px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .search-box input:focus {
+            border-color: #e94560;
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 1.3em;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 18px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #e94560;
+            border-color: #e94560;
+            color: #fff;
+        }
+
+        .results-info {
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .results::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .results::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+
+        .results::-webkit-scrollbar-thumb {
+            background: rgba(233, 69, 96, 0.5);
+            border-radius: 3px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-left: 4px solid #e94560;
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease forwards;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .card:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateX(5px);
+        }
+
+        .card-ddd {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #e94560;
+            margin-bottom: 8px;
+        }
+
+        .card-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .card-info span {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-info .label {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8em;
+        }
+
+        .no-results {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            padding: 40px;
+            font-size: 1.1em;
+        }
+
+        .no-results-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .highlight {
+            background: rgba(233, 69, 96, 0.3);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📞 Consultador Brasil</h1>
+        <p class="subtitle">Digite DDD, estado ou capital para buscar</p>
+
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Ex: 11, São Paulo, Brasília..." autocomplete="off">
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="ddd">DDD</button>
+            <button class="filter-btn" data-filter="estado">Estado</button>
+            <button class="filter-btn" data-filter="capital">Capital</button>
+        </div>
+
+        <div class="results-info" id="resultsInfo"></div>
+        <div class="results" id="results"></div>
+
+        <div class="footer">
+            Brasil • DDDs por estado
+        </div>
+    </div>
+
+    <script>
+        const dados = {
+            "11": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "12": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "13": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "14": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "15": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "16": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "17": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "18": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "19": { "estado": "São Paulo", "sigla": "SP", "capital": "São Paulo" },
+            "21": { "estado": "Rio de Janeiro", "sigla": "RJ", "capital": "Rio de Janeiro" },
+            "22": { "estado": "Rio de Janeiro", "sigla": "RJ", "capital": "Rio de Janeiro" },
+            "24": { "estado": "Rio de Janeiro", "sigla": "RJ", "capital": "Rio de Janeiro" },
+            "27": { "estado": "Espírito Santo", "sigla": "ES", "capital": "Vitória" },
+            "28": { "estado": "Espírito Santo", "sigla": "ES", "capital": "Vitória" },
+            "31": { "estado": "Minas Gerais", "sigla": "MG", "capital": "Belo Horizonte" },
+            "32": { "estado": "Minas Gerais", "sigla": "MG", "capital": "Belo Horizonte" },
+            "33": { "estado": "Minas Gerais", "sigla": "MG", "capital": "Belo Horizonte" },
+            "34": { "estado": "Minas Gerais", "sigla": "MG", "capital": "Belo Horizonte" },
+            "35": { "estado": "Minas Gerais", "sigla": "MG", "capital": "Belo Horizonte" },
+            "37": { "estado": "Minas Gerais", "sigla": "MG", "capital": "Belo Horizonte" },
+            "38": { "estado": "Minas Gerais", "sigla": "MG", "capital": "Belo Horizonte" },
+            "41": { "estado": "Paraná", "sigla": "PR", "capital": "Curitiba" },
+            "42": { "estado": "Paraná", "sigla": "PR", "capital": "Curitiba" },
+            "43": { "estado": "Paraná", "sigla": "PR", "capital": "Curitiba" },
+            "44": { "estado": "Paraná", "sigla": "PR", "capital": "Curitiba" },
+            "45": { "estado": "Paraná", "sigla": "PR", "capital": "Curitiba" },
+            "46": { "estado": "Paraná", "sigla": "PR", "capital": "Curitiba" },
+            "47": { "estado": "Santa Catarina", "sigla": "SC", "capital": "Florianópolis" },
+            "48": { "estado": "Santa Catarina", "sigla": "SC", "capital": "Florianópolis" },
+            "49": { "estado": "Santa Catarina", "sigla": "SC", "capital": "Florianópolis" },
+            "51": { "estado": "Rio Grande do Sul", "sigla": "RS", "capital": "Porto Alegre" },
+            "53": { "estado": "Rio Grande do Sul", "sigla": "RS", "capital": "Porto Alegre" },
+            "54": { "estado": "Rio Grande do Sul", "sigla": "RS", "capital": "Porto Alegre" },
+            "55": { "estado": "Rio Grande do Sul", "sigla": "RS", "capital": "Porto Alegre" },
+            "61": { "estado": "Distrito Federal", "sigla": "DF", "capital": "Brasília" },
+            "62": { "estado": "Goiás", "sigla": "GO", "capital": "Goiânia" },
+            "64": { "estado": "Goiás", "sigla": "GO", "capital": "Goiânia" },
+            "63": { "estado": "Tocantins", "sigla": "TO", "capital": "Palmas" },
+            "65": { "estado": "Mato Grosso", "sigla": "MT", "capital": "Cuiabá" },
+            "66": { "estado": "Mato Grosso", "sigla": "MT", "capital": "Cuiabá" },
+            "67": { "estado": "Mato Grosso do Sul", "sigla": "MS", "capital": "Campo Grande" },
+            "68": { "estado": "Acre", "sigla": "AC", "capital": "Rio Branco" },
+            "69": { "estado": "Rondônia", "sigla": "RO", "capital": "Porto Velho" },
+            "71": { "estado": "Bahia", "sigla": "BA", "capital": "Salvador" },
+            "73": { "estado": "Bahia", "sigla": "BA", "capital": "Salvador" },
+            "74": { "estado": "Bahia", "sigla": "BA", "capital": "Salvador" },
+            "75": { "estado": "Bahia", "sigla": "BA", "capital": "Salvador" },
+            "77": { "estado": "Bahia", "sigla": "BA", "capital": "Salvador" },
+            "79": { "estado": "Sergipe", "sigla": "SE", "capital": "Aracaju" },
+            "81": { "estado": "Pernambuco", "sigla": "PE", "capital": "Recife" },
+            "87": { "estado": "Pernambuco", "sigla": "PE", "capital": "Recife" },
+            "82": { "estado": "Alagoas", "sigla": "AL", "capital": "Maceió" },
+            "83": { "estado": "Paraíba", "sigla": "PB", "capital": "João Pessoa" },
+            "84": { "estado": "Rio Grande do Norte", "sigla": "RN", "capital": "Natal" },
+            "85": { "estado": "Ceará", "sigla": "CE", "capital": "Fortaleza" },
+            "88": { "estado": "Ceará", "sigla": "CE", "capital": "Fortaleza" },
+            "86": { "estado": "Piauí", "sigla": "PI", "capital": "Teresina" },
+            "89": { "estado": "Piauí", "sigla": "PI", "capital": "Teresina" },
+            "91": { "estado": "Pará", "sigla": "PA", "capital": "Belém" },
+            "93": { "estado": "Pará", "sigla": "PA", "capital": "Belém" },
+            "94": { "estado": "Pará", "sigla": "PA", "capital": "Belém" },
+            "92": { "estado": "Amazonas", "sigla": "AM", "capital": "Manaus" },
+            "97": { "estado": "Amazonas", "sigla": "AM", "capital": "Manaus" },
+            "95": { "estado": "Roraima", "sigla": "RR", "capital": "Boa Vista" },
+            "96": { "estado": "Amapá", "sigla": "AP", "capital": "Macapá" },
+            "98": { "estado": "Maranhão", "sigla": "MA", "capital": "São Luís" },
+            "99": { "estado": "Maranhão", "sigla": "MA", "capital": "São Luís" }
+        };
+
+        let currentFilter = 'all';
+        const searchInput = document.getElementById('searchInput');
+        const resultsDiv = document.getElementById('results');
+        const resultsInfo = document.getElementById('resultsInfo');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        // Filtros
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                buscar();
+            });
+        });
+
+        // Busca ao digitar
+        searchInput.addEventListener('input', buscar);
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim() === '') {
+                mostrarTodos();
+            }
+        });
+
+        function normalizar(str) {
+            return str.toLowerCase()
+                .normalize('NFD')
+                .replace(/[̀-ͯ]/g, '');
+        }
+
+        function destacar(texto, termo) {
+            if (!termo) return texto;
+            const regex = new RegExp(`(${termo})`, 'gi');
+            return texto.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function buscar() {
+            const termo = searchInput.value.trim();
+
+            if (termo === '') {
+                mostrarTodos();
+                return;
+            }
+
+            const termoNorm = normalizar(termo);
+            const resultados = [];
+
+            for (const [ddd, info] of Object.entries(dados)) {
+                const estadoNorm = normalizar(info.estado);
+                const capitalNorm = normalizar(info.capital);
+                const siglaNorm = normalizar(info.sigla);
+                const dddNorm = normalizar(ddd);
+
+                let match = false;
+                let campoMatch = '';
+
+                if (currentFilter === 'all' || currentFilter === 'ddd') {
+                    if (dddNorm.includes(termoNorm)) {
+                        match = true;
+                        campoMatch = 'ddd';
+                    }
+                }
+
+                if (!match && (currentFilter === 'all' || currentFilter === 'estado')) {
+                    if (estadoNorm.includes(termoNorm) || siglaNorm.includes(termoNorm)) {
+                        match = true;
+                        campoMatch = 'estado';
+                    }
+                }
+
+                if (!match && (currentFilter === 'all' || currentFilter === 'capital')) {
+                    if (capitalNorm.includes(termoNorm)) {
+                        match = true;
+                        campoMatch = 'capital';
+                    }
+                }
+
+                if (match) {
+                    resultados.push({ ddd, ...info, campoMatch });
+                }
+            }
+
+            exibirResultados(resultados, termo);
+        }
+
+        function mostrarTodos() {
+            const todos = Object.entries(dados).map(([ddd, info]) => ({ ddd, ...info }));
+            exibirResultados(todos, '');
+        }
+
+        function exibirResultados(resultados, termo) {
+            if (resultados.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <p>Nenhum resultado encontrado</p>
+                        <p style="font-size: 0.85em; margin-top: 5px;">Tente buscar por DDD, estado ou capital</p>
+                    </div>
+                `;
+                resultsInfo.textContent = '';
+                return;
+            }
+
+            resultsInfo.textContent = `${resultados.length} resultado${resultados.length !== 1 ? 's' : ''} encontrado${resultados.length !== 1 ? 's' : ''}`;
+
+            resultsDiv.innerHTML = resultados.map((item, index) => {
+                const dddDest = termo ? destacar(item.ddd, termo) : item.ddd;
+                const estadoDest = termo ? destacar(item.estado, termo) : item.estado;
+                const capitalDest = termo ? destacar(item.capital, termo) : item.capital;
+
+                return `
+                    <div class="card" style="animation-delay: ${index * 0.05}s">
+                        <div class="card-ddd">${dddDest}</div>
+                        <div class="card-info">
+                            <span><span class="label">📍 Estado:</span> ${estadoDest} (${item.sigla})</span>
+                            <span><span class="label">🏛️ Capital:</span> ${capitalDest}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Mostrar todos ao carregar
+        mostrarTodos();
+    </script>
+</body>
+</html>
