@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Consulta CPF - Full Data</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #475569;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        header h1 { font-size: 1.8rem; margin-bottom: 8px; color: var(--accent); }
+        header p { color: var(--text-muted); font-size: 0.95rem; }
+        .panel {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: end;
+        }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        input[type="text"] {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus { border-color: var(--accent); }
+        input::placeholder { color: #64748b; }
+        .cpf-preview {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 10px;
+            margin: 16px 0;
+            letter-spacing: 2px;
+            border: 1px dashed var(--border);
+        }
+        .cpf-preview .mask { color: var(--text-muted); }
+        .cpf-preview .user { color: var(--accent); }
+        .cpf-preview .gen { color: var(--success); }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            height: fit-content;
+        }
+        button:hover { background: var(--accent-hover); }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #dc2626; }
+        .progress-area {
+            display: none;
+            margin-top: 20px;
+        }
+        .progress-bar-bg {
+            background: var(--bg-input);
+            border-radius: 10px;
+            height: 28px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--accent), #60a5fa);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .stat-box {
+            background: var(--bg);
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .stat-box .value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+        .stat-box .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+        .search-area {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        thead { background: var(--bg); }
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            color: var(--text);
+        }
+        tr:hover td { background: rgba(59,130,246,0.08); }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green { background: rgba(34,197,94,0.15); color: var(--success); }
+        .badge-orange { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.4; }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 360px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast-title { font-weight: 700; margin-bottom: 4px; }
+        .toast-msg { font-size: 0.9rem; color: var(--text-muted); }
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .controls button { padding: 8px 16px; font-size: 0.85rem; }
+        .detail-row { cursor: pointer; }
+        .detail-row .expand-icon { transition: transform 0.2s; display: inline-block; margin-right: 6px; }
+        .detail-row.expanded .expand-icon { transform: rotate(90deg); }
+        .detail-panel {
+            display: none;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+        }
+        .detail-panel.show { display: table-row; }
+        .detail-inner {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        .detail-field {
+            background: var(--bg-card);
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .detail-field .field-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .detail-field .field-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            word-break: break-word;
+        }
+        .parentes-grid {
+            grid-column: 1 / -1;
+            margin-top: 8px;
+        }
+        .parentes-grid h4 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .parente-card {
+            background: var(--bg-card);
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+        }
+        .parente-card .p-field {
+            font-size: 0.85rem;
+        }
+        .parente-card .p-field span {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 2px;
+        }
+        @media (max-width: 640px) {
+            .form-grid, .search-area { grid-template-columns: 1fr; }
+            .cpf-preview { font-size: 1rem; }
+            .detail-inner { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Painel de Consulta CPF - Full Data</h1>
+            <p>Informe os 6 dígitos do meio do CPF para gerar todas as combinações válidas e consultar na API cpf-all.</p>
+        </header>
+
+        <div class="panel">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="meioCpf">6 dígitos do meio do CPF</label>
+                    <input type="text" id="meioCpf" maxlength="6" placeholder="Ex: 978914" autocomplete="off">
+                </div>
+                <button id="btnConsultar" onclick="iniciarConsulta()">🚀 Consultar Todos</button>
+            </div>
+            <div class="cpf-preview" id="preview">
+                <span class="mask">XXX.</span><span class="user">______</span><span class="mask">.-XX</span>
+            </div>
+            <div class="progress-area" id="progressArea">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBar">0%</div>
+                </div>
+                <div class="stats">
+                    <div class="stat-box"><div class="value" id="statTotal">0</div><div class="label">Total</div></div>
+                    <div class="stat-box"><div class="value" id="statOk">0</div><div class="label">Encontrados</div></div>
+                    <div class="stat-box"><div class="value" id="statErro">0</div><div class="label">Não encontrados</div></div>
+                    <div class="stat-box"><div class="value" id="statRest">0</div><div class="label">Restantes</div></div>
+                </div>
+                <div class="controls" style="margin-top:12px;">
+                    <button class="btn-danger" onclick="cancelarConsulta()">⛔ Cancelar</button>
+                    <button onclick="exportarCSV()">📥 Exportar CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="resultadosPanel" style="display:none;">
+            <div class="search-area">
+                <div class="input-group">
+                    <label for="busca">🔎 Buscar por nome, CPF, mãe, cidade, renda, sexo...</label>
+                    <input type="text" id="busca" placeholder="Digite para filtrar..." oninput="filtrarTabela()">
+                </div>
+                <button onclick="limparBusca()">Limpar</button>
+            </div>
+            <div class="controls">
+                <button onclick="filtrarStatus('todos')">Todos</button>
+                <button onclick="filtrarStatus('ok')">✅ Encontrados</button>
+                <button onclick="filtrarStatus('erro')">❌ Não encontrados</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"></th>
+                            <th>#</th>
+                            <th>CPF</th>
+                            <th>Nome</th>
+                            <th>Nascimento</th>
+                            <th>Sexo</th>
+                            <th>Renda</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaCorpo"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                <h3>Nenhum resultado encontrado</h3>
+                <p>Tente ajustar os termos da busca.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-title" id="toastTitle"></div>
+        <div class="toast-msg" id="toastMsg"></div>
+    </div>
+
+    <script>
+        // ============ CÁLCULO DE CPF ============
+        function calcDV(cpf9) {
+            let soma = 0;
+            for (let i = 0; i < 9; i++) soma += parseInt(cpf9[i]) * (10 - i);
+            let resto = soma % 11;
+            let d1 = resto < 2 ? 0 : 11 - resto;
+            soma = 0;
+            for (let i = 0; i < 9; i++) soma += parseInt(cpf9[i]) * (11 - i);
+            soma += d1 * 2;
+            resto = soma % 11;
+            let d2 = resto < 2 ? 0 : 11 - resto;
+            return '' + d1 + d2;
+        }
+
+        function formatCPF(cpf) {
+            return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        function gerarCPFs(meio) {
+            const cpfs = [];
+            for (let i = 0; i <= 999; i++) {
+                const prefixo = String(i).padStart(3, '0');
+                const base = prefixo + meio;
+                const dv = calcDV(base);
+                cpfs.push(base + dv);
+            }
+            return cpfs;
+        }
+
+        // ============ ESTADO ============
+        let abortController = null;
+        let resultados = [];
+        let filtroAtual = 'todos';
+
+        // ============ UI ============
+        const meioInput = document.getElementById('meioCpf');
+        const preview = document.getElementById('preview');
+
+        meioInput.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 6);
+            e.target.value = v;
+            if (v.length === 6) {
+                preview.innerHTML = `<span class="mask">XXX.</span><span class="user">${v.slice(0,3)}.${v.slice(3)}</span><span class="mask">-XX</span>`;
+            } else {
+                preview.innerHTML = `<span class="mask">XXX.</span><span class="user">${v.padEnd(6,'_').replace(/(\d{3})/,'$1.')}</span><span class="mask">-XX</span>`;
+            }
+        });
+
+        function showToast(title, msg, dur = 3000) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMsg').textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), dur);
+        }
+
+        // ============ CONSULTA ============
+        async function iniciarConsulta() {
+            const meio = meioInput.value.replace(/\D/g, '');
+            if (meio.length !== 6) {
+                showToast('Atenção', 'Digite exatamente 6 dígitos do meio do CPF.', 4000);
+                meioInput.focus();
+                return;
+            }
+
+            const cpfs = gerarCPFs(meio);
+            resultados = cpfs.map(cpf => ({
+                cpf, cpfFmt: formatCPF(cpf),
+                nome: '-', nasc: '-', sexo: '-', renda: '-',
+                nomeMae: '-', nomePai: '-', rg: '-', orgaoEmissor: '-',
+                ufEmissao: '-', tituloEleitor: '-', so: '-',
+                parentes: [],
+                status: 'pendente', statusText: '⏳ Pendente',
+                expanded: false
+            }));
+
+            document.getElementById('resultadosPanel').style.display = 'block';
+            document.getElementById('progressArea').style.display = 'block';
+            document.getElementById('btnConsultar').disabled = true;
+            filtroAtual = 'todos';
+            renderTabela();
+            updateStats();
+
+            abortController = new AbortController();
+            const signal = abortController.signal;
+            const total = cpfs.length;
+            let concluidos = 0, ok = 0, erro = 0;
+            const CONCORRENCIA = 30;
+
+            async function worker(fila) {
+                for (const idx of fila) {
+                    if (signal.aborted) return;
+                    const cpf = cpfs[idx];
+                    try {
+                        const res = await fetch(`https://api-web-br.vercel.app/api/cpf-all.js?cpf=${cpf}`, { signal });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const data = await res.json();
+
+                        const dados = (data.dados && data.dados[0]) || {};
+                        const parentes = data.parentes || [];
+
+                        resultados[idx] = {
+                            cpf, cpfFmt: formatCPF(cpf),
+                            nome: dados.NOME || '-',
+                            nasc: dados.NASC || '-',
+                            sexo: dados.SEXO || '-',
+                            renda: dados.RENDA || '-',
+                            nomeMae: dados.NOME_MAE || '-',
+                            nomePai: dados.NOME_PAI || '-',
+                            rg: dados.RG || '-',
+                            orgaoEmissor: dados.ORGAO_EMISSOR || '-',
+                            ufEmissao: dados.UF_EMISSAO || '-',
+                            tituloEleitor: dados.TITULO_ELEITOR || '-',
+                            so: dados.SO || '-',
+                            parentes: parentes,
+                            status: 'ok', statusText: '✅ Encontrado',
+                            expanded: false
+                        };
+                        ok++;
+                    } catch (e) {
+                        if (signal.aborted) return;
+                        resultados[idx] = {
+                            cpf, cpfFmt: formatCPF(cpf),
+                            nome: '-', nasc: '-', sexo: '-', renda: '-',
+                            nomeMae: '-', nomePai: '-', rg: '-', orgaoEmissor: '-',
+                            ufEmissao: '-', tituloEleitor: '-', so: '-',
+                            parentes: [],
+                            status: 'erro', statusText: '❌ Não encontrado',
+                            expanded: false
+                        };
+                        erro++;
+                    }
+                    concluidos++;
+                    const pct = Math.round((concluidos / total) * 100);
+                    document.getElementById('progressBar').style.width = pct + '%';
+                    document.getElementById('progressBar').textContent = pct + '%';
+                    updateStats(total, ok, erro, total - concluidos);
+                    if (concluidos % 10 === 0 || concluidos === total) renderTabela();
+                }
+            }
+
+            const indices = Array.from({length: total}, (_, i) => i);
+            const lotes = [];
+            for (let i = 0; i < CONCORRENCIA; i++) {
+                lotes.push(indices.filter((_, j) => j % CONCORRENCIA === i));
+            }
+
+            await Promise.all(lotes.map(l => worker(l)));
+
+            document.getElementById('btnConsultar').disabled = false;
+            if (!signal.aborted) {
+                showToast('Concluído!', `${ok} encontrados, ${erro} não encontrados de ${total} consultas.`);
+                renderTabela();
+            }
+        }
+
+        function cancelarConsulta() {
+            if (abortController) abortController.abort();
+            document.getElementById('btnConsultar').disabled = false;
+            showToast('Cancelado', 'A consulta foi interrompida.');
+        }
+
+        function updateStats(total, ok, erro, rest) {
+            if (total !== undefined) {
+                document.getElementById('statTotal').textContent = total;
+                document.getElementById('statOk').textContent = ok;
+                document.getElementById('statErro').textContent = erro;
+                document.getElementById('statRest').textContent = rest;
+            }
+        }
+
+        // ============ TABELA & FILTROS ============
+        function toggleDetail(idx) {
+            resultados[idx].expanded = !resultados[idx].expanded;
+            renderTabela();
+        }
+
+        function renderTabela() {
+            const busca = (document.getElementById('busca').value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const tbody = document.getElementById('tabelaCorpo');
+            const empty = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            let visiveis = 0;
+            resultados.forEach((r, i) => {
+                if (filtroAtual === 'ok' && r.status !== 'ok') return;
+                if (filtroAtual === 'erro' && r.status !== 'erro') return;
+
+                const textoBusca = (r.nome + ' ' + r.cpf + ' ' + r.cpfFmt + ' ' + r.nasc + ' ' + r.sexo + ' ' + r.renda + ' ' + r.nomeMae + ' ' + r.nomePai).toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                if (busca && !textoBusca.includes(busca)) return;
+
+                visiveis++;
+                const tr = document.createElement('tr');
+                tr.className = 'detail-row' + (r.expanded ? ' expanded' : '');
+                tr.onclick = () => toggleDetail(i);
+
+                let badgeClass = 'badge-orange';
+                if (r.status === 'ok') badgeClass = 'badge-green';
+                if (r.status === 'erro') badgeClass = 'badge-red';
+
+                tr.innerHTML = `
+                    <td><span class="expand-icon">▶</span></td>
+                    <td>${i + 1}</td>
+                    <td><code>${r.cpfFmt}</code></td>
+                    <td>${r.nome}</td>
+                    <td>${r.nasc}</td>
+                    <td>${r.sexo}</td>
+                    <td>${r.renda}</td>
+                    <td><span class="badge ${badgeClass}">${r.statusText}</span></td>
+                `;
+                tbody.appendChild(tr);
+
+                // Painel de detalhes
+                if (r.expanded && r.status === 'ok') {
+                    const detailTr = document.createElement('tr');
+                    detailTr.className = 'detail-panel show';
+
+                    let parentesHtml = '';
+                    if (r.parentes && r.parentes.length > 0) {
+                        const parentesCards = r.parentes.map(p => `
+                            <div class="parente-card">
+                                <div class="p-field"><span>Nome</span>${p.NOME || '-'}</div>
+                                <div class="p-field"><span>CPF</span>${p.CPF || '-'}</div>
+                                <div class="p-field"><span>Relação</span>${p.RELACAO || '-'}</div>
+                                <div class="p-field"><span>Data Nasc.</span>${p.DATA_NASC || '-'}</div>
+                                <div class="p-field"><span>Sexo</span>${p.SEXO || '-'}</div>
+                            </div>
+                        `).join('');
+                        parentesHtml = `
+                            <div class="detail-field parentes-grid">
+                                <h4>👨‍👩‍👧‍👦 Parentes (${r.parentes.length})</h4>
+                                ${parentesCards}
+                            </div>
+                        `;
+                    }
+
+                    detailTr.innerHTML = `
+                        <td colspan="8">
+                            <div class="detail-inner">
+                                <div class="detail-field">
+                                    <div class="field-label">CPF</div>
+                                    <div class="field-value">${r.cpfFmt}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Nome Completo</div>
+                                    <div class="field-value">${r.nome}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Nascimento</div>
+                                    <div class="field-value">${r.nasc}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Sexo</div>
+                                    <div class="field-value">${r.sexo}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Renda</div>
+                                    <div class="field-value">R$ ${r.renda}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Nome da Mãe</div>
+                                    <div class="field-value">${r.nomeMae}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Nome do Pai</div>
+                                    <div class="field-value">${r.nomePai}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">RG</div>
+                                    <div class="field-value">${r.rg}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Órgão Emissor</div>
+                                    <div class="field-value">${r.orgaoEmissor}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">UF Emissão</div>
+                                    <div class="field-value">${r.ufEmissao}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">Título de Eleitor</div>
+                                    <div class="field-value">${r.tituloEleitor}</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="field-label">SO</div>
+                                    <div class="field-value">${r.so}</div>
+                                </div>
+                                ${parentesHtml}
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(detailTr);
+                }
+            });
+
+            empty.style.display = visiveis === 0 ? 'block' : 'none';
+        }
+
+        function filtrarTabela() { renderTabela(); }
+        function limparBusca() { document.getElementById('busca').value = ''; renderTabela(); }
+        function filtrarStatus(s) { filtroAtual = s; renderTabela(); }
+
+        // ============ EXPORTAR ============
+        function exportarCSV() {
+            const headers = ['#', 'CPF', 'NOME', 'NASCIMENTO', 'SEXO', 'RENDA', 'NOME_MAE', 'NOME_PAI', 'RG', 'ORGAO_EMISSOR', 'UF_EMISSAO', 'TITULO_ELEITOR', 'SO', 'STATUS'];
+            const rows = resultados.map((r, i) => [
+                i + 1, r.cpfFmt, r.nome, r.nasc, r.sexo, r.renda,
+                r.nomeMae, r.nomePai, r.rg, r.orgaoEmissor, r.ufEmissao,
+                r.tituloEleitor, r.so, r.statusText
+            ]);
+            const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `consulta_cpf_full_${meioInput.value}_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Exportado!', 'Arquivo CSV baixado com sucesso.');
+        }
+    </script>
+</body>
+</html>
