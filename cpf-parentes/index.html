@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Consulta Parentes & Titular</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d26;
+    --accent: #00d4aa;
+    --accent2: #3b82f6;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #2d3344;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .search-box {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+  .search-box input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .search-box input:focus { border-color: var(--accent); }
+  .search-box input::placeholder { color: #64748b; }
+  .search-box button {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .search-box button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,170,0.3); }
+  .search-box button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .progress-bar {
+    max-width: 500px;
+    margin: 0 auto 20px;
+    background: var(--card);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 8px;
+    display: none;
+  }
+  .progress-bar.active { display: block; }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .progress-text.active { display: block; }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .card.titular::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .card-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+  .card-badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-titular { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-parente { background: rgba(0,212,170,0.15); color: var(--accent); border: 1px solid rgba(0,212,170,0.3); }
+  .badge-vinculo {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(59,130,246,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(59,130,246,0.3);
+    margin-left: 6px;
+  }
+  .card-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+  .info-item { display: flex; flex-direction: column; }
+  .info-label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .info-value { color: var(--text); font-weight: 500; word-break: break-all; }
+  .info-value.empty { color: #64748b; font-style: italic; }
+  .info-value.renda { color: var(--accent); font-weight: 700; }
+  .card-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .parentes-count {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .parentes-count span { color: var(--accent); font-weight: 700; }
+  .btn-detail {
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-detail:hover { border-color: var(--accent); color: var(--accent); }
+
+  .tree-view {
+    margin-top: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: none;
+  }
+  .tree-view.active { display: block; }
+  .tree-title {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tree-container {
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  .tree-node {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin: 0 10px;
+  }
+  .tree-node-content {
+    background: linear-gradient(135deg, #1e2330, #252b3a);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    text-align: center;
+    min-width: 140px;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 2;
+  }
+  .tree-node-content:hover { border-color: var(--accent); box-shadow: 0 0 16px rgba(0,212,170,0.2); }
+  .tree-node-content.titular { border-color: var(--warning); }
+  .tree-node-name { font-weight: 600; font-size: 0.85rem; color: #fff; }
+  .tree-node-cpf { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+  .tree-node-vinculo { font-size: 0.65rem; color: var(--accent2); margin-top: 2px; }
+  .tree-children {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    position: relative;
+  }
+  .tree-children::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+  .tree-child-wrapper {
+    position: relative;
+    padding: 0 8px;
+  }
+  .tree-child-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border);
+  }
+  .tree-child-wrapper:first-child::before { left: 50%; }
+  .tree-child-wrapper:last-child::before { right: 50%; }
+  .tree-child-wrapper::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+
+  .error-msg {
+    text-align: center;
+    color: var(--danger);
+    padding: 20px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .error-msg.active { display: block; }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15,17,23,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+  }
+  .loading-overlay.active { display: flex; }
+  .spinner {
+    width: 50px; height: 50px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { margin-top: 16px; color: var(--muted); font-size: 0.9rem; }
+
+  .detail-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    padding: 20px;
+  }
+  .detail-modal.active { display: flex; }
+  .modal-content {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-title { font-size: 1.2rem; margin-bottom: 16px; color: #fff; }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .modal-item.full { grid-column: 1 / -1; }
+
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .card-info { grid-template-columns: 1fr; }
+    .modal-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Painel Consulta Parentes & Titular</h1>
+  <p class="subtitle">Consulte CPF e visualize toda a árvore genealógica vinculada</p>
+
+  <div class="search-box">
+    <input type="text" id="cpfInput" placeholder="Digite o CPF (somente números)" maxlength="14" autocomplete="off">
+    <button id="btnBuscar" onclick="buscar()">Buscar</button>
+  </div>
+
+  <div class="progress-bar" id="progressBar"><div class="fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText"></div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="stats-bar" id="statsBar" style="display:none;">
+    <div class="stat-pill"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total</div></div>
+    <div class="stat-pill"><div class="stat-value" id="statTitular">0</div><div class="stat-label">Titular</div></div>
+    <div class="stat-pill"><div class="stat-value" id="statParentes">0</div><div class="stat-label">Parentes</div></div>
+    <div class="stat-pill"><div class="stat-value" id="statReqs">0</div><div class="stat-label">Requisições</div></div>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid"></div>
+
+  <div class="tree-view" id="treeView">
+    <div class="tree-title">Árvore de Vínculos</div>
+    <div class="tree-container" id="treeContainer"></div>
+  </div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Consultando...</div>
+</div>
+
+<div class="detail-modal" id="detailModal" onclick="closeModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-grid" id="modalGrid"></div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://api-web-br.vercel.app/api/cpf-all.js?cpf=';
+let allResults = [];
+let visitedCpfs = new Set();
+let requestCount = 0;
+
+function formatCPF(cpf) {
+  const s = String(cpf).replace(/\D/g, '').padStart(11, '0');
+  return s.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
+function cleanCPF(cpf) {
+  return String(cpf).replace(/\D/g, '').padStart(11, '0');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 5000);
+}
+
+function setProgress(current, total, text) {
+  const bar = document.getElementById('progressBar');
+  const fill = document.getElementById('progressFill');
+  const txt = document.getElementById('progressText');
+  if (total > 0) {
+    bar.classList.add('active');
+    txt.classList.add('active');
+    fill.style.width = Math.round((current / total) * 100) + '%';
+    txt.textContent = text || `Consultando ${current} de ${total}...`;
+  } else {
+    bar.classList.remove('active');
+    txt.classList.remove('active');
+  }
+}
+
+async function fetchCPF(cpf) {
+  const clean = cleanCPF(cpf);
+  if (visitedCpfs.has(clean)) return null;
+  visitedCpfs.add(clean);
+  requestCount++;
+  try {
+    const res = await fetch(API_BASE + clean, { method: 'GET' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.status !== 200 || !data.dados || data.dados.length === 0) return null;
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function buscar() {
+  const input = document.getElementById('cpfInput');
+  const btn = document.getElementById('btnBuscar');
+  let cpf = cleanCPF(input.value);
+  if (cpf.length !== 11) { showError('CPF inválido. Digite 11 números.'); return; }
+
+  btn.disabled = true;
+  document.getElementById('loadingOverlay').classList.add('active');
+  document.getElementById('loadingText').textContent = 'Consultando titular...';
+  document.getElementById('cardsGrid').innerHTML = '';
+  document.getElementById('treeContainer').innerHTML = '';
+  document.getElementById('treeView').classList.remove('active');
+  document.getElementById('statsBar').style.display = 'none';
+  document.getElementById('errorMsg').classList.remove('active');
+  allResults = [];
+  visitedCpfs = new Set();
+  requestCount = 0;
+
+  const queue = [cpf];
+  const parentMap = new Map();
+  let totalExpected = 1;
+  let processed = 0;
+
+  while (queue.length > 0) {
+    const currentCpf = queue.shift();
+    setProgress(processed, totalExpected, `Consultando ${formatCPF(currentCpf)}...`);
+    const data = await fetchCPF(currentCpf);
+    processed++;
+
+    if (!data) continue;
+
+    const person = {
+      cpf: cleanCPF(data.dados[0].CPF),
+      nome: data.dados[0].NOME,
+      nasc: data.dados[0].NASC,
+      mae: data.dados[0].NOME_MAE,
+      pai: data.dados[0].NOME_PAI,
+      renda: data.dados[0].RENDA,
+      rg: data.dados[0].RG,
+      sexo: data.dados[0].SEXO,
+      titulo: data.dados[0].TITULO_ELEITOR,
+      uf: data.dados[0].UF_EMISSAO,
+      orgao: data.dados[0].ORGAO_EMISSOR,
+      isTitular: cleanCPF(data.dados[0].CPF) === cpf,
+      parentes: [],
+      vinculo: parentMap.get(cleanCPF(data.dados[0].CPF)) || (cleanCPF(data.dados[0].CPF) === cpf ? 'TITULAR' : 'PARENTE')
+    };
+
+    if (data.parentes && Array.isArray(data.parentes)) {
+      for (const p of data.parentes) {
+        const pCpf = p.CPF_VINCULO ? cleanCPF(p.CPF_VINCULO) : null;
+        if (pCpf && pCpf.length === 11 && !visitedCpfs.has(pCpf)) {
+          person.parentes.push({
+            cpf: pCpf,
+            nome: p.NOME_VINCULO,
+            vinculo: p.VINCULO
+          });
+          parentMap.set(pCpf, p.VINCULO);
+          if (!queue.includes(pCpf)) {
+            queue.push(pCpf);
+            totalExpected++;
+          }
+        }
+      }
+    }
+
+    allResults.push(person);
+    renderCards();
+  }
+
+  setProgress(0, 0, '');
+  document.getElementById('loadingOverlay').classList.remove('active');
+  btn.disabled = false;
+
+  if (allResults.length === 0) {
+    showError('Nenhum dado encontrado para este CPF.');
+    return;
+  }
+
+  updateStats();
+  renderTree();
+}
+
+function renderCards() {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  allResults.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card' + (p.isTitular ? ' titular' : '');
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-name">${p.nome}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
+          <span class="card-badge ${p.isTitular ? 'badge-titular' : 'badge-parente'}">${p.isTitular ? 'Titular' : 'Parente'}</span>
+          ${p.vinculo !== 'TITULAR' ? `<span class="badge-vinculo">${p.vinculo}</span>` : ''}
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="info-item"><span class="info-label">CPF</span><span class="info-value">${formatCPF(p.cpf)}</span></div>
+        <div class="info-item"><span class="info-label">Nascimento</span><span class="info-value">${p.nasc || '<span class="empty">—</span>'}</span></div>
+        <div class="info-item"><span class="info-label">Sexo</span><span class="info-value">${p.sexo || '<span class="empty">—</span>'}</span></div>
+        <div class="info-item"><span class="info-label">Renda</span><span class="info-value renda">R$ ${p.renda || '0,00'}</span></div>
+        <div class="info-item"><span class="info-label">Mãe</span><span class="info-value">${p.mae || '<span class="empty">—</span>'}</span></div>
+        <div class="info-item"><span class="info-label">Pai</span><span class="info-value">${p.pai || '<span class="empty">—</span>'}</span></div>
+        <div class="info-item"><span class="info-label">RG</span><span class="info-value">${p.rg || '<span class="empty">—</span>'}</span></div>
+        <div class="info-item"><span class="info-label">Título</span><span class="info-value">${p.titulo || '<span class="empty">—</span>'}</span></div>
+      </div>
+      <div class="card-footer">
+        <div class="parentes-count">Parentes vinculados: <span>${p.parentes.length}</span></div>
+        <button class="btn-detail" onclick='openModal(${JSON.stringify(p).replace(/'/g, "\'")})'>Ver detalhes</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function updateStats() {
+  document.getElementById('statsBar').style.display = 'flex';
+  document.getElementById('statTotal').textContent = allResults.length;
+  document.getElementById('statTitular').textContent = allResults.filter(p => p.isTitular).length;
+  document.getElementById('statParentes').textContent = allResults.filter(p => !p.isTitular).length;
+  document.getElementById('statReqs').textContent = requestCount;
+}
+
+function renderTree() {
+  const container = document.getElementById('treeContainer');
+  const treeView = document.getElementById('treeView');
+  if (allResults.length <= 1) { treeView.classList.remove('active'); return; }
+
+  treeView.classList.add('active');
+  const titular = allResults.find(p => p.isTitular) || allResults[0];
+
+  function buildNode(person, level = 0) {
+    const node = document.createElement('div');
+    node.className = 'tree-node';
+
+    const content = document.createElement('div');
+    content.className = 'tree-node-content' + (person.isTitular ? ' titular' : '');
+    content.innerHTML = `
+      <div class="tree-node-name">${person.nome}</div>
+      <div class="tree-node-cpf">${formatCPF(person.cpf)}</div>
+      <div class="tree-node-vinculo">${person.vinculo}</div>
+    `;
+    content.onclick = () => openModal(person);
+    node.appendChild(content);
+
+    const children = allResults.filter(p => {
+      const parent = allResults.find(parent => parent.parentes.some(par => par.cpf === p.cpf));
+      return parent && parent.cpf === person.cpf && p.cpf !== person.cpf;
+    });
+
+    if (children.length > 0 && level < 3) {
+      const childrenContainer = document.createElement('div');
+      childrenContainer.className = 'tree-children';
+      children.forEach(child => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'tree-child-wrapper';
+        wrapper.appendChild(buildNode(child, level + 1));
+        childrenContainer.appendChild(wrapper);
+      });
+      node.appendChild(childrenContainer);
+    }
+
+    return node;
+  }
+
+  container.innerHTML = '';
+  container.appendChild(buildNode(titular));
+}
+
+function openModal(person) {
+  document.getElementById('modalTitle').textContent = person.nome;
+  document.getElementById('modalGrid').innerHTML = `
+    <div class="modal-item"><div class="info-label">CPF</div><div class="info-value">${formatCPF(person.cpf)}</div></div>
+    <div class="modal-item"><div class="info-label">Vínculo</div><div class="info-value">${person.vinculo}</div></div>
+    <div class="modal-item"><div class="info-label">Nascimento</div><div class="info-value">${person.nasc || '—'}</div></div>
+    <div class="modal-item"><div class="info-label">Sexo</div><div class="info-value">${person.sexo || '—'}</div></div>
+    <div class="modal-item"><div class="info-label">Renda</div><div class="info-value renda">R$ ${person.renda || '0,00'}</div></div>
+    <div class="modal-item"><div class="info-label">RG</div><div class="info-value">${person.rg || '—'}</div></div>
+    <div class="modal-item"><div class="info-label">Órgão Emissor</div><div class="info-value">${person.orgao || '—'}</div></div>
+    <div class="modal-item"><div class="info-label">UF Emissão</div><div class="info-value">${person.uf || '—'}</div></div>
+    <div class="modal-item full"><div class="info-label">Título de Eleitor</div><div class="info-value">${person.titulo || '—'}</div></div>
+    <div class="modal-item full"><div class="info-label">Nome da Mãe</div><div class="info-value">${person.mae || '—'}</div></div>
+    <div class="modal-item full"><div class="info-label">Nome do Pai</div><div class="info-value">${person.pai || '—'}</div></div>
+  `;
+  document.getElementById('detailModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (!e || e.target.id === 'detailModal') {
+    document.getElementById('detailModal').classList.remove('active');
+  }
+}
+
+document.getElementById('cpfInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') buscar();
+});
+</script>
+</body>
+</html>
