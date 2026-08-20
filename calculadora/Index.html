@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .calculator {
+            background-color: #1e1f26;
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.5);
+            width: 360px;
+        }
+
+        #display {
+            width: 100%;
+            height: 70px;
+            background-color: #131419;
+            border: none;
+            border-radius: 12px;
+            color: #00ffc6;
+            font-size: 2.2rem;
+            text-align: right;
+            padding: 15px;
+            margin-bottom: 20px;
+            outline: none;
+            box-shadow: inset 0px 4px 8px rgba(0,0,0,0.5);
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            height: 55px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #2d303e;
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #3b3f51;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Cores de botões específicos */
+        .operator {
+            color: #ff5376;
+        }
+
+        .func {
+            color: #00e6a8;
+            background-color: #252836;
+        }
+
+        .clear {
+            color: #ffb74d;
+        }
+
+        .equal {
+            background-color: #00b894;
+            color: #ffffff;
+            grid-column: span 2;
+        }
+
+        .equal:hover {
+            background-color: #00cec9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <input type="text" id="display" readonly placeholder="0">
+        <div class="buttons">
+            <!-- Linha 1 -->
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="clear" onclick="deleteLast()">⌫</button>
+            <button class="func" onclick="appendValue('(')">(</button>
+            <button class="func" onclick="appendValue(')')">)</button>
+            <button class="operator" onclick="appendValue('/')">/</button>
+
+            <!-- Linha 2 -->
+            <button class="func" onclick="appendValue('√(')">√</button>
+            <button class="func" onclick="appendValue('²')">x²</button>
+            <button class="func" onclick="appendValue('%')">%</button>
+            <button class="func" onclick="appendValue('π')">π</button>
+            <button class="operator" onclick="appendValue('*')">*</button>
+
+            <!-- Linha 3 -->
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button class="func" onclick="toggleSign()">±</button>
+            <button class="operator" onclick="appendValue('-')">-</button>
+
+            <!-- Linha 4 -->
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button onclick="appendValue('.')">.</button>
+            <button class="operator" onclick="appendValue('+')">+</button>
+
+            <!-- Linha 5 -->
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button onclick="appendValue('0')">0</button>
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+
+        function appendValue(value) {
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            display.value = '';
+        }
+
+        function deleteLast() {
+            display.value = display.value.slice(0, -1);
+        }
+
+        // Alterna entre positivo e negativo
+        function toggleSign() {
+            if (display.value.startsWith('-')) {
+                display.value = display.value.slice(1);
+            } else if (display.value !== '') {
+                display.value = '-' + display.value;
+            }
+        }
+
+        function calculate() {
+            try {
+                let expression = display.value;
+
+                // Converte símbolos matemáticos visuais em código JS
+                expression = expression.replace(/√\(/g, 'Math.sqrt(');
+                expression = expression.replace(/²/g, '**2');
+                expression = expression.replace(/π/g, 'Math.PI');
+                expression = expression.replace(/%/g, '/100');
+
+                // Executa a expressão convertida
+                let result = eval(expression);
+
+                // Arredonda resultados com muitas casas decimais
+                if (Number.isInteger(result)) {
+                    display.value = result;
+                } else {
+                    display.value = parseFloat(result.toFixed(8));
+                }
+
+            } catch (error) {
+                display.value = 'Erro';
+                setTimeout(() => clearDisplay(), 1500);
+            }
+        }
+    </script>
+
+</body>
+  </html>
