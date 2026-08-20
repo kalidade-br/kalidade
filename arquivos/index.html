@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquivos — web-br/arquivos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #f0f6fc;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .repo-link {
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .repo-link:hover { text-decoration: underline; }
+        .subtitle {
+            color: #8b949e;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        .loading {
+            color: #8b949e;
+            font-size: 0.9rem;
+            padding: 20px 0;
+        }
+        .error {
+            background: #da3633;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .file-list {
+            list-style: none;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid #21262d;
+            background: #161b22;
+            transition: background 0.15s;
+        }
+        .file-item:last-child { border-bottom: none; }
+        .file-item:hover { background: #1c2128; }
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+        .file-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+        .file-name {
+            color: #c9d1d9;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .file-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+        .btn {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-view {
+            background: #21262d;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+        }
+        .btn-view:hover {
+            background: #30363d;
+            border-color: #8b949e;
+        }
+        .btn-download {
+            background: #238636;
+            color: #fff;
+            border: 1px solid #238636;
+        }
+        .btn-download:hover {
+            background: #2ea043;
+            border-color: #2ea043;
+        }
+        .file-size {
+            color: #8b949e;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        @media (max-width: 480px) {
+            .file-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .file-actions { margin-left: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <svg height="24" width="24" viewBox="0 0 16 16" fill="#8b949e">
+                <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.5 2.5 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.5 2.5 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-3.5a.25.25 0 0 1-.25-.25Z"/>
+            </svg>
+            Arquivos do Repositório
+        </h1>
+        <div class="subtitle">
+            <a class="repo-link" href="https://github.com/web-br/arquivos" target="_blank">kalidade-br/arquivos</a>
+            &mdash; listagem atualizada em tempo real via GitHub API
+        </div>
+
+        <div id="status" class="loading">Carregando arquivos...</div>
+        <ul id="fileList" class="file-list" style="display:none;"></ul>
+    </div>
+
+    <script>
+        const API_URL = "https://api.github.com/repos/kalidade-br/arquivos/contents/";
+        const statusEl = document.getElementById("status");
+        const listEl = document.getElementById("fileList");
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return "0 B";
+            const k = 1024;
+            const sizes = ["B", "KB", "MB", "GB"];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+        }
+
+        async function loadFiles() {
+            try {
+                const res = await fetch(API_URL);
+                if (!res.ok) throw new Error("Erro " + res.status + " ao buscar dados.");
+                const data = await res.json();
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    statusEl.textContent = "Nenhum arquivo encontrado no repositório.";
+                    return;
+                }
+
+                statusEl.style.display = "none";
+                listEl.style.display = "block";
+
+                data.forEach(item => {
+                    const li = document.createElement("li");
+                    li.className = "file-item";
+
+                    const isZip = item.name.endsWith(".zip") || item.name.endsWith(".rar");
+                    const iconPath = isZip
+                        ? "M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.206-.1l-.9-1.2A.25.25 0 0 0 6.223 1.5Z"
+                        : "M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H3.75A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.013-.013-2.914-2.914-.013-.013Z";
+
+                    li.innerHTML = `
+                        <div class="file-info">
+                            <svg class="file-icon" viewBox="0 0 16 16" fill="#8b949e">
+                                <path d="${iconPath}"/>
+                            </svg>
+                            <span class="file-name" title="${item.name}">${item.name}</span>
+                            <span class="file-size">${formatBytes(item.size)}</span>
+                        </div>
+                        <div class="file-actions">
+                            <a class="btn btn-view" href="${item.html_url}" target="_blank" rel="noopener">Ver no GitHub</a>
+                            <a class="btn btn-download" href="${item.download_url}" download>Download</a>
+                        </div>
+                    `;
+                    listEl.appendChild(li);
+                });
+            } catch (err) {
+                statusEl.className = "error";
+                statusEl.textContent = "Falha ao carregar: " + err.message;
+            }
+        }
+
+        loadFiles();
+    </script>
+
+<script>
+(() => {
+  if (document.getElementById("webbr-watermark")) return;
+
+  const a = document.createElement("a");
+  a.id = "webbr-watermark";
+  a.href = "https://github.com/kalidade-br";
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+
+  a.innerHTML = `
+    <style>
+      @keyframes webbrFloat {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+      }
+
+      @keyframes webbrGlow {
+        0%,100% { box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+        50% { box-shadow: 0 8px 24px rgba(255,255,255,.15); }
+      }
+
+      #webbr-watermark{
+        position:fixed;
+        right:16px;
+        bottom:16px;
+        display:flex;
+        align-items:center;
+        gap:7px;
+        padding:7px 10px;
+        border-radius:999px;
+        text-decoration:none;
+        background:rgba(25,25,25,.55);
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,.12);
+        color:#fff;
+        font:600 13px system-ui,sans-serif;
+        z-index:2147483647;
+        opacity:.75;
+        animation:webbrFloat 3s ease-in-out infinite,
+                  webbrGlow 3s ease-in-out infinite;
+        transition:.25s;
+      }
+
+      #webbr-watermark:hover{
+        opacity:1;
+        transform:scale(1.06);
+      }
+
+      #webbr-watermark img.avatar{
+        width:26px;
+        height:26px;
+        border-radius:50%;
+      }
+
+      #webbr-watermark img.github{
+        width:16px;
+        height:16px;
+        filter:invert(1);
+        opacity:.9;
+      }
+    </style>
+
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/286726470?v=4">
+    <span>@web-br</span>
+    <img class="github" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
+  `;
+
+  document.body.appendChild(a);
+})();
+</script>
+</body>
+</html>
