@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Consulta de CNPJ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 20px;
+    line-height: 1.5;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 28px; }
+  .header h1 { font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+  .header p { color: #64748b; font-size: 14px; }
+  .search-box { display: flex; gap: 10px; margin-bottom: 24px; }
+  .search-box input {
+    flex: 1; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 12px;
+    font-size: 16px; outline: none; transition: border-color 0.2s; background: #fff;
+  }
+  .search-box input:focus { border-color: #2563eb; }
+  .search-box button {
+    padding: 14px 28px; background: #2563eb; color: white; border: none;
+    border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .search-box button:hover { background: #1d4ed8; }
+  .search-box button:disabled { background: #93c5fd; cursor: not-allowed; }
+  .error {
+    background: #fef2f2; color: #dc2626; padding: 14px 18px;
+    border-radius: 10px; margin-bottom: 16px; font-size: 14px; display: none;
+    border: 1px solid #fecaca;
+  }
+  .error.show { display: block; }
+  .loading { text-align: center; padding: 40px; color: #64748b; display: none; }
+  .loading.show { display: block; }
+  .spinner {
+    display: inline-block; width: 36px; height: 36px;
+    border: 3px solid #e2e8f0; border-top-color: #2563eb;
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .result { display: none; }
+  .result.show { display: block; }
+  .card {
+    background: #fff; border-radius: 14px; padding: 20px;
+    margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid #f1f5f9;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600; color: #2563eb;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; }
+  .field-label {
+    font-size: 11px; color: #94a3b8; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px;
+  }
+  .field-value { font-size: 14px; color: #0f172a; font-weight: 500; word-break: break-word; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+  }
+  .badge-ativa { background: #dcfce7; color: #166534; }
+  .badge-inativa { background: #fee2e2; color: #991b1b; }
+  .badge-matriz { background: #dbeafe; color: #1e40af; }
+  .badge-filial { background: #fef3c7; color: #92400e; }
+  .qsa-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+  .qsa-item:last-child { border-bottom: none; }
+  .qsa-name { font-weight: 600; color: #0f172a; font-size: 14px; }
+  .qsa-role { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .cnae-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cnae-tag {
+    background: #f1f5f9; color: #334155;
+    padding: 5px 10px; border-radius: 6px; font-size: 12px;
+  }
+  .tributario-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tributario-table th, .tributario-table td {
+    padding: 10px 12px; text-align: left; border-bottom: 1px solid #f1f5f9;
+  }
+  .tributario-table th {
+    color: #94a3b8; font-weight: 600; font-size: 11px;
+    text-transform: uppercase; background: #f8fafc;
+  }
+  .tributario-table tr:hover { background: #f8fafc; }
+  .hidden { display: none; }
+  .footer {
+    text-align: center; margin-top: 24px; padding: 16px;
+    color: #94a3b8; font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🔍 Consulta de CNPJ</h1>
+    <p>Digite o CNPJ com ou sem formatação (ex: 04.601.397/0001-28 ou 04601397000128)</p>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="cnpjInput" placeholder="Digite o CNPJ..." maxlength="18" autocomplete="off">
+    <button id="btnBuscar" onclick="buscarCNPJ()">Buscar</button>
+  </div>
+
+  <div class="error" id="errorBox"></div>
+
+  <div class="loading" id="loadingBox">
+    <div class="spinner"></div>
+    <div>Consultando dados na Receita Federal...</div>
+  </div>
+
+  <div class="result" id="resultBox">
+    <div class="card">
+      <div class="card-title">📋 Informações Principais</div>
+      <div class="grid-2">
+        <div class="field">
+          <span class="field-label">Razão Social</span>
+          <span class="field-value" id="razaoSocial"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Nome Fantasia</span>
+          <span class="field-value" id="nomeFantasia"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">CNPJ</span>
+          <span class="field-value" id="cnpjFormatado"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Situação Cadastral</span>
+          <span id="situacaoBadge"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Natureza Jurídica</span>
+          <span class="field-value" id="naturezaJuridica"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Porte</span>
+          <span class="field-value" id="porte"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Matriz / Filial</span>
+          <span id="matrizBadge"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Capital Social</span>
+          <span class="field-value" id="capitalSocial"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Data de Início</span>
+          <span class="field-value" id="dataInicio"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Data Situação Cadastral</span>
+          <span class="field-value" id="dataSituacao"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📍 Endereço</div>
+      <div class="grid-2">
+        <div class="field">
+          <span class="field-label">Logradouro</span>
+          <span class="field-value" id="logradouro"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Número</span>
+          <span class="field-value" id="numero"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Complemento</span>
+          <span class="field-value" id="complemento"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Bairro</span>
+          <span class="field-value" id="bairro"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Município / UF</span>
+          <span class="field-value" id="municipioUf"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">CEP</span>
+          <span class="field-value" id="cep"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📞 Contato</div>
+      <div class="grid-3">
+        <div class="field">
+          <span class="field-label">Telefone 1</span>
+          <span class="field-value" id="telefone1"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Telefone 2</span>
+          <span class="field-value" id="telefone2"></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Fax</span>
+          <span class="field-value" id="fax"></span>
+        </div>
+        <div class="field" style="grid-column: 1 / -1;">
+          <span class="field-label">E-mail</span>
+          <span class="field-value" id="email"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏭 Atividade Principal (CNAE)</div>
+      <div class="field">
+        <span class="field-value" id="cnaePrincipal"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏭 Atividades Secundárias</div>
+      <div class="cnae-list" id="cnaesSecundarios"></div>
+    </div>
+
+    <div class="card" id="qsaCard">
+      <div class="card-title">👥 Quadro Societário (QSA)</div>
+      <div id="qsaList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💰 Regime Tributário</div>
+      <table class="tributario-table">
+        <thead>
+          <tr><th>Ano</th><th>Forma de Tributação</th><th>Escriturações</th></tr>
+        </thead>
+        <tbody id="tributarioBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    Dados fornecidos por api-web-br.vercel.app • Painel offline — funciona no navegador
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('cnpjInput');
+  const btn = document.getElementById('btnBuscar');
+  const errorBox = document.getElementById('errorBox');
+  const loadingBox = document.getElementById('loadingBox');
+  const resultBox = document.getElementById('resultBox');
+
+  input.addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 14) v = v.slice(0, 14);
+    if (v.length > 2) v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+    if (v.length > 5) v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    if (v.length > 8) v = v.replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3/$4');
+    if (v.length > 12) v = v.replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, '$1.$2.$3/$4-$5');
+    e.target.value = v;
+  });
+
+  input.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') buscarCNPJ();
+  });
+
+  function formatCNPJ(cnpj) {
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  }
+
+  function formatMoney(value) {
+    if (!value && value !== 0) return '-';
+    return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('pt-BR');
+  }
+
+  function formatPhone(num) {
+    if (!num || num === '') return '-';
+    const s = String(num);
+    if (s.length === 10) return s.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+    if (s.length === 11) return s.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    return s;
+  }
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.classList.add('show');
+    loadingBox.classList.remove('show');
+    resultBox.classList.remove('show');
+  }
+
+  function clearError() {
+    errorBox.classList.remove('show');
+  }
+
+  async function buscarCNPJ() {
+    const raw = input.value.trim();
+    const cnpjLimpo = raw.replace(/\D/g, '');
+
+    if (cnpjLimpo.length !== 14) {
+      showError('CNPJ inválido. Digite os 14 dígitos do CNPJ.');
+      return;
+    }
+
+    clearError();
+    loadingBox.classList.add('show');
+    resultBox.classList.remove('show');
+    btn.disabled = true;
+
+    try {
+      const apiUrl = 'https://api-web-br.vercel.app/api/cnpj.js?cnpj=' + cnpjLimpo;
+      const res = await fetch(apiUrl);
+
+      if (!res.ok) throw new Error('Erro na consulta: ' + res.status);
+      const data = await res.json();
+
+      if (!data || !data.cnpj) {
+        showError('CNPJ não encontrado ou dados indisponíveis.');
+        return;
+      }
+
+      document.getElementById('razaoSocial').textContent = data.razao_social || '-';
+      document.getElementById('nomeFantasia').textContent = data.nome_fantasia || '-';
+      document.getElementById('cnpjFormatado').textContent = formatCNPJ(data.cnpj);
+
+      const sitBadge = document.getElementById('situacaoBadge');
+      if (data.descricao_situacao_cadastral === 'ATIVA') {
+        sitBadge.innerHTML = '<span class="badge badge-ativa">ATIVA</span>';
+      } else {
+        sitBadge.innerHTML = '<span class="badge badge-inativa">' + (data.descricao_situacao_cadastral || 'INATIVA') + '</span>';
+      }
+
+      document.getElementById('naturezaJuridica').textContent = data.natureza_juridica || '-';
+      document.getElementById('porte').textContent = data.porte || '-';
+
+      const matBadge = document.getElementById('matrizBadge');
+      if (data.identificador_matriz_filial === 1) {
+        matBadge.innerHTML = '<span class="badge badge-matriz">MATRIZ</span>';
+      } else {
+        matBadge.innerHTML = '<span class="badge badge-filial">FILIAL</span>';
+      }
+
+      document.getElementById('capitalSocial').textContent = formatMoney(data.capital_social);
+      document.getElementById('dataInicio').textContent = formatDate(data.data_inicio_atividade);
+      document.getElementById('dataSituacao').textContent = formatDate(data.data_situacao_cadastral);
+
+      document.getElementById('logradouro').textContent = (data.descricao_tipo_de_logradouro || '') + ' ' + (data.logradouro || '');
+      document.getElementById('numero').textContent = data.numero || '-';
+      document.getElementById('complemento').textContent = data.complemento || '-';
+      document.getElementById('bairro').textContent = data.bairro || '-';
+      document.getElementById('municipioUf').textContent = (data.municipio || '-') + ' / ' + (data.uf || '-');
+      document.getElementById('cep').textContent = data.cep ? data.cep.replace(/^(\d{5})(\d{3})$/, '$1-$2') : '-';
+
+      document.getElementById('telefone1').textContent = formatPhone(data.ddd_telefone_1);
+      document.getElementById('telefone2').textContent = formatPhone(data.ddd_telefone_2);
+      document.getElementById('fax').textContent = formatPhone(data.ddd_fax);
+      document.getElementById('email').textContent = data.email || '-';
+
+      document.getElementById('cnaePrincipal').textContent = (data.cnae_fiscal || '') + ' - ' + (data.cnae_fiscal_descricao || '');
+
+      const secContainer = document.getElementById('cnaesSecundarios');
+      secContainer.innerHTML = '';
+      if (data.cnaes_secundarios && data.cnaes_secundarios.length > 0) {
+        data.cnaes_secundarios.forEach(c => {
+          const tag = document.createElement('span');
+          tag.className = 'cnae-tag';
+          tag.textContent = c.codigo + ' - ' + c.descricao;
+          secContainer.appendChild(tag);
+        });
+      } else {
+        secContainer.innerHTML = '<span style="color:#888;font-size:13px;">Nenhuma atividade secundária registrada</span>';
+      }
+
+      const qsaContainer = document.getElementById('qsaList');
+      qsaContainer.innerHTML = '';
+      if (data.qsa && data.qsa.length > 0) {
+        document.getElementById('qsaCard').classList.remove('hidden');
+        data.qsa.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'qsa-item';
+          div.innerHTML = '<div class="qsa-name">' + (s.nome_socio || '-') + '</div>' +
+            '<div class="qsa-role">' + (s.qualificacao_socio || '-') + ' • Entrou em ' + formatDate(s.data_entrada_sociedade) + ' • ' + (s.faixa_etaria || '') + '</div>';
+          qsaContainer.appendChild(div);
+        });
+      } else {
+        document.getElementById('qsaCard').classList.add('hidden');
+      }
+
+      const tribBody = document.getElementById('tributarioBody');
+      tribBody.innerHTML = '';
+      if (data.regime_tributario && data.regime_tributario.length > 0) {
+        data.regime_tributario.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td>' + r.ano + '</td><td>' + (r.forma_de_tributacao || '-') + '</td><td>' + (r.quantidade_de_escrituracoes || '-') + '</td>';
+          tribBody.appendChild(tr);
+        });
+      } else {
+        tribBody.innerHTML = '<tr><td colspan="3" style="color:#888;">Sem dados de regime tributário</td></tr>';
+      }
+
+      loadingBox.classList.remove('show');
+      resultBox.classList.add('show');
+    } catch (err) {
+      showError('Erro ao consultar CNPJ: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
