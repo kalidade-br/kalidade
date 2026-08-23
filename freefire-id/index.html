@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONSULTAR ID FF - WEB-BR</title>
+<style>
+:root{--bg:#07090f;--card:#101522;--border:rgba(255,255,255,.08);--text:#f5f7ff;--muted:#8791a7;--orange:#ff8a00;--orange2:#ffb52b;--green:#2bd47f;--blue:#4e9cff;--shadow:0 25px 70px rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(circle at 10% 0%,rgba(255,138,0,.13),transparent 28%),radial-gradient(circle at 100% 50%,rgba(95,65,255,.1),transparent 30%),var(--bg)}.container{width:min(1180px,calc(100% - 28px));margin:auto}.hidden{display:none!important}.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:30px;font-size:11px;font-weight:800;border:1px solid var(--border);background:rgba(255,255,255,.04)}.badge.green{color:#55e59c;background:rgba(43,212,127,.08)}.badge.orange{color:#ffb14a;background:rgba(255,138,0,.08)}.badge.blue{color:#75b4ff;background:rgba(78,156,255,.08)}
+header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:#111;font-weight:1000;background:linear-gradient(135deg,var(--orange),var(--orange2));box-shadow:0 10px 35px rgba(255,138,0,.2)}.brand h1{font-size:18px}.brand small{display:block;color:var(--muted);margin-top:3px}.api-status{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:30px;border:1px solid var(--border);background:rgba(255,255,255,.025);font-size:11px;color:#aab2c3}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.hero{text-align:center;padding:60px 0 35px}.hero h2{font-size:clamp(32px,6vw,62px);line-height:1;letter-spacing:-2.5px;margin-bottom:17px}.hero h2 span{color:var(--orange)}.hero p{color:var(--muted);max-width:650px;margin:auto;line-height:1.6}.search{max-width:720px;margin:30px auto 0;padding:7px;display:flex;gap:7px;border-radius:17px;border:1px solid var(--border);background:rgba(16,21,34,.9);box-shadow:var(--shadow)}.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:white;padding:15px;font-size:15px}.search input::placeholder{color:#5f687c}.search button{border:0;padding:0 25px;border-radius:12px;cursor:pointer;font-weight:900;color:#111;background:linear-gradient(135deg,var(--orange),var(--orange2))}.search button:disabled{opacity:.6;cursor:wait}.search-info{color:#555e72;font-size:11px;margin-top:11px}.error{max-width:720px;margin:20px auto;padding:14px 17px;display:none;color:#ff8793;border:1px solid rgba(255,82,99,.2);background:rgba(255,82,99,.07);border-radius:13px;font-size:13px}
+.dashboard{display:none;padding-bottom:60px;animation:appear .4s ease}@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}.profile{position:relative;overflow:hidden;padding:25px;border-radius:23px;border:1px solid var(--border);background:linear-gradient(145deg,rgba(20,26,41,.97),rgba(10,13,21,.97));box-shadow:var(--shadow)}.profile-main{position:relative;z-index:1;display:flex;align-items:center;gap:20px}.avatar-wrap{width:105px;height:105px;flex-shrink:0;border-radius:25px;padding:4px;background:linear-gradient(135deg,var(--orange),#ffcf70)}.avatar{width:100%;height:100%;object-fit:cover;border-radius:21px;background:#151b29}.profile-info{min-width:0;flex:1}.nickname{font-size:30px;letter-spacing:-1px;margin-bottom:7px;word-break:break-word}.player-id{color:var(--muted);font-size:13px}.player-id strong{color:#dce2ee}.profile-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.profile-actions{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px}.action{border:1px solid var(--border);background:rgba(255,255,255,.035);color:#cbd2df;padding:10px 13px;border-radius:10px;cursor:pointer;font-size:12px}.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:13px}.quick{padding:19px;border:1px solid var(--border);border-radius:16px;background:rgba(16,21,34,.75)}.quick-label{color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-size:10px;margin-bottom:8px}.quick-value{font-size:22px;font-weight:900}.section{margin-top:28px}.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:13px}.section-title{font-size:18px;font-weight:900}.section-subtitle{color:var(--muted);font-size:11px;margin-top:4px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{padding:19px;border:1px solid var(--border);border-radius:17px;background:rgba(16,21,34,.75)}.card-title{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}.card-value{font-size:17px;font-weight:800;word-break:break-word}
+.account-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.account-card{padding:17px;border:1px solid var(--border);border-radius:15px;background:rgba(255,255,255,.025)}.account-card .label{color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:8px}.account-card .value{font-weight:800;font-size:14px;word-break:break-word}
+.guild{display:grid;grid-template-columns:1.3fr 1fr;gap:13px}.guild-main{padding:24px;border-radius:19px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(126,83,255,.1),rgba(16,21,34,.85))}.guild-name{font-size:25px;font-weight:900;margin:10px 0 5px}.guild-id{color:var(--muted);font-size:12px}.guild-info{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px}.guild-stat{padding:13px;border-radius:12px;background:rgba(255,255,255,.035)}.guild-stat span{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}.guild-stat strong{font-size:13px}.guild-side{padding:24px;border:1px solid var(--border);border-radius:19px;background:rgba(16,21,34,.75)}.guild-side h3{margin-bottom:15px}.guild-line{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid var(--border);font-size:12px}.guild-line:last-child{border-bottom:0}.guild-line span{color:var(--muted)}
+.prime{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.prime-card{padding:20px;border-radius:17px;border:1px solid rgba(255,181,43,.12);background:linear-gradient(145deg,rgba(255,138,0,.08),rgba(16,21,34,.8))}.prime-icon{font-size:24px;margin-bottom:13px}.prime-label{color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:7px}.prime-value{font-size:20px;font-weight:900}
+.rank-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.rank-card{position:relative;overflow:hidden;padding:22px;border-radius:18px;border:1px solid var(--border);background:rgba(16,21,34,.8)}.rank-name{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.8px}.rank-number{margin:9px 0;font-size:39px;font-weight:1000;color:var(--orange)}.rank-points{font-size:14px}.rank-extra{margin-top:15px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+.total-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:13px}.total{padding:21px;border-radius:17px;border:1px solid var(--border);background:rgba(16,21,34,.8)}.total-label{color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:8px}.total-value{font-size:27px;font-weight:1000}.mode-tabs{display:flex;gap:7px;margin-bottom:13px}.mode-tab{border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.03);border-radius:10px;padding:9px 14px;cursor:pointer;font-size:12px;font-weight:800}.mode-tab.active{color:#111;background:var(--orange);border-color:var(--orange)}.mode-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:13px}.stat-box{padding:15px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.025)}.stat-box span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;margin-bottom:7px}.stat-box strong{font-size:17px}.details{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail{padding:14px;border:1px solid var(--border);border-radius:13px;background:rgba(255,255,255,.02)}.detail span{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}.detail strong{font-size:14px}
+.items{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.item{overflow:hidden;position:relative;text-decoration:none;color:var(--text);border-radius:17px;border:1px solid var(--border);background:rgba(16,21,34,.82);transition:.2s}.item:hover{transform:translateY(-3px);border-color:rgba(255,138,0,.35)}.item-image{height:190px;display:grid;place-items:center;padding:15px;background:radial-gradient(circle,rgba(255,138,0,.08),transparent 65%),#0c101a}.item-image img{max-width:100%;max-height:160px;width:auto;object-fit:contain}.item-body{padding:14px}.item-name{font-size:13px;font-weight:900;margin-bottom:7px;line-height:1.3}.item-category{color:var(--muted);font-size:10px;margin-bottom:8px}.rarity{display:inline-flex;padding:5px 8px;border-radius:7px;font-size:9px;font-weight:900;background:rgba(155,108,255,.1);color:#b998ff}.flags{display:flex;flex-wrap:wrap;gap:8px}.loading{width:15px;height:15px;display:none;margin:auto;border:2px solid rgba(0,0,0,.25);border-top-color:#111;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}footer{padding:25px 0 45px;text-align:center;color:#4f586b;font-size:11px}
+@media(max-width:900px){.quick-grid{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,1fr)}.account-grid{grid-template-columns:repeat(2,1fr)}.items{grid-template-columns:repeat(3,1fr)}.mode-summary{grid-template-columns:repeat(3,1fr)}.details{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.api-status{display:none}.hero{padding:40px 0 25px}.hero h2{letter-spacing:-1.5px}.profile-main{align-items:flex-start}.profile-actions{display:none}.guild{grid-template-columns:1fr}.prime{grid-template-columns:repeat(2,1fr)}.rank-grid{grid-template-columns:1fr}.total-stats{grid-template-columns:1fr}.items{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.container{width:calc(100% - 18px)}header{height:65px}.brand h1{font-size:15px}.brand small{font-size:9px}.logo{width:39px;height:39px}.search{border-radius:14px}.search button{padding:0 16px}.search input{padding:13px 9px;font-size:13px}.profile{padding:18px}.avatar-wrap{width:75px;height:75px;border-radius:18px}.avatar{border-radius:15px}.nickname{font-size:20px}.quick-grid,.cards,.account-grid{grid-template-columns:1fr 1fr}.quick{padding:15px}.quick-value{font-size:18px}.guild-info{grid-template-columns:1fr}.mode-summary{grid-template-columns:1fr 1fr}.details{grid-template-columns:1fr 1fr}.items{grid-template-columns:1fr 1fr}.item-image{height:145px}.item-image img{max-height:120px}.item-body{padding:11px}.item-name{font-size:11px}}@media(max-width:350px){.items{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<div class="brand"><div class="logo">FF</div><div><h1>CONSULTAR ID FF - WEB-BR</h1><small>Free Fire ID all info</small></div></div>
+<div class="api-status"><span class="dot"></span>API ONLINE</div>
+</header>
+
+<section class="hero">
+<h2>Consulte qualquer <span>jogador</span></h2>
+<p>Pesquise pelo ID do Free Fire e visualize perfil, conta, guilda, rankings, estatísticas e itens.</p>
+<form class="search" id="searchForm">
+<input id="playerId" type="text" inputmode="numeric" autocomplete="off" placeholder="Digite o ID do jogador..." required>
+<button id="searchButton" type="submit"><span id="buttonText">Consultar</span><span class="loading" id="loading"></span></button>
+</form>
+<div class="search-info">Exemplo: 54934696</div>
+<div class="error" id="error"></div>
+</section>
+
+<main class="dashboard" id="dashboard">
+<section class="profile">
+<div class="profile-main">
+<div class="avatar-wrap"><img id="avatar" class="avatar" alt="Avatar do jogador" src=""></div>
+<div class="profile-info">
+<h2 class="nickname" id="nickname">—</h2>
+<div class="player-id">ID: <strong id="playerIdValue">—</strong></div>
+<div class="profile-tags">
+<span class="badge orange" id="regionBadge">🌎 BR</span>
+<span class="badge green">● Dados encontrados</span>
+<span class="badge" id="levelBadge">LVL —</span>
+</div>
+</div>
+<div class="profile-actions">
+<button class="action" onclick="copyId()">📋 Copiar ID</button>
+<button class="action" onclick="scrollToItems()">🎒 Ver itens</button>
+</div>
+</div>
+</section>
+
+<div class="quick-grid">
+<div class="quick"><div class="quick-label">Nível</div><div class="quick-value" id="quickLevel">—</div></div>
+<div class="quick"><div class="quick-label">XP</div><div class="quick-value" id="quickXp">—</div></div>
+<div class="quick"><div class="quick-label">Curtidas</div><div class="quick-value" id="quickLikes">—</div></div>
+<div class="quick"><div class="quick-label">Visualizações</div><div class="quick-value" id="quickViews">—</div></div>
+</div>
+
+<section class="section">
+<div class="section-head"><div><div class="section-title">Conta</div><div class="section-subtitle">Informações gerais da conta</div></div></div>
+<div class="account-grid">
+<div class="account-card"><div class="label">Criada em</div><div class="value" id="createdAt">—</div></div>
+<div class="account-card"><div class="label">Último login</div><div class="value" id="lastLogin">—</div></div>
+<div class="account-card"><div class="label">Último online</div><div class="value" id="lastOnline">—</div></div>
+<div class="account-card"><div class="label">Versão</div><div class="value" id="gameVersion">—</div></div>
+<div class="account-card"><div class="label">Temporada</div><div class="value" id="season">—</div></div>
+<div class="account-card"><div class="label">Insígnias</div><div class="value" id="badges">—</div></div>
+<div class="account-card"><div class="label">Passe Elite</div><div class="value" id="elitePass">—</div></div>
+<div class="account-card"><div class="label">Influenciador</div><div class="value" id="influencer">—</div></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-head"><div><div class="section-title">Guilda</div><div class="section-subtitle">Informações da guilda do jogador</div></div></div>
+<div class="guild">
+<div class="guild-main">
+<span class="badge blue">🛡 GUILDA</span>
+<div class="guild-name" id="guildName">Sem guilda</div>
+<div class="guild-id">Clan ID: <strong id="clanId">—</strong></div>
+<div class="guild-info">
+<div class="guild-stat"><span>Emblema</span><strong id="guildEmblem">—</strong></div>
+<div class="guild-stat"><span>Membros</span><strong id="guildMembers">—</strong></div>
+<div class="guild-stat"><span>Time</span><strong id="guildTeam">—</strong></div>
+<div class="guild-stat"><span>Team ID</span><strong id="teamId">—</strong></div>
+</div>
+</div>
+<div class="guild-side">
+<h3>Competitivo</h3>
+<div class="guild-line"><span>Championship Team</span><strong id="championshipTeam">—</strong></div>
+<div class="guild-line"><span>Team ID</span><strong id="teamId2">—</strong></div>
+<div class="guild-line"><span>Quantidade de membros</span><strong id="teamMembers2">—</strong></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-head"><div><div class="section-title">Prime</div><div class="section-subtitle">Sistema Prime da conta</div></div></div>
+<div class="prime">
+<div class="prime-card"><div class="prime-icon">👑</div><div class="prime-label">Nível Prime</div><div class="prime-value" id="primeLevel">—</div></div>
+<div class="prime-card"><div class="prime-icon">📅</div><div class="prime-label">Pontos mensais</div><div class="prime-value" id="monthlyPoints">—</div></div>
+<div class="prime-card"><div class="prime-icon">🏆</div><div class="prime-label">Pontos anuais</div><div class="prime-value" id="annualPoints">—</div></div>
+<div class="prime-card"><div class="prime-icon">⭐</div><div class="prime-label">Total</div><div class="prime-value" id="totalPoints">—</div></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-head"><div><div class="section-title">Rankings</div><div class="section-subtitle">Posição atual e melhor posição registrada</div></div></div>
+<div class="rank-grid" id="rankGrid"></div>
+</section>
+
+<section class="section">
+<div class="section-head"><div><div class="section-title">Estatísticas</div><div class="section-subtitle">Desempenho geral da conta</div></div></div>
+<div class="total-stats">
+<div class="total"><div class="total-label">Partidas</div><div class="total-value" id="totalMatches">—</div></div>
+<div class="total"><div class="total-label">Vitórias</div><div class="total-value" id="totalWins">—</div></div>
+<div class="total"><div class="total-label">Abates</div><div class="total-value" id="totalKills">—</div></div>
+</div>
+<div class="mode-tabs">
+<button class="mode-tab active" data-mode="solo">Solo</button>
+<button class="mode-tab" data-mode="duo">Duo</button>
+<button class="mode-tab" data-mode="squad">Squad</button>
+</div>
+<div id="modeContainer"></div>
+</section>
+
+<section class="section">
+<div class="section-head"><div><div class="section-title">Informações extras</div></div></div>
+<div class="cards">
+<div class="card"><div class="card-title">CS Peak Points</div><div class="card-value" id="csPeakPoints">—</div></div>
+<div class="card"><div class="card-title">Hippo Rank</div><div class="card-value" id="hippoRank">—</div></div>
+<div class="card"><div class="card-title">Hippo Points</div><div class="card-value" id="hippoPoints">—</div></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-head"><div><div class="section-title">Status da conta</div></div></div>
+<div class="flags">
+<span class="badge" id="flagActive">—</span>
+<span class="badge" id="flagBan">—</span>
+<span class="badge" id="flagPenalty">—</span>
+<span class="badge" id="flagDeleted">—</span>
+</div>
+</section>
+
+<section class="section" id="itemsSection">
+<div class="section-head"><div><div class="section-title">Itens</div><div class="section-subtitle">Coleção encontrada no perfil</div></div><span class="badge orange" id="itemCount">0 itens</span></div>
+<div class="items" id="items"></div>
+</section>
+</main>
+
+<footer>FF Player Database • Dados fornecidos pela API</footer>
+</div>
+
+<script>
+const API_URL="https://elvis-ff-info.vercel.app/?id=";
+const form=document.getElementById("searchForm"),input=document.getElementById("playerId"),button=document.getElementById("searchButton"),buttonText=document.getElementById("buttonText"),loading=document.getElementById("loading"),dashboard=document.getElementById("dashboard"),errorBox=document.getElementById("error");
+let currentData=null;
+const $=id=>document.getElementById(id);
+function value(v,fallback="Não informado"){return v===null||v===undefined||v===""?fallback:v}
+function number(v){return v===null||v===undefined||v===""?"0":Number(v).toLocaleString("pt-BR")}
+function set(id,v){const el=$(id);if(el)el.textContent=value(v)}
+function formatBool(v){return v===true?"Sim":v===false?"Não":"Não informado"}
+function safeImage(img){img.onerror=function(){this.onerror=null;this.src="data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="#111624"/><text x="200" y="220" text-anchor="middle" fill="#ff8a00" font-size="55" font-family="Arial" font-weight="bold">FF</text></svg>`)}}
+function setLoading(active){button.disabled=active;buttonText.style.display=active?"none":"inline";loading.style.display=active?"block":"none"}
+function showError(message){errorBox.textContent=message;errorBox.style.display="block"}
+function hideError(){errorBox.style.display="none"}
+
+form.addEventListener("submit",async e=>{
+e.preventDefault();const id=input.value.trim();if(!id){showError("Digite o ID de um jogador.");return}
+hideError();dashboard.style.display="none";setLoading(true);
+try{
+const response=await fetch(API_URL+encodeURIComponent(id),{headers:{"Accept":"application/json"}});
+if(!response.ok)throw new Error("HTTP "+response.status);
+const json=await response.json();
+if(!json||json.success!==true||!json.data)throw new Error("Jogador não encontrado.");
+currentData=json.data;renderDashboard(currentData);dashboard.style.display="block";setTimeout(()=>dashboard.scrollIntoView({behavior:"smooth",block:"start"}),100);
+}catch(err){console.error(err);showError("Não foi possível consultar esse ID. Verifique o ID ou tente novamente.")}finally{setLoading(false)}
+});
+
+function renderDashboard(data){renderProfile(data);renderAccount(data);renderGuild(data.guild);renderPrime(data.prime);renderRanks(data.ranks);renderStats(data.stats);renderExtra(data.extra);renderFlags(data.flags);renderItems(data.items||[])}
+function renderProfile(data){
+set("nickname",data.nickname);set("playerIdValue",data.id);set("quickLevel",number(data.level));set("quickXp",number(data.xp));set("quickLikes",number(data.likes));set("quickViews",number(data.profileViews));set("levelBadge","LVL "+value(data.level,"?"));set("regionBadge","🌎 "+value(data.region,"?"));
+const avatar=$("avatar");avatar.src=value(data.avatarUrl,"");safeImage(avatar)
+}
+function renderAccount(data){
+const a=data.account||{};set("createdAt",a.createdAt);set("lastLogin",a.lastLogin);set("lastOnline",data.lastOnline);set("gameVersion",a.gameVersion);set("season",a.season);set("badges",a.badges);set("elitePass",formatBool(a.elitePass));set("influencer",formatBool(a.influencer))
+}
+function renderGuild(g){
+if(!g){set("guildName","Sem guilda");return}
+set("guildName",g.name);set("clanId",g.clanId);set("guildEmblem",g.emblem);set("guildMembers",g.teamMembers);set("guildTeam",g.championshipTeam);set("teamId",g.teamId);set("championshipTeam",g.championshipTeam);set("teamId2",g.teamId);set("teamMembers2",g.teamMembers)
+}
+function renderPrime(p){p=p||{};set("primeLevel",p.level);set("monthlyPoints",number(p.monthlyPoints));set("annualPoints",number(p.annualPoints));set("totalPoints",number(p.totalPoints))}
+function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function renderRanks(ranks){
+const c=$("rankGrid");c.innerHTML="";
+if(!ranks){c.innerHTML='<div class="card">Nenhum ranking disponível.</div>';return}
+Object.values(ranks).forEach(r=>{if(!r)return;const d=document.createElement("div");d.className="rank-card";d.innerHTML=`<div class="rank-name">${esc(value(r.label,"Ranking"))}</div><div class="rank-number">#${esc(value(r.rank,"?"))}</div><div class="rank-points">${number(r.points)} pontos</div><div class="rank-extra"><span>Melhor rank</span><strong>#${esc(value(r.bestRank,"?"))}</strong></div>`;c.appendChild(d)})
+}
+function renderStats(stats){
+if(!stats)return;const t=stats.totals||{};set("totalMatches",number(t.matches));set("totalWins",number(t.wins));set("totalKills",number(t.kills));renderMode("solo",stats.modes?.solo)
+}
+function renderMode(mode,data){
+const c=$("modeContainer");if(!data){c.innerHTML='<div class="card">Nenhuma estatística disponível.</div>';return}
+let detailsHTML="";Object.values(data.details||{}).forEach(d=>{if(!d)return;detailsHTML+=`<div class="detail"><span>${esc(value(d.label,"—"))}</span><strong>${esc(value(d.value,"—"))}</strong></div>`});
+c.innerHTML=`<div><div class="mode-summary"><div class="stat-box"><span>Partidas</span><strong>${number(data.matches)}</strong></div><div class="stat-box"><span>Vitórias</span><strong>${number(data.wins)}</strong></div><div class="stat-box"><span>Win Rate</span><strong>${value(data.winRate)}%</strong></div><div class="stat-box"><span>Abates</span><strong>${number(data.kills)}</strong></div><div class="stat-box"><span>K/D</span><strong>${value(data.killDeathRatio)}</strong></div></div><div class="details">${detailsHTML}</div></div>`
+}
+document.querySelectorAll(".mode-tab").forEach(tab=>tab.addEventListener("click",function(){document.querySelectorAll(".mode-tab").forEach(t=>t.classList.remove("active"));this.classList.add("active");const mode=this.dataset.mode;if(currentData?.stats?.modes)renderMode(mode,currentData.stats.modes[mode])}))
+function renderExtra(e){e=e||{};set("csPeakPoints",number(e.csPeakPoints));set("hippoRank",e.hippoRank);set("hippoPoints",e.hippoPoints)}
+function renderFlags(f){f=f||{};set("flagActive",f.activeMember?"✓ Membro ativo":"Membro não ativo");set("flagBan",f.csRankBan?"⚠ CS Rank Ban":"✓ Sem CS Rank Ban");set("flagPenalty",f.homepagePenalized?"⚠ Penalizado":"✓ Sem penalidade");set("flagDeleted",f.accountDeleted?"⚠ Conta deletada":"✓ Conta ativa")}
+function renderItems(items){
+const c=$("items");c.innerHTML="";$("itemCount").textContent=items.length+(items.length===1?" item":" itens");
+if(!items.length){c.innerHTML='<div class="card">Nenhum item encontrado.</div>';return}
+items.forEach(item=>{const a=document.createElement("a");a.className="item";a.href=value(item.wikiUrl,"#");a.target="_blank";a.rel="noopener noreferrer";a.innerHTML=`<div class="item-image"><img src="${esc(value(item.imageUrl,""))}" alt="${esc(value(item.name,"Item"))}"></div><div class="item-body"><div class="item-name">${esc(value(item.name,"Item"))}</div><div class="item-category">${esc(value(item.category,"Categoria desconhecida"))}</div><span class="rarity">${esc(value(item.rarity,"Comum"))}</span></div>`;safeImage(a.querySelector("img"));c.appendChild(a)})
+}
+async function copyId(){const id=currentData?.id;if(!id)return;try{await navigator.clipboard.writeText(String(id));alert("ID copiado: "+id)}catch{alert("ID: "+id)}}
+function scrollToItems(){$("itemsSection").scrollIntoView({behavior:"smooth"})}
+input.value="54934696";
+</script>
+</body>
+</html>
