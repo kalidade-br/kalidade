@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel de Consulta</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #05070d;
+    --panel: #0b0f18;
+    --panel2: #101522;
+    --border: rgba(255,255,255,.08);
+    --text: #f4f7fb;
+    --muted: #8791a5;
+    --cyan: #00f5ff;
+    --purple: #a855f7;
+    --green: #00ff9d;
+    --pink: #ff2bd6;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(0,245,255,.12), transparent 30%),
+        radial-gradient(circle at 90% 20%, rgba(168,85,247,.13), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(255,43,214,.08), transparent 35%),
+        #05070d;
+    color: var(--text);
+    font-family: Inter, sans-serif;
+    overflow-x: hidden;
+}
+
+/* GRID BACKGROUND */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .18;
+    background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 45px 45px;
+}
+
+/* APP */
+
+.app {
+    position: relative;
+    z-index: 1;
+    max-width: 1250px;
+    margin: auto;
+    padding: 30px 22px 60px;
+}
+
+/* TOP */
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 45px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #001014;
+    font-weight: 900;
+    background: var(--cyan);
+    box-shadow:
+        0 0 15px rgba(0,245,255,.7),
+        0 0 45px rgba(0,245,255,.2);
+}
+
+.brand h1 {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 20px;
+}
+
+.brand span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 3px;
+    letter-spacing: 1px;
+}
+
+.status-api {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(0,255,157,.2);
+    background: rgba(0,255,157,.05);
+    padding: 9px 13px;
+    border-radius: 30px;
+    font-size: 12px;
+    color: #8fffd2;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--green);
+}
+
+/* HERO */
+
+.hero {
+    margin-bottom: 30px;
+}
+
+.hero .tag {
+    display: inline-block;
+    color: var(--cyan);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 13px;
+}
+
+.hero h2 {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(35px, 6vw, 62px);
+    line-height: .98;
+    max-width: 800px;
+    letter-spacing: -2px;
+}
+
+.hero h2 span {
+    color: transparent;
+    background: linear-gradient(
+        90deg,
+        var(--cyan),
+        var(--purple),
+        var(--pink)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.hero p {
+    color: var(--muted);
+    margin-top: 18px;
+    max-width: 600px;
+    line-height: 1.7;
+}
+
+/* SEARCH */
+
+.search-panel {
+    position: relative;
+    padding: 25px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: rgba(11,15,24,.85);
+    backdrop-filter: blur(20px);
+    box-shadow:
+        0 20px 70px rgba(0,0,0,.35),
+        inset 0 1px rgba(255,255,255,.04);
+    overflow: hidden;
+}
+
+.search-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--cyan),
+        var(--purple),
+        transparent
+    );
+}
+
+.search-label {
+    color: #aeb7c9;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.search-row {
+    display: flex;
+    gap: 10px;
+}
+
+.search-row input {
+    flex: 1;
+    height: 58px;
+    border-radius: 13px;
+    border: 1px solid rgba(255,255,255,.09);
+    outline: none;
+    background: #070a11;
+    color: white;
+    padding: 0 18px;
+    font-size: 16px;
+    transition: .2s;
+}
+
+.search-row input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(0,245,255,.08);
+}
+
+.search-row button {
+    border: none;
+    height: 58px;
+    padding: 0 28px;
+    border-radius: 13px;
+    color: #001014;
+    font-weight: 800;
+    cursor: pointer;
+    background: var(--cyan);
+    box-shadow:
+        0 0 15px rgba(0,245,255,.4),
+        inset 0 -2px rgba(0,0,0,.15);
+    transition: .2s;
+}
+
+.search-row button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 25px rgba(0,245,255,.65);
+}
+
+.search-row button:active {
+    transform: scale(.98);
+}
+
+/* STATUS */
+
+.status {
+    display: none;
+    margin-top: 14px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.035);
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* RESULT */
+
+.result {
+    display: none;
+    margin-top: 35px;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 17px;
+}
+
+.result-header small {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.result-header h3 {
+    font-family: "Space Grotesk";
+    font-size: 24px;
+}
+
+/* CARDS */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 15px;
+}
+
+.data-card {
+    grid-column: span 4;
+    position: relative;
+    min-height: 125px;
+    padding: 21px;
+    border-radius: 17px;
+    border: 1px solid var(--border);
+    background: linear-gradient(
+        145deg,
+        rgba(16,21,34,.95),
+        rgba(8,11,18,.95)
+    );
+    overflow: hidden;
+    transition: .25s;
+}
+
+.data-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,245,255,.25);
+    box-shadow: 0 10px 35px rgba(0,245,255,.06);
+}
+
+.data-card.large {
+    grid-column: span 8;
+}
+
+.data-card::after {
+    content: "";
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    right: -30px;
+    bottom: -35px;
+    border-radius: 50%;
+    background: var(--cyan);
+    filter: blur(45px);
+    opacity: .08;
+}
+
+.card-label {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 13px;
+}
+
+.card-value {
+    font-size: 20px;
+    font-weight: 800;
+    text-transform: uppercase;
+    word-break: break-word;
+}
+
+.card-value.cyan {
+    color: var(--cyan);
+    text-shadow: 0 0 15px rgba(0,245,255,.25);
+}
+
+.card-value.green {
+    color: var(--green);
+}
+
+.card-value.purple {
+    color: #c084fc;
+}
+
+/* BOTTOM BLOCKS */
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.info-panel {
+    padding: 23px;
+    border-radius: 17px;
+    border: 1px solid var(--border);
+    background: rgba(11,15,24,.8);
+}
+
+.info-panel h3 {
+    font-family: "Space Grotesk";
+    margin-bottom: 8px;
+}
+
+.info-panel p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* API */
+
+.api {
+    margin-top: 35px;
+}
+
+.api-title {
+    margin-bottom: 15px;
+}
+
+.api-title h3 {
+    font-family: "Space Grotesk";
+    font-size: 24px;
+}
+
+.api-title p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.endpoint {
+    border: 1px solid var(--border);
+    background: #070a11;
+    border-radius: 15px;
+    padding: 17px;
+    color: #b7c3d8;
+    font-family: Consolas, monospace;
+    font-size: 13px;
+    word-break: break-all;
+}
+
+.endpoint span {
+    color: var(--cyan);
+}
+
+.copy {
+    margin-top: 10px;
+    border: 1px solid rgba(0,245,255,.25);
+    background: rgba(0,245,255,.05);
+    color: var(--cyan);
+    border-radius: 9px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.copy:hover {
+    background: rgba(0,245,255,.1);
+}
+
+/* FOOTER */
+
+footer {
+    margin-top: 50px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    color: #596274;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 800px) {
+
+    .topbar {
+        margin-bottom: 30px;
+    }
+
+    .status-api {
+        display: none;
+    }
+
+    .search-row {
+        flex-direction: column;
+    }
+
+    .search-row button {
+        width: 100%;
+    }
+
+    .data-card,
+    .data-card.large {
+        grid-column: span 12;
+    }
+
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    footer {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media(max-width: 500px) {
+
+    .app {
+        padding: 20px 15px 40px;
+    }
+
+    .hero h2 {
+        font-size: 38px;
+    }
+
+    .search-panel {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="logo">PX</div>
+
+            <div>
+                <h1>Portal da transparencia</h1>
+                <span>DATA CONSULTATION SYSTEM</span>
+            </div>
+
+        </div>
+
+        <div class="status-api">
+            <div class="status-dot"></div>
+            API ONLINE
+        </div>
+
+    </header>
+
+
+    <section class="hero">
+
+        <div class="tag">● CONSULTA EM TEMPO REAL</div>
+
+        <h2>
+            PAINEL DE
+            <span>CONSULTA CPF PDT</span>
+        </h2>
+
+        <p>
+            Consulte informações através da API e visualize
+            os resultados em um painel moderno e organizado.
+        </p>
+
+    </section>
+
+
+    <section class="search-panel">
+
+        <div class="search-label">
+            IDENTIFICADOR DA CONSULTA
+        </div>
+
+        <div class="search-row">
+
+            <input
+                id="cpf"
+                type="text"
+                maxlength="14"
+                placeholder="DIGITE O CPF"
+            >
+
+            <button onclick="consultar()">
+                CONSULTAR →
+            </button>
+
+        </div>
+
+        <div id="status" class="status"></div>
+
+    </section>
+
+
+    <section id="result" class="result">
+
+        <div class="result-header">
+
+            <div>
+                <small>RESULTADO</small>
+                <h3>DADOS ENCONTRADOS</h3>
+            </div>
+
+            <small>STATUS: CONCLUÍDO</small>
+
+        </div>
+
+
+        <div class="grid">
+
+            <div class="data-card">
+                <div class="card-label">SK / ID</div>
+                <div id="sk" class="card-value cyan">—</div>
+            </div>
+
+            <div class="data-card">
+                <div class="card-label">CPF</div>
+                <div id="cpfResultado" class="card-value purple">—</div>
+            </div>
+
+            <div class="data-card large">
+                <div class="card-label">NOME</div>
+                <div id="nome" class="card-value">—</div>
+            </div>
+
+            <div class="data-card">
+                <div class="card-label">RELAÇÕES</div>
+                <div id="relacoes" class="card-value green">—</div>
+            </div>
+
+            <div class="data-card large">
+                <div class="card-label">UF / LOCALIDADE</div>
+                <div id="uf" class="card-value cyan">—</div>
+            </div>
+
+        </div>
+
+
+        <div class="bottom-grid">
+
+            <div class="info-panel">
+                <h3>✓ CONSULTA CONCLUÍDA</h3>
+                <p>
+                    Os dados foram recebidos da API e organizados
+                    automaticamente pelo painel.
+                </p>
+            </div>
+
+            <div class="info-panel">
+                <h3>⚡ API RESPONSE</h3>
+                <p>
+                    Resposta processada em formato JSON e apresentada
+                    nos blocos acima.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="api">
+
+        <div class="api-title">
+            <h3>API ENDPOINT</h3>
+            <p>Endpoint utilizado pelo painel.</p>
+        </div>
+
+        <div class="endpoint" id="apiEndpoint">
+            <span>GET</span>
+            https://api-web-br.vercel.app/api/pdt.js?cpf=10797891463
+        </div>
+
+        <button class="copy" onclick="copiar()">
+            ⧉ COPIAR ENDPOINT
+        </button>
+
+    </section>
+
+
+    <footer>
+
+        <div>
+            PAINEL X • DATA SYSTEM
+        </div>
+
+        <div>
+            2026 • API CLIENT
+        </div>
+
+    </footer>
+
+</div>
+
+
+<script>
+
+const cpfInput = document.getElementById("cpf");
+
+cpfInput.addEventListener("input", function() {
+
+    let value = this.value.replace(/\D/g, "");
+
+    if (value.length > 11) {
+        value = value.substring(0, 11);
+    }
+
+    if (value.length > 9) {
+
+        value = value.replace(
+            /(\d{3})(\d{3})(\d{3})(\d{1,2})/,
+            "$1.$2.$3-$4"
+        );
+
+    } else if (value.length > 6) {
+
+        value = value.replace(
+            /(\d{3})(\d{3})(\d{1,3})/,
+            "$1.$2.$3"
+        );
+
+    } else if (value.length > 3) {
+
+        value = value.replace(
+            /(\d{3})(\d{1,3})/,
+            "$1.$2"
+        );
+    }
+
+    this.value = value;
+});
+
+
+async function consultar() {
+
+    const cpf = cpfInput.value.replace(/\D/g, "");
+
+    const status = document.getElementById("status");
+    const result = document.getElementById("result");
+
+    result.style.display = "none";
+    status.style.display = "block";
+
+    if (cpf.length !== 11) {
+
+        status.innerText =
+            "⚠ INFORME UM CPF COM 11 DÍGITOS.";
+
+        return;
+    }
+
+    status.innerText =
+        "◌ CONECTANDO À API...";
+
+    try {
+
+        const url =
+            "https://api-web-br.vercel.app/api/pdt.js?cpf=" +
+            encodeURIComponent(cpf);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(
+                "HTTP " + response.status
+            );
+        }
+
+        const data = await response.json();
+
+
+        document.getElementById("sk").innerText =
+            String(data.SK ?? "—").toUpperCase();
+
+        document.getElementById("nome").innerText =
+            String(data.NOME ?? "—").toUpperCase();
+
+        document.getElementById("cpfResultado").innerText =
+            String(data.CPF ?? "—").toUpperCase();
+
+        document.getElementById("relacoes").innerText =
+            String(data.RELACOES ?? "—").toUpperCase();
+
+        document.getElementById("uf").innerText =
+            String(data.UF ?? "—").toUpperCase();
+
+
+        status.innerText =
+            "✓ CONSULTA CONCLUÍDA COM SUCESSO.";
+
+        result.style.display = "block";
+
+        result.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.innerText =
+            "✕ ERRO AO CONSULTAR A API.";
+
+    }
+}
+
+
+function copiar() {
+
+    const texto =
+        document.getElementById("apiEndpoint").innerText
+            .replace("GET", "")
+            .trim();
+
+    navigator.clipboard.writeText(texto);
+
+    const button =
+        document.querySelector(".copy");
+
+    const old =
+        button.innerText;
+
+    button.innerText =
+        "✓ COPIADO!";
+
+    setTimeout(() => {
+        button.innerText = old;
+    }, 1500);
+}
+
+</script>
+
+</body>
+</html>
