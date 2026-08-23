@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗 Encurtador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2em;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .stat {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 15px 30px;
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .card-header h2 {
+            color: #94a3b8;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px 25px;
+            color: #64748b;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #334155;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 18px 25px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        tr:hover td {
+            background: #252f47;
+        }
+
+        .id-cell {
+            font-family: 'Courier New', monospace;
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .title-cell {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .url-cell {
+            color: #64748b;
+            font-size: 0.9em;
+            max-width: 350px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .url-cell a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .url-cell a:hover {
+            color: #38bdf8;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ef4444;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Encurtador</h1>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-num" id="totalLinks">-</div>
+                <div class="stat-label">Links</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>📋 Links</h2>
+            </div>
+            <div id="tabela">
+                <div class="loading">Carregando...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== REDIRECIONAMENTO GET ?id=xxx ====================
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+
+        if (id) {
+            // Se tem ?id=, busca no JSON e redireciona
+            fetch('links.json')
+                .then(r => r.json())
+                .then(data => {
+                    const link = data.links.find(l => l.id === id);
+                    if (link) {
+                        window.location.replace(link.url);
+                    } else {
+                        document.body.innerHTML = `
+                            <div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:#e2e8f0;font-family:sans-serif;">
+                                <div style="text-align:center;">
+                                    <h1 style="color:#ef4444;margin-bottom:15px;">❌ ID não encontrado</h1>
+                                    <p style="color:#64748b;">"${id}" não existe em links.json</p>
+                                    <a href="/" style="color:#38bdf8;text-decoration:none;margin-top:20px;display:inline-block;">← Voltar</a>
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(() => {
+                    document.body.innerHTML = '<div style="color:#ef4444;text-align:center;padding:50px;">Erro ao carregar links.json</div>';
+                });
+        } else {
+            // ==================== PAINEL DE LISTAGEM ====================
+            fetch('links.json')
+                .then(r => r.json())
+                .then(data => {
+                    const container = document.getElementById('tabela');
+
+                    if (!data.links || data.links.length === 0) {
+                        container.innerHTML = '<div class="empty">Nenhum link cadastrado</div>';
+                        return;
+                    }
+
+                    document.getElementById('totalLinks').textContent = data.links.length;
+
+                    let html = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Título</th>
+                                    <th>URL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    data.links.forEach(link => {
+                        html += `
+                            <tr>
+                                <td class="id-cell">${link.id}</td>
+                                <td class="title-cell">${link.title}</td>
+                                <td class="url-cell" title="${link.url}">
+                                    <a href="?id=${link.id}">${link.url}</a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += '</tbody></table>';
+                    container.innerHTML = html;
+                })
+                .catch(() => {
+                    document.getElementById('tabela').innerHTML = '<div class="error">Erro ao carregar links.json</div>';
+                });
+        }
+    </script>
+<script>
+(() => {
+  if (document.getElementById("webbr-watermark")) return;
+
+  const a = document.createElement("a");
+  a.id = "webbr-watermark";
+  a.href = "https://github.com/web-br";
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+
+  a.innerHTML = `
+    <style>
+      @keyframes webbrFloat {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+      }
+
+      @keyframes webbrGlow {
+        0%,100% { box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+        50% { box-shadow: 0 8px 24px rgba(255,255,255,.15); }
+      }
+
+      #webbr-watermark{
+        position:fixed;
+        right:16px;
+        bottom:16px;
+        display:flex;
+        align-items:center;
+        gap:7px;
+        padding:7px 10px;
+        border-radius:999px;
+        text-decoration:none;
+        background:rgba(25,25,25,.55);
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,.12);
+        color:#fff;
+        font:600 13px system-ui,sans-serif;
+        z-index:2147483647;
+        opacity:.75;
+        animation:webbrFloat 3s ease-in-out infinite,
+                  webbrGlow 3s ease-in-out infinite;
+        transition:.25s;
+      }
+
+      #webbr-watermark:hover{
+        opacity:1;
+        transform:scale(1.06);
+      }
+
+      #webbr-watermark img.avatar{
+        width:26px;
+        height:26px;
+        border-radius:50%;
+      }
+
+      #webbr-watermark img.github{
+        width:16px;
+        height:16px;
+        filter:invert(1);
+        opacity:.9;
+      }
+    </style>
+
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/286726470?v=4">
+    <span>@web-br</span>
+    <img class="github" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
+  `;
+
+  document.body.appendChild(a);
+})();
+</script>
+</body>
+</html>
