@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://emn178.github.io/online-tools/sitemap.xml
