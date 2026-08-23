@@ -1,0 +1,588 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Consulta IP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+        
+        .search-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        input[type="text"] {
+            flex: 1;
+            min-width: 250px;
+            padding: 14px 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+        button {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+        }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .loading.active { display: block; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .result-area { display: none; }
+        .result-area.active { display: block; }
+        
+        .flag-hero {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .flag-hero img {
+            width: 180px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .flag-hero h2 {
+            margin-top: 15px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+        .flag-hero .country-code {
+            display: inline-block;
+            background: rgba(0,212,255,0.2);
+            color: #00d4ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-3px);
+            border-color: rgba(0,212,255,0.3);
+        }
+        .card-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        .card-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            word-break: break-all;
+        }
+        .card-value.small { font-size: 0.95rem; }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .badge-true { background: rgba(0,255,136,0.2); color: #00ff88; }
+        .badge-false { background: rgba(255,68,68,0.2); color: #ff4444; }
+        
+        .map-container {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            height: 350px;
+        }
+        .map-container iframe {
+            width: 100%; height: 100%;
+            border: none;
+        }
+        
+        .flags-gallery {
+            margin-top: 40px;
+        }
+        .flags-gallery h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: #fff;
+        }
+        .flags-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+        .flag-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .flag-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.05);
+            border-color: rgba(0,212,255,0.4);
+        }
+        .flag-item img {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            margin-bottom: 8px;
+        }
+        .flag-item span {
+            display: block;
+            font-size: 0.75rem;
+            color: #aaa;
+            font-weight: 500;
+        }
+        
+        .error-box {
+            background: rgba(255,68,68,0.1);
+            border: 1px solid rgba(255,68,68,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #ff8888;
+            display: none;
+        }
+        .error-box.active { display: block; }
+        
+        .raw-json {
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        .raw-json pre {
+            color: #00ff88;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .toggle-raw {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ccc;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .toggle-raw:hover { background: rgba(255,255,255,0.15); }
+        .raw-json { display: none; }
+        .raw-json.active { display: block; }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .grid { grid-template-columns: 1fr; }
+            .flags-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Painel de Consulta IP</h1>
+        <p class="subtitle">Consulte informações detalhadas de qualquer endereço IP</p>
+        
+        <div class="search-box">
+            <div class="search-row">
+                <input type="text" id="ipInput" placeholder="Digite um IP (ex: 9.9.9.9)" value="9.9.9.9">
+                <button id="btnConsultar" onclick="consultarIP()">Consultar</button>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Consultando informações do IP...</p>
+        </div>
+        
+        <div class="error-box" id="errorBox">
+            <p id="errorMsg"></p>
+        </div>
+        
+        <div class="result-area" id="resultArea">
+            <div class="flag-hero" id="flagHero"></div>
+            
+            <div class="grid" id="infoGrid"></div>
+            
+            <div class="map-container" id="mapContainer"></div>
+            
+            <div style="text-align:center;">
+                <button class="toggle-raw" onclick="toggleRaw()">📄 Ver JSON Bruto</button>
+            </div>
+            <div class="raw-json" id="rawJson"></div>
+        </div>
+        
+        <div class="flags-gallery">
+            <h3>🌍 Galeria de Bandeiras (PNG)</h3>
+            <div class="flags-grid" id="flagsGrid"></div>
+        </div>
+    </div>
+    
+    <script>
+        const countryFlags = [
+            {code:"br",name:"Brasil"},{code:"us",name:"Estados Unidos"},{code:"ca",name:"Canadá"},
+            {code:"gb",name:"Reino Unido"},{code:"fr",name:"França"},{code:"de",name:"Alemanha"},
+            {code:"it",name:"Itália"},{code:"es",name:"Espanha"},{code:"pt",name:"Portugal"},
+            {code:"ar",name:"Argentina"},{code:"cl",name:"Chile"},{code:"co",name:"Colômbia"},
+            {code:"mx",name:"México"},{code:"jp",name:"Japão"},{code:"cn",name:"China"},
+            {code:"kr",name:"Coreia do Sul"},{code:"in",name:"Índia"},{code:"ru",name:"Rússia"},
+            {code:"au",name:"Austrália"},{code:"nz",name:"Nova Zelândia"},{code:"za",name:"África do Sul"},
+            {code:"eg",name:"Egito"},{code:"ng",name:"Nigéria"},{code:"ke",name:"Quênia"},
+            {code:"sa",name:"Arábia Saudita"},{code:"ae",name:"Emirados"},{code:"tr",name:"Turquia"},
+            {code:"il",name:"Israel"},{code:"ir",name:"Irã"},{code:"pk",name:"Paquistão"},
+            {code:"bd",name:"Bangladesh"},{code:"th",name:"Tailândia"},{code:"vn",name:"Vietnã"},
+            {code:"id",name:"Indonésia"},{code:"ph",name:"Filipinas"},{code:"my",name:"Malásia"},
+            {code:"sg",name:"Singapura"},{code:"nl",name:"Holanda"},{code:"be",name:"Bélgica"},
+            {code:"ch",name:"Suíça"},{code:"se",name:"Suécia"},{code:"no",name:"Noruega"},
+            {code:"dk",name:"Dinamarca"},{code:"fi",name:"Finlândia"},{code:"pl",name:"Polônia"},
+            {code:"ua",name:"Ucrânia"},{code:"cz",name:"Rep. Tcheca"},{code:"gr",name:"Grécia"},
+            {code:"at",name:"Áustria"},{code:"hu",name:"Hungria"},{code:"ro",name:"Romênia"},
+            {code:"ie",name:"Irlanda"},{code:"lu",name:"Luxemburgo"},{code:"is",name:"Islândia"},
+            {code:"pe",name:"Peru"},{code:"ve",name:"Venezuela"},{code:"ec",name:"Equador"},
+            {code:"bo",name:"Bolívia"},{code:"py",name:"Paraguai"},{code:"uy",name:"Uruguai"},
+            {code:"cu",name:"Cuba"},{code:"do",name:"Rep. Dominicana"},{code:"cr",name:"Costa Rica"},
+            {code:"pa",name:"Panamá"},{code:"gt",name:"Guatemala"},{code:"hn",name:"Honduras"},
+            {code:"sv",name:"El Salvador"},{code:"ni",name:"Nicarágua"}
+        ];
+        
+        function renderFlagsGallery() {
+            const grid = document.getElementById('flagsGrid');
+            grid.innerHTML = countryFlags.map(c => `
+                <div class="flag-item" onclick="consultarPorPais('${c.code}')">
+                    <img src="https://flagcdn.com/w160/${c.code}.png" alt="${c.name}" loading="lazy">
+                    <span>${c.name}</span>
+                </div>
+            `).join('');
+        }
+        
+        function consultarPorPais(code) {
+            // Apenas destaca a bandeira, não consulta IP específico
+            document.querySelectorAll('.flag-item').forEach(el => el.style.borderColor = '');
+            event.currentTarget.style.borderColor = '#00d4ff';
+        }
+        
+        async function consultarIP() {
+            const ip = document.getElementById('ipInput').value.trim();
+            if (!ip) { alert('Digite um IP válido'); return; }
+            
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('resultArea').classList.remove('active');
+            document.getElementById('errorBox').classList.remove('active');
+            document.getElementById('btnConsultar').disabled = true;
+            
+            try {
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const apiUrl = `https://api-web-br.vercel.app/api/ip.js?ip=${encodeURIComponent(ip)}`;
+                
+                // Tentativa direta primeiro
+                let response;
+                try {
+                    response = await fetch(apiUrl);
+                } catch(e) {
+                    response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+                }
+                
+                if (!response.ok) throw new Error('Erro na consulta: ' + response.status);
+                const data = await response.json();
+                
+                if (data.status !== 'success') throw new Error(data.message || 'Falha na consulta');
+                
+                mostrarResultado(data);
+            } catch (err) {
+                document.getElementById('errorMsg').textContent = err.message;
+                document.getElementById('errorBox').classList.add('active');
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('btnConsultar').disabled = false;
+            }
+        }
+        
+        function mostrarResultado(data) {
+            const cc = (data.countryCode || 'un').toLowerCase();
+            
+            // Bandeira principal
+            document.getElementById('flagHero').innerHTML = `
+                <img src="https://flagcdn.com/w320/${cc}.png" alt="${data.country}">
+                <h2>${data.country}</h2>
+                <div class="country-code">${data.countryCode} · ${data.continent}</div>
+            `;
+            
+            // Cards de informação
+            const campos = [
+                {k:'query',l:'IP Consultado'},
+                {k:'continent',l:'Continente'},
+                {k:'country',l:'País'},
+                {k:'regionName',l:'Estado/Região'},
+                {k:'city',l:'Cidade'},
+                {k:'district',l:'Bairro'},
+                {k:'zip',l:'CEP/Zip'},
+                {k:'lat',l:'Latitude'},
+                {k:'lon',l:'Longitude'},
+                {k:'timezone',l:'Fuso Horário'},
+                {k:'offset',l:'Offset (seg)'},
+                {k:'currency',l:'Moeda'},
+                {k:'isp',l:'ISP'},
+                {k:'org',l:'Organização'},
+                {k:'as',l:'AS'},
+                {k:'asname',l:'AS Name'},
+                {k:'mobile',l:'Mobile'},
+                {k:'proxy',l:'Proxy'},
+                {k:'hosting',l:'Hosting'}
+            ];
+            
+            document.getElementById('infoGrid').innerHTML = campos.map(f => {
+                let val = data[f.k];
+                if (val === undefined || val === null || val === '') return '';
+                if (typeof val === 'boolean') {
+                    val = `<span class="badge badge-${val}">${val ? 'SIM' : 'NÃO'}</span>`;
+                }
+                return `
+                    <div class="card">
+                        <div class="card-label">${f.l}</div>
+                        <div class="card-value ${String(val).length > 30 ? 'small' : ''}">${val}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Mapa
+            if (data.lat && data.lon) {
+                document.getElementById('mapContainer').innerHTML = `
+                    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${data.lon-0.5}%2C${data.lat-0.5}%2C${data.lon+0.5}%2C${data.lat+0.5}&layer=mapnik&marker=${data.lat}%2C${data.lon}"></iframe>
+                `;
+            }
+            
+            // JSON bruto
+            document.getElementById('rawJson').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            
+            document.getElementById('resultArea').classList.add('active');
+        }
+        
+        function toggleRaw() {
+            document.getElementById('rawJson').classList.toggle('active');
+        }
+        
+        // Inicializar
+        renderFlagsGallery();
+        consultarIP(); // Consulta automática com 9.9.9.9
+        
+        // Enter no input
+        document.getElementById('ipInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') consultarIP();
+        });
+    </script>
+    
+    <script>
+        (() => {
+    // Evita adicionar duas vezes
+    if (document.getElementById("myIpBtn")) return;
+
+    // CSS
+    const style = document.createElement("style");
+    style.textContent = `
+    #myIpBtn{
+        position:fixed;
+        bottom:20px;
+        right:20px;
+        padding:14px 26px;
+        border:none;
+        border-radius:12px;
+        background:linear-gradient(135deg,#2563eb,#06b6d4);
+        color:#fff;
+        font:bold 15px Arial,sans-serif;
+        cursor:pointer;
+        z-index:999999;
+        box-shadow:0 8px 25px rgba(37,99,235,.45);
+        transition:.2s;
+    }
+    #myIpBtn:hover{
+        transform:translateY(-2px);
+        box-shadow:0 12px 35px rgba(37,99,235,.6);
+    }
+    #ipOverlay{
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.6);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        z-index:1000000;
+    }
+    #ipBox{
+        width:330px;
+        background:#1e293b;
+        color:#fff;
+        border-radius:16px;
+        padding:22px;
+        text-align:center;
+        font-family:Arial,sans-serif;
+        box-shadow:0 10px 40px rgba(0,0,0,.5);
+    }
+    #ipTitle{
+        font-size:20px;
+        font-weight:bold;
+        margin-bottom:15px;
+    }
+    #ipValue{
+        background:#0f172a;
+        padding:15px;
+        border-radius:10px;
+        font-size:18px;
+        margin-bottom:18px;
+        user-select:all;
+    }
+    #ipButtons{
+        display:flex;
+        gap:10px;
+    }
+    #ipButtons button{
+        flex:1;
+        border:none;
+        padding:11px;
+        border-radius:10px;
+        cursor:pointer;
+        font-weight:bold;
+    }
+    #copyIp{background:#22c55e;color:#fff;}
+    #closeIp{background:#ef4444;color:#fff;}
+    `;
+    document.head.appendChild(style);
+
+    // Botão
+    const btn = document.createElement("button");
+    btn.id = "myIpBtn";
+    btn.textContent = "MY IP";
+    document.body.appendChild(btn);
+
+    // Janela
+    const overlay = document.createElement("div");
+    overlay.id = "ipOverlay";
+    overlay.innerHTML = `
+        <div id="ipBox">
+            <div id="ipTitle">🌐 Meu IPv4</div>
+            <div id="ipValue">Carregando...</div>
+            <div id="ipButtons">
+                <button id="copyIp">📋 Copiar</button>
+                <button id="closeIp">❌ Fechar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const ipValue = overlay.querySelector("#ipValue");
+
+    btn.onclick = async () => {
+        overlay.style.display = "flex";
+        ipValue.textContent = "Carregando...";
+
+        try {
+            const res = await fetch("https://api.ipify.org?format=json");
+            const data = await res.json();
+            ipValue.textContent = data.ip;
+        } catch {
+            ipValue.textContent = "Erro ao obter IP";
+        }
+    };
+
+    overlay.querySelector("#copyIp").onclick = async () => {
+        await navigator.clipboard.writeText(ipValue.textContent);
+        alert("IP copiado!");
+    };
+
+    overlay.querySelector("#closeIp").onclick = () => {
+        overlay.style.display = "none";
+    };
+
+    overlay.onclick = e => {
+        if (e.target === overlay) overlay.style.display = "none";
+    };
+})();
+    </script>
+</body>
+</html>
