@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚗 Painel de Consulta de Placa</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #0f0f0f 100%);
+    min-height: 100vh;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+header h1 {
+    font-size: 2.2em;
+    margin: 0;
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+header p {
+    color: #888;
+    margin-top: 8px;
+}
+
+/* Upload Zone */
+.drop-zone {
+    background: rgba(255,255,255,0.05);
+    border: 2px dashed #444;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 25px;
+    transition: border-color 0.3s;
+    cursor: pointer;
+}
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: #00d4ff;
+}
+.drop-zone .icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+.drop-zone p {
+    color: #aaa;
+    margin: 0 0 15px 0;
+}
+.drop-zone button {
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    border: none;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+#imagePreview {
+    margin-top: 20px;
+    display: none;
+}
+#previewImg {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 12px;
+    border: 2px solid #333;
+}
+#ocrStatus {
+    color: #00d4ff;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Input Bar */
+.input-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+#placa {
+    flex: 1;
+    min-width: 200px;
+    padding: 14px 20px;
+    font-size: 16px;
+    border: 2px solid #333;
+    border-radius: 12px;
+    background: #1a1a2e;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s;
+}
+#placa:focus {
+    border-color: #00d4ff;
+}
+#btnConsultar {
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    border: none;
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+#btnConsultar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+}
+#btnConsultar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Options */
+.options {
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 25px;
+    border: 1px solid #222;
+}
+.options-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 14px;
+}
+.options input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #00d4ff;
+}
+.options code {
+    background: #222;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #00d4ff;
+}
+.options .divider {
+    color: #555;
+}
+.options .hint {
+    color: #666;
+    font-size: 12px;
+    margin: 10px 0 0 0;
+}
+
+/* Loading */
+#loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+}
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #333;
+    border-top-color: #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+#loading p {
+    color: #888;
+}
+
+/* Result Card */
+.result-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #222;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.result-header {
+    background: linear-gradient(90deg, rgba(0,212,255,0.13), rgba(123,44,191,0.13));
+    padding: 18px 24px;
+    border-bottom: 1px solid #222;
+}
+.result-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+    color: #fff;
+}
+.result-header p {
+    margin: 5px 0 0 0;
+    color: #888;
+    font-size: 13px;
+}
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.result-table td {
+    padding: 14px 24px;
+    font-size: 14px;
+    border-bottom: 1px solid #1a1a1a;
+}
+.result-table td:first-child {
+    color: #888;
+    width: 40%;
+}
+.result-table td:last-child {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+}
+.result-table tr:nth-child(odd) {
+    background: rgba(255,255,255,0.02);
+}
+.result-table tr:hover {
+    background: rgba(0,212,255,0.05);
+}
+.result-actions {
+    padding: 18px 24px;
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.result-actions button {
+    background: #222;
+    border: 1px solid #333;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+.result-actions button:hover {
+    background: #1a1a2e;
+}
+.btn-json { color: #00d4ff; }
+.btn-json:hover { border-color: #00d4ff !important; }
+.btn-copy { color: #7b2cbf; }
+.btn-copy:hover { border-color: #7b2cbf !important; }
+.btn-new { color: #888; }
+.btn-new:hover { border-color: #888 !important; }
+
+#jsonPre {
+    display: none;
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px;
+    color: #00ff88;
+    font-size: 13px;
+    overflow-x: auto;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Alert boxes */
+.alert {
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+.alert-error {
+    background: rgba(255,0,0,0.1);
+    border: 1px solid #500;
+    color: #ff6666;
+}
+.alert-warning {
+    background: rgba(255,170,0,0.1);
+    border: 1px solid #550;
+    color: #ffaa00;
+    text-align: center;
+}
+.alert-warning h3 {
+    margin: 0 0 10px 0;
+}
+.alert-warning p {
+    margin: 0;
+    color: #cc9900;
+}
+
+/* History */
+#historico {
+    margin-top: 30px;
+}
+#historico h3 {
+    color: #aaa;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+.history-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 10px;
+}
+.history-item:hover {
+    background: rgba(255,255,255,0.06);
+}
+.history-item .placa {
+    color: #00d4ff;
+    font-weight: 600;
+    font-size: 16px;
+}
+.history-item .data {
+    color: #666;
+    font-size: 12px;
+    margin-left: 10px;
+}
+.history-item .campos {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    header h1 { font-size: 1.6em; }
+    .input-bar { flex-direction: column; }
+    #placa { width: 100%; }
+    #btnConsultar { width: 100%; }
+    .result-actions { flex-direction: column; }
+    .result-actions button { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>🚗 Consulta de Placa</h1>
+        <p>Consulte dados veiculares pelo número da placa</p>
+    </header>
+
+    <!-- Upload de Imagem do DETRAN -->
+    <div class="drop-zone" id="dropZone">
+        <div class="icon">📷</div>
+        <p>Arraste uma imagem do DETRAN ou clique para selecionar</p>
+        <button onclick="document.getElementById('fileInput').click()">Selecionar Imagem</button>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFile(this.files[0])">
+        <div id="imagePreview">
+            <img id="previewImg">
+            <p id="ocrStatus">Processando OCR...</p>
+        </div>
+    </div>
+
+    <!-- Barra de Consulta -->
+    <div class="input-bar">
+        <input id="placa" placeholder="Digite a placa (ex: QFN8407)" onkeyup="if(event.key==='Enter')consultar()">
+        <button id="btnConsultar" onclick="consultar()">🔍 Consultar</button>
+    </div>
+
+    <!-- Opções -->
+    <div class="options">
+        <div class="options-row">
+            <label>
+                <input type="checkbox" id="useProxy">
+                Usar proxy CORS (<code>corsproxy.io</code>)
+            </label>
+            <span class="divider">|</span>
+            <label>
+                <input type="checkbox" id="autoOCR" checked>
+                Auto-detectar placa na imagem
+            </label>
+        </div>
+        <p class="hint">💡 Ative o proxy se a requisição direta falhar por bloqueio CORS.</p>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Consultando placa...</p>
+    </div>
+
+    <!-- Resultado -->
+    <div id="saida"></div>
+    <pre id="jsonPre"></pre>
+
+    <!-- Histórico -->
+    <div id="historico" style="display:none;">
+        <h3>📋 Histórico de Consultas</h3>
+        <div id="listaHistorico"></div>
+    </div>
+
+</div>
+
+<script>
+// ========== HISTÓRICO ==========
+let historico = JSON.parse(localStorage.getItem('placaHistorico') || '[]');
+
+function salvarHistorico(placa, dados) {
+    historico.unshift({ placa, dados, data: new Date().toLocaleString('pt-BR') });
+    if (historico.length > 10) historico.pop();
+    localStorage.setItem('placaHistorico', JSON.stringify(historico));
+    renderHistorico();
+}
+
+function renderHistorico() {
+    const container = document.getElementById('listaHistorico');
+    if (historico.length === 0) {
+        document.getElementById('historico').style.display = 'none';
+        return;
+    }
+    document.getElementById('historico').style.display = 'block';
+    container.innerHTML = historico.map((h, i) => `
+        <div class="history-item" onclick="carregarHistorico(${i})">
+            <div>
+                <span class="placa">${h.placa}</span>
+                <span class="data">${h.data}</span>
+            </div>
+            <span class="campos">📄 ${Object.keys(h.dados).length} campos</span>
+        </div>
+    `).join('');
+}
+
+function carregarHistorico(index) {
+    const h = historico[index];
+    document.getElementById('placa').value = h.placa;
+    mostrarResultado(h.placa, h.dados);
+}
+
+renderHistorico();
+
+// ========== DRAG & DROP ==========
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+});
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+});
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+});
+
+// ========== UPLOAD & OCR ==========
+function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = document.getElementById('previewImg');
+        img.src = e.target.result;
+        document.getElementById('imagePreview').style.display = 'block';
+        document.getElementById('ocrStatus').textContent = 'Processando OCR...';
+        document.getElementById('ocrStatus').style.color = '#00d4ff';
+
+        // OCR simples via canvas (detecção básica de padrão de placa)
+        img.onload = function() {
+            detectarPlacaNaImagem(img);
+        };
+    };
+    reader.readAsDataURL(file);
+}
+
+function detectarPlacaNaImagem(img) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
+    ctx.drawImage(img, 0, 0);
+
+    // OCR real requer Tesseract.js. Aqui usamos uma simulação/placeholder.
+    // Para OCR real, adicione: <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js">
+    document.getElementById('ocrStatus').innerHTML = '<span style="color:#ffaa00;">⚠️ OCR automático requer Tesseract.js. Digite a placa manualmente ou use o campo acima.</span>';
+}
+
+// ========== CONSULTA ==========
+async function consultar() {
+    const placa = document.getElementById('placa').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const saida = document.getElementById('saida');
+    const loading = document.getElementById('loading');
+    const btn = document.getElementById('btnConsultar');
+
+    if (!placa || placa.length < 5) {
+        saida.innerHTML = '<div class="alert alert-error"><h3 style="margin:0 0 10px 0;">⚠️ Placa inválida</h3><p style="margin:0;">Digite uma placa válida (mínimo 5 caracteres).</p></div>';
+        return;
+    }
+
+    saida.innerHTML = '';
+    document.getElementById('jsonPre').style.display = 'none';
+    loading.style.display = 'block';
+    btn.disabled = true;
+
+    const useProxy = document.getElementById('useProxy').checked;
+    let url = 'https://www.placas.app.br/';
+    if (useProxy) url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+
+    try {
+        const body = new URLSearchParams();
+        body.append('plate', placa);
+
+        const r = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+            },
+            body
+        });
+
+        if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+
+        const html = await r.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const linhas = doc.querySelectorAll('tr');
+        const dados = {};
+
+        linhas.forEach(tr => {
+            const th = tr.querySelector('th');
+            const td = tr.querySelector('td');
+            if (!th || !td) return;
+            let chave = th.textContent.trim();
+            let valor = td.textContent.trim();
+            if (valor === '—') valor = '';
+            if (chave) dados[chave] = valor;
+        });
+
+        loading.style.display = 'none';
+        btn.disabled = false;
+
+        if (Object.keys(dados).length === 0) {
+            saida.innerHTML = `<div class="alert alert-warning"><h3>🔍 Nenhum dado encontrado</h3><p>A placa <b>${placa}</b> não retornou resultados. Verifique se está correta ou tente com proxy ativado.</p></div>`;
+            return;
+        }
+
+        salvarHistorico(placa, dados);
+        mostrarResultado(placa, dados);
+
+    } catch (e) {
+        loading.style.display = 'none';
+        btn.disabled = false;
+
+        let dica = '';
+        if (e.message.includes('Failed to fetch') || e.message.includes('CORS') || e.message.includes('NetworkError')) {
+            dica = '<br><br><b style="color:#00d4ff;">💡 Dica:</b> Ative a opção <b>"Usar proxy CORS"</b> acima e tente novamente.';
+        }
+
+        saida.innerHTML = `<div class="alert alert-error"><h3 style="margin:0 0 10px 0;">❌ Erro na consulta</h3><p style="margin:0;">${e.message}</p>${dica}</div>`;
+    }
+}
+
+function mostrarResultado(placa, dados) {
+    const saida = document.getElementById('saida');
+    const campos = Object.entries(dados);
+
+    let tabela = `
+        <div class="result-card">
+            <div class="result-header">
+                <h2>🚘 ${placa}</h2>
+                <p>${campos.length} informações encontradas</p>
+            </div>
+            <table class="result-table">
+    `;
+
+    campos.forEach(([campo, valor]) => {
+        tabela += `
+            <tr>
+                <td>${campo}</td>
+                <td>${valor || '<span style="color:#555;">—</span>'}</td>
+            </tr>
+        `;
+    });
+
+    tabela += `
+            </table>
+            <div class="result-actions">
+                <button class="btn-json" onclick="toggleJSON()">📋 Ver JSON</button>
+                <button class="btn-copy" onclick="copiarJSON()">📋 Copiar JSON</button>
+                <button class="btn-new" onclick="novaConsulta()">🔄 Nova Consulta</button>
+            </div>
+        </div>
+    `;
+
+    saida.innerHTML = tabela;
+
+    document.getElementById('jsonPre').textContent = JSON.stringify({
+        placa,
+        dados,
+        consultado_em: new Date().toISOString()
+    }, null, 2);
+}
+
+function toggleJSON() {
+    const pre = document.getElementById('jsonPre');
+    pre.style.display = pre.style.display === 'none' ? 'block' : 'none';
+    if (pre.style.display === 'block') {
+        pre.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function copiarJSON() {
+    const pre = document.getElementById('jsonPre');
+    const text = pre.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = '✅ Copiado!';
+        btn.style.color = '#00ff88';
+        setTimeout(() => {
+            btn.textContent = original;
+            btn.style.color = '#7b2cbf';
+        }, 2000);
+    }).catch(() => {
+        // Fallback para navegadores antigos
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    });
+}
+
+function novaConsulta() {
+    document.getElementById('placa').value = '';
+    document.getElementById('saida').innerHTML = '';
+    document.getElementById('jsonPre').style.display = 'none';
+    document.getElementById('placa').focus();
+}
+</script>
+<script>
+(() => {
+  if (document.getElementById("webbr-watermark")) return;
+
+  const a = document.createElement("a");
+  a.id = "webbr-watermark";
+  a.href = "https://github.com/web-br";
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+
+  a.innerHTML = `
+    <style>
+      @keyframes webbrFloat {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+      }
+
+      @keyframes webbrGlow {
+        0%,100% { box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+        50% { box-shadow: 0 8px 24px rgba(255,255,255,.15); }
+      }
+
+      #webbr-watermark{
+        position:fixed;
+        right:16px;
+        bottom:16px;
+        display:flex;
+        align-items:center;
+        gap:7px;
+        padding:7px 10px;
+        border-radius:999px;
+        text-decoration:none;
+        background:rgba(25,25,25,.55);
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(10px);
+        border:1px solid rgba(255,255,255,.12);
+        color:#fff;
+        font:600 13px system-ui,sans-serif;
+        z-index:2147483647;
+        opacity:.75;
+        animation:webbrFloat 3s ease-in-out infinite,
+                  webbrGlow 3s ease-in-out infinite;
+        transition:.25s;
+      }
+
+      #webbr-watermark:hover{
+        opacity:1;
+        transform:scale(1.06);
+      }
+
+      #webbr-watermark img.avatar{
+        width:26px;
+        height:26px;
+        border-radius:50%;
+      }
+
+      #webbr-watermark img.github{
+        width:16px;
+        height:16px;
+        filter:invert(1);
+        opacity:.9;
+      }
+    </style>
+
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/286726470?v=4">
+    <span>@web-br</span>
+    <img class="github" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
+  `;
+
+  document.body.appendChild(a);
+})();
+</script>
+</body>
+</html>
