@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta - Portal da Transparência</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    min-height: 100vh;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.header { background: #fff; border-bottom: 3px solid #1351b4; padding: 20px 0; margin-bottom: 30px; }
+.header-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 15px; }
+.header-icon { width: 50px; height: 50px; background: #1351b4; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.5rem; }
+.header-title h1 { font-size: 1.4rem; color: #1351b4; font-weight: 700; }
+.header-title p { font-size: 0.85rem; color: #666; }
+.status-dot { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #666; }
+.status-dot .dot { width: 9px; height: 9px; border-radius: 50%; background: #999; transition: background .2s; }
+.status-dot .dot.online { background: #168821; }
+.status-dot .dot.offline { background: #c62828; }
+.status-dot .dot.checking { background: #e65100; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+.search-panel { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 25px; margin-bottom: 25px; }
+.panel-title { font-size: 1.1rem; color: #1351b4; font-weight: 700; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; display:flex; align-items:center; gap:8px; }
+.search-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.search-input-group { flex: 1; min-width: 250px; position: relative; }
+.search-input-group label { display: block; font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 6px; }
+.search-input-group input {
+    width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 4px;
+    font-size: 1rem; font-family: 'Open Sans', sans-serif; outline: none; transition: border-color 0.2s;
+}
+.search-input-group input:focus { border-color: #1351b4; box-shadow: 0 0 0 3px rgba(19, 81, 180, 0.15); }
+.search-input-group input.invalid { border-color: #c62828; }
+.field-hint { font-size: 0.75rem; color: #888; margin-top: 5px; }
+.field-hint.error { color: #c62828; }
+.tipo-badge { position:absolute; right:10px; top:34px; font-size: 0.7rem; font-weight:700; padding: 3px 8px; border-radius: 10px; background:#e3f2fd; color:#1351b4; display:none; }
+
+.btn { padding: 12px 28px; font-size: 0.9rem; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-family: 'Open Sans', sans-serif; white-space: nowrap; display:inline-flex; align-items:center; gap:8px; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-primary { background: #1351b4; color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #0e3d8a; }
+.btn-secondary { background: #fff; color: #555; border: 1px solid #ccc; }
+.btn-secondary:hover:not(:disabled) { background: #f0f0f0; }
+.btn-success { background: #168821; color: #fff; }
+.btn-success:hover:not(:disabled) { background: #116b1a; }
+.btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+
+.history-row { display:flex; gap:8px; flex-wrap:wrap; margin-top: 14px; }
+.history-chip { background:#eef2fb; color:#1351b4; border:1px solid #d3ddf5; padding: 5px 12px; border-radius: 14px; font-size: 0.75rem; cursor:pointer; }
+.history-chip:hover { background:#dde7fa; }
+
+.stats-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 14px; margin-bottom: 22px; }
+.stat-card { background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:16px 18px; border-left: 4px solid #1351b4; }
+.stat-card .num { font-size: 1.5rem; font-weight:700; color:#1351b4; }
+.stat-card .lbl { font-size: 0.75rem; color:#777; text-transform:uppercase; letter-spacing:.4px; margin-top:2px; }
+
+.results-panel { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 25px; position: relative; }
+.loading-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.92); z-index: 100; justify-content: center; align-items: center; flex-direction: column; border-radius: 8px; }
+.loading-overlay.active { display: flex; }
+.loading-spinner { width: 40px; height: 40px; border: 3px solid #e0e0e0; border-top-color: #1351b4; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { margin-top: 12px; color: #1351b4; font-weight: 600; font-size: 0.9rem; }
+.loading-sub { margin-top: 4px; color: #999; font-size: 0.78rem; }
+
+.results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.results-count { font-size: 0.9rem; color: #555; font-weight: 600; }
+.results-count span { color: #1351b4; font-weight: 700; }
+.toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.toolbar input[type=text] { padding:8px 12px; border:1px solid #ccc; border-radius:4px; font-size:.82rem; font-family:'Open Sans',sans-serif; min-width:180px; }
+.filter-chip { border:1px solid #ccc; background:#fff; color:#555; padding:6px 12px; border-radius:14px; font-size:.75rem; cursor:pointer; font-weight:600; }
+.filter-chip.active { background:#1351b4; color:#fff; border-color:#1351b4; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table thead th { background: #1351b4; color: #fff; padding: 14px 12px; text-align: left; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; cursor:pointer; user-select:none; white-space:nowrap; }
+.data-table thead th:hover { background:#0e3d8a; }
+.data-table thead th .sort-ind { opacity:.6; font-size:.7rem; margin-left:4px; }
+.data-table tbody tr { border-bottom: 1px solid #e0e0e0; }
+.data-table tbody tr:nth-child(even) { background: #f8f9fa; }
+.data-table tbody tr:hover { background: #e8f0fe; }
+.data-table tbody td { padding: 12px; color: #444; vertical-align: middle; }
+.link-portal { color:#1351b4; text-decoration:none; font-weight:600; }
+.link-portal:hover { text-decoration:underline; }
+.copy-btn { background:none; border:none; color:#999; cursor:pointer; margin-left:6px; font-size:.8rem; }
+.copy-btn:hover { color:#1351b4; }
+
+.badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+.badge-social { background: #e6f5e6; color: #168821; }
+.badge-favorecido { background: #fff3e0; color: #e65100; }
+.badge-inativo { background: #ffebee; color: #c62828; }
+.badge-pensao { background: #f3e5f5; color: #7b1fa2; }
+.badge-misto { background: #e3f2fd; color: #1351b4; }
+.badge-outro { background:#f0f0f0; color:#555; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: #888; }
+.empty-state i { font-size: 2.6rem; color: #ccc; margin-bottom: 14px; display:block; }
+.empty-state h3 { color: #555; margin-bottom: 8px; }
+.empty-state.error-state i { color: #e57373; }
+.empty-state.error-state h3 { color: #c62828; }
+.error-detail { background:#fff5f5; border:1px solid #ffcdd2; color:#b71c1c; padding:12px 16px; border-radius:6px; font-size:.8rem; margin-top:14px; text-align:left; max-width:560px; margin-left:auto; margin-right:auto; font-family: monospace; word-break: break-word; }
+
+.pagination { display:flex; justify-content:center; align-items:center; gap:6px; margin-top:20px; flex-wrap:wrap; }
+.page-btn { min-width:34px; height:34px; border:1px solid #ccc; background:#fff; color:#555; border-radius:4px; cursor:pointer; font-size:.82rem; font-weight:600; }
+.page-btn.active { background:#1351b4; color:#fff; border-color:#1351b4; }
+.page-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+.footer-note { text-align:center; font-size:.75rem; color:#999; margin-top: 24px; padding-bottom: 20px; }
+.footer-note a { color:#1351b4; }
+
+@media (max-width: 640px) {
+    .data-table { font-size: 0.75rem; }
+    .data-table thead th, .data-table tbody td { padding: 8px 6px; }
+    .header-title p { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+    <div class="header-inner">
+        <div class="header-icon"><i class="fas fa-search"></i></div>
+        <div class="header-title">
+            <h1>Consulta de Pessoas</h1>
+            <p>Portal da Transparência - Busca por nome, CPF ou identificador</p>
+        </div>
+        <div class="status-dot" id="statusDot"><span class="dot checking" id="statusIcon"></span><span id="statusText">verificando API...</span></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="search-panel">
+        <div class="panel-title"><i class="fas fa-filter"></i> Consulta</div>
+        <div class="search-row">
+            <div class="search-input-group">
+                <label>Digite nome, CPF ou SK Pessoa</label>
+                <input type="text" id="campoBusca" placeholder="Ex: LUIZ DA SILVA, 123.456.789-00 ou 278439811" autocomplete="off">
+                <span class="tipo-badge" id="tipoBadge"></span>
+                <div class="field-hint" id="fieldHint">Nome (mín. 3 letras), CPF (11 dígitos) ou SK Pessoa (número).</div>
+            </div>
+            <button class="btn btn-primary" id="btnBuscar"><i class="fas fa-search"></i> Buscar</button>
+            <button class="btn btn-secondary" id="btnLimpar"><i class="fas fa-eraser"></i> Limpar</button>
+        </div>
+        <div class="history-row" id="historyRow"></div>
+    </div>
+
+    <div id="statsRow" class="stats-row" style="display:none;"></div>
+
+    <div class="results-panel">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Consultando...</div>
+            <div class="loading-sub" id="loadingSub">conectando à API</div>
+        </div>
+
+        <div class="results-header">
+            <div class="results-count"><i class="fas fa-list"></i> Resultados: <span id="resultCount">0</span> registros encontrados</div>
+            <div class="toolbar" id="exportGroup" style="display:none;">
+                <input type="text" id="filtroTabela" placeholder="Filtrar resultados exibidos...">
+                <button class="btn btn-success btn-sm" id="btnExportarJSON"><i class="fas fa-download"></i> JSON</button>
+                <button class="btn btn-success btn-sm" id="btnExportarCSV"><i class="fas fa-file-csv"></i> CSV</button>
+            </div>
+        </div>
+
+        <div class="toolbar" id="chipRow" style="display:none; margin-bottom:16px;"></div>
+
+        <div id="resultsContainer">
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>Realize uma consulta</h3>
+                <p>Digite um nome, CPF ou SK Pessoa no campo acima e clique em "Buscar".</p>
+            </div>
+        </div>
+
+        <div class="pagination" id="pagination" style="display:none;"></div>
+    </div>
+
+    <div class="footer-note">
+        Dados públicos consultados via API do <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>. CPFs exibidos parcialmente mascarados pela própria fonte.
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var API_BASE = 'https://api-web-br.vercel.app/api/pdt-busca.js';
+    var CORS_PROXY = 'https://corsproxy.io/?url=';
+    var TIMEOUT_MS = 20000;
+    var PAGE_SIZE = 15;
+    var HISTORY_KEY_LIMIT = 8;
+
+    var state = {
+        dadosBrutos: [],
+        totalRegistrosAPI: 0,
+        filtroAtivo: 'todos',
+        buscaTexto: '',
+        paginaAtual: 1,
+        sortCol: null,
+        sortDir: 1,
+        historico: []
+    };
+
+    var el = {
+        campoBusca: document.getElementById('campoBusca'),
+        tipoBadge: document.getElementById('tipoBadge'),
+        fieldHint: document.getElementById('fieldHint'),
+        loading: document.getElementById('loadingOverlay'),
+        loadingText: document.getElementById('loadingText'),
+        loadingSub: document.getElementById('loadingSub'),
+        resultCount: document.getElementById('resultCount'),
+        results: document.getElementById('resultsContainer'),
+        exportGroup: document.getElementById('exportGroup'),
+        chipRow: document.getElementById('chipRow'),
+        statsRow: document.getElementById('statsRow'),
+        pagination: document.getElementById('pagination'),
+        historyRow: document.getElementById('historyRow'),
+        filtroTabela: document.getElementById('filtroTabela'),
+        statusIcon: document.getElementById('statusIcon'),
+        statusText: document.getElementById('statusText'),
+        btnBuscar: document.getElementById('btnBuscar')
+    };
+
+    document.getElementById('btnLimpar').addEventListener('click', limparTudo);
+    document.getElementById('btnExportarJSON').addEventListener('click', exportarJSON);
+    document.getElementById('btnExportarCSV').addEventListener('click', exportarCSV);
+    el.btnBuscar.addEventListener('click', function () { executarBusca(false); });
+    el.filtroTabela.addEventListener('input', function () {
+        state.buscaTexto = this.value.toLowerCase();
+        state.paginaAtual = 1;
+        renderizarTabela();
+    });
+    el.campoBusca.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') { executarBusca(false); }
+    });
+    el.campoBusca.addEventListener('input', atualizarTipoDetectado);
+
+    // ---------- utilidades de detecção / validação ----------
+    function apenasDigitos(s) { return (s || '').replace(/\D/g, ''); }
+
+    function detectarTipo(valor) {
+        var v = valor.trim();
+        if (!v) return null;
+        var digitos = apenasDigitos(v);
+        if (digitos.length === 11 && /[.\-]/.test(v) || (digitos.length === 11 && v === digitos)) {
+            // pode ser CPF (11 dígitos) - mas também pode ser SK Pessoa longo; CPF geralmente tem pontuação ou exatamente 11 díg. puros vindos de CPF
+        }
+        if (digitos.length === 11) return 'cpf';
+        if (/^\d+$/.test(v)) return 'sk';
+        if (/^[a-zA-ZÀ-ÿ\s'.-]+$/.test(v) && v.replace(/\s/g, '').length >= 3) return 'nome';
+        return 'outro';
+    }
+
+    function atualizarTipoDetectado() {
+        var v = el.campoBusca.value;
+        var tipo = detectarTipo(v);
+        el.campoBusca.classList.remove('invalid');
+        el.fieldHint.classList.remove('error');
+        if (!v.trim()) {
+            el.tipoBadge.style.display = 'none';
+            el.fieldHint.textContent = 'Nome (mín. 3 letras), CPF (11 dígitos) ou SK Pessoa (número).';
+            return;
+        }
+        el.tipoBadge.style.display = 'inline-block';
+        if (tipo === 'cpf') { el.tipoBadge.textContent = 'CPF'; el.fieldHint.textContent = 'Formato de CPF detectado.'; }
+        else if (tipo === 'sk') { el.tipoBadge.textContent = 'SK PESSOA'; el.fieldHint.textContent = 'Identificador numérico detectado.'; }
+        else if (tipo === 'nome') { el.tipoBadge.textContent = 'NOME'; el.fieldHint.textContent = 'Busca por nome.'; }
+        else {
+            el.tipoBadge.textContent = '?';
+            el.fieldHint.textContent = 'Termo muito curto ou com caracteres inválidos.';
+            el.fieldHint.classList.add('error');
+        }
+    }
+
+    // ---------- checagem de status da API ----------
+    function checarStatusAPI() {
+        var ctrl = new AbortController();
+        var to = setTimeout(function () { ctrl.abort(); }, 8000);
+        fetch(API_BASE + '?busca=teste', { method: 'GET', signal: ctrl.signal })
+            .then(function (r) {
+                clearTimeout(to);
+                if (r.ok || r.status === 400 || r.status === 404) {
+                    setStatus('online', 'API respondendo');
+                } else {
+                    setStatus('offline', 'API com erro (HTTP ' + r.status + ')');
+                }
+            })
+            .catch(function () {
+                clearTimeout(to);
+                setStatus('offline', 'API indisponível');
+            });
+    }
+    function setStatus(kind, texto) {
+        el.statusIcon.className = 'dot ' + kind;
+        el.statusText.textContent = texto;
+    }
+    checarStatusAPI();
+
+    // ---------- fetch com timeout + retentativa via proxy ----------
+    function fetchComTimeout(url, ms) {
+        var ctrl = new AbortController();
+        var timer = setTimeout(function () { ctrl.abort(); }, ms);
+        return fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' }, signal: ctrl.signal })
+            .finally(function () { clearTimeout(timer); });
+    }
+
+    function normalizarResposta(data) {
+        // aceita vários formatos possíveis de retorno da API
+        var registros = null, total = null;
+        if (Array.isArray(data)) {
+            registros = data;
+            total = data.length;
+        } else if (data && Array.isArray(data.registros)) {
+            registros = data.registros;
+            total = data.totalRegistros != null ? data.totalRegistros : registros.length;
+        } else if (data && Array.isArray(data.data)) {
+            registros = data.data;
+            total = data.total != null ? data.total : registros.length;
+        } else if (data && Array.isArray(data.resultados)) {
+            registros = data.resultados;
+            total = data.totalRegistros || data.total || registros.length;
+        } else if (data && data.erro) {
+            throw new Error(typeof data.erro === 'string' ? data.erro : 'A API retornou um erro.');
+        }
+        if (!registros) {
+            throw new Error('Formato de resposta inesperado da API.');
+        }
+        return { registros: registros, total: total };
+    }
+
+    function executarBusca(viaProxy) {
+        var termoOriginal = el.campoBusca.value.trim();
+
+        if (!termoOriginal) {
+            marcarInvalido('Digite um termo para buscar.');
+            return;
+        }
+        var tipo = detectarTipo(termoOriginal);
+        if (tipo === 'outro') {
+            marcarInvalido('Termo inválido: use um nome, CPF ou SK Pessoa.');
+            return;
+        }
+
+        var termoEnvio = tipo === 'cpf' ? apenasDigitos(termoOriginal) : termoOriginal;
+        var url = API_BASE + '?busca=' + encodeURIComponent(termoEnvio);
+        var urlFinal = viaProxy ? CORS_PROXY + encodeURIComponent(url) : url;
+
+        el.campoBusca.classList.remove('invalid');
+        el.btnBuscar.disabled = true;
+        el.loading.classList.add('active');
+        el.loadingText.textContent = 'Consultando...';
+        el.loadingSub.textContent = viaProxy ? 'tentando via proxy alternativo' : 'conectando à API';
+
+        fetchComTimeout(urlFinal, TIMEOUT_MS)
+            .then(function (response) {
+                if (!response.ok) {
+                    return response.text().then(function (txt) {
+                        var msg = 'HTTP ' + response.status + ' ' + response.statusText;
+                        if (txt) { msg += ' — ' + txt.slice(0, 200); }
+                        throw new Error(msg);
+                    });
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                var norm = normalizarResposta(data);
+                setStatus('online', 'API respondendo');
+                salvarHistorico(termoOriginal);
+
+                if (norm.registros.length === 0) {
+                    state.dadosBrutos = [];
+                    state.totalRegistrosAPI = norm.total || 0;
+                    mostrarVazio('Nenhum registro encontrado para "' + termoOriginal + '".', false);
+                    return;
+                }
+                state.dadosBrutos = norm.registros;
+                state.totalRegistrosAPI = norm.total || norm.registros.length;
+                state.filtroAtivo = 'todos';
+                state.buscaTexto = '';
+                state.paginaAtual = 1;
+                state.sortCol = null;
+                el.filtroTabela.value = '';
+                renderizarTabela();
+            })
+            .catch(function (error) {
+                var isAbort = error.name === 'AbortError';
+                var isNetwork = error instanceof TypeError;
+
+                // Se falhou por rede/CORS e ainda não tentamos via proxy, tenta uma vez
+                if (!viaProxy && (isNetwork || isAbort)) {
+                    executarBusca(true);
+                    return;
+                }
+
+                setStatus('offline', 'API indisponível');
+                var msg = isAbort ? 'Tempo de espera esgotado (a API demorou demais para responder).' : error.message;
+                mostrarVazio(msg, true);
+            })
+            .finally(function () {
+                if (!(state.retryPending)) {
+                    el.btnBuscar.disabled = false;
+                    el.loading.classList.remove('active');
+                }
+            });
+    }
+
+    function marcarInvalido(msg) {
+        el.campoBusca.classList.add('invalid');
+        el.fieldHint.classList.add('error');
+        el.fieldHint.textContent = msg;
+        el.campoBusca.focus();
+    }
+
+    // ---------- histórico ----------
+    function salvarHistorico(termo) {
+        state.historico = state.historico.filter(function (t) { return t.toLowerCase() !== termo.toLowerCase(); });
+        state.historico.unshift(termo);
+        state.historico = state.historico.slice(0, HISTORY_KEY_LIMIT);
+        renderHistorico();
+    }
+    function renderHistorico() {
+        if (!state.historico.length) { el.historyRow.innerHTML = ''; return; }
+        var html = '';
+        for (var i = 0; i < state.historico.length; i++) {
+            html += '<span class="history-chip" data-termo="' + escapeHtml(state.historico[i]) + '"><i class="fas fa-clock-rotate-left"></i> ' + escapeHtml(state.historico[i]) + '</span>';
+        }
+        el.historyRow.innerHTML = html;
+        var chips = el.historyRow.querySelectorAll('.history-chip');
+        for (var j = 0; j < chips.length; j++) {
+            chips[j].addEventListener('click', function () {
+                el.campoBusca.value = this.getAttribute('data-termo');
+                atualizarTipoDetectado();
+                executarBusca(false);
+            });
+        }
+    }
+
+    // ---------- badge / classificação ----------
+    function getBadgeClass(relacao) {
+        var r = (relacao || '').toLowerCase();
+        if (r.indexOf('beneficiário') !== -1 && r.indexOf('favorecido') !== -1) return 'badge-misto';
+        if (r.indexOf('beneficiário') !== -1) return 'badge-social';
+        if (r.indexOf('favorecido') !== -1) return 'badge-favorecido';
+        if (r.indexOf('inativo') !== -1) return 'badge-inativo';
+        if (r.indexOf('pensão') !== -1) return 'badge-pensao';
+        return 'badge-outro';
+    }
+    function categoriasUnicas() {
+        var set = {};
+        for (var i = 0; i < state.dadosBrutos.length; i++) {
+            var r = state.dadosBrutos[i].descricaoRelacoesGovernoFederal || 'Não informado';
+            set[r] = (set[r] || 0) + 1;
+        }
+        return set;
+    }
+
+    // ---------- renderização ----------
+    function renderStats() {
+        var cats = categoriasUnicas();
+        var numCats = Object.keys(cats).length;
+        var html = '';
+        html += statCard(state.totalRegistrosAPI.toLocaleString('pt-BR'), 'Total encontrados');
+        html += statCard(state.dadosBrutos.length.toLocaleString('pt-BR'), 'Nesta página de dados');
+        html += statCard(numCats, 'Categorias distintas');
+        el.statsRow.innerHTML = html;
+        el.statsRow.style.display = 'grid';
+    }
+    function statCard(num, lbl) {
+        return '<div class="stat-card"><div class="num">' + num + '</div><div class="lbl">' + lbl + '</div></div>';
+    }
+
+    function renderChips() {
+        var cats = categoriasUnicas();
+        var chaves = Object.keys(cats);
+        var html = '<button class="filter-chip' + (state.filtroAtivo === 'todos' ? ' active' : '') + '" data-cat="todos">Todos (' + state.dadosBrutos.length + ')</button>';
+        for (var i = 0; i < chaves.length; i++) {
+            var c = chaves[i];
+            html += '<button class="filter-chip' + (state.filtroAtivo === c ? ' active' : '') + '" data-cat="' + escapeHtml(c) + '">' + escapeHtml(c) + ' (' + cats[c] + ')</button>';
+        }
+        el.chipRow.innerHTML = html;
+        el.chipRow.style.display = 'flex';
+        var btns = el.chipRow.querySelectorAll('.filter-chip');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].addEventListener('click', function () {
+                state.filtroAtivo = this.getAttribute('data-cat');
+                state.paginaAtual = 1;
+                renderizarTabela();
+            });
+        }
+    }
+
+    function dadosFiltrados() {
+        return state.dadosBrutos.filter(function (item) {
+            if (state.filtroAtivo !== 'todos' && (item.descricaoRelacoesGovernoFederal || 'Não informado') !== state.filtroAtivo) return false;
+            if (state.buscaTexto) {
+                var alvo = ((item.nome || '') + ' ' + (item.cpfNis || '') + ' ' + (item.skPessoa || '') + ' ' + (item.descricaoRelacoesGovernoFederal || '')).toLowerCase();
+                if (alvo.indexOf(state.buscaTexto) === -1) return false;
+            }
+            return true;
+        });
+    }
+
+    var COLS = [
+        { key: 'skPessoa', label: 'SK Pessoa' },
+        { key: 'nome', label: 'Nome Completo' },
+        { key: 'cpfNis', label: 'CPF / NIS' },
+        { key: 'descricaoRelacoesGovernoFederal', label: 'Relação com Governo Federal' }
+    ];
+
+    function renderizarTabela() {
+        el.resultCount.textContent = state.totalRegistrosAPI.toLocaleString('pt-BR');
+        renderStats();
+        renderChips();
+
+        var dados = dadosFiltrados();
+
+        if (state.sortCol) {
+            dados = dados.slice().sort(function (a, b) {
+                var va = (a[state.sortCol] || '').toString().toLowerCase();
+                var vb = (b[state.sortCol] || '').toString().toLowerCase();
+                if (va < vb) return -1 * state.sortDir;
+                if (va > vb) return 1 * state.sortDir;
+                return 0;
+            });
+        }
+
+        var totalPaginas = Math.max(1, Math.ceil(dados.length / PAGE_SIZE));
+        if (state.paginaAtual > totalPaginas) state.paginaAtual = totalPaginas;
+        var inicio = (state.paginaAtual - 1) * PAGE_SIZE;
+        var pageItems = dados.slice(inicio, inicio + PAGE_SIZE);
+
+        if (dados.length === 0) {
+            el.results.innerHTML = '<div class="empty-state"><i class="fas fa-filter-circle-xmark"></i><h3>Nada encontrado com este filtro</h3><p>Ajuste o filtro ou o texto de busca dentro da tabela.</p></div>';
+            el.pagination.style.display = 'none';
+            el.exportGroup.style.display = 'flex';
+            return;
+        }
+
+        var html = '<div style="overflow-x: auto;"><table class="data-table"><thead><tr>';
+        for (var c = 0; c < COLS.length; c++) {
+            var col = COLS[c];
+            var ind = '';
+            if (state.sortCol === col.key) ind = '<span class="sort-ind">' + (state.sortDir === 1 ? '▲' : '▼') + '</span>';
+            html += '<th data-col="' + col.key + '">' + col.label + ind + '</th>';
+        }
+        html += '</tr></thead><tbody>';
+
+        for (var i = 0; i < pageItems.length; i++) {
+            var item = pageItems[i];
+            var badgeClass = getBadgeClass(item.descricaoRelacoesGovernoFederal);
+            var sk = escapeHtml(item.skPessoa != null ? String(item.skPessoa) : '');
+            html += '<tr>';
+            html += '<td><a class="link-portal" target="_blank" rel="noopener" href="https://portaldatransparencia.gov.br/pessoa-fisica/' + sk + '">' + sk + '</a>' +
+                     '<button class="copy-btn" data-copy="' + sk + '" title="Copiar"><i class="fas fa-copy"></i></button></td>';
+            html += '<td>' + escapeHtml(item.nome) + '</td>';
+            html += '<td>' + escapeHtml(item.cpfNis) +
+                     '<button class="copy-btn" data-copy="' + escapeHtml(item.cpfNis) + '" title="Copiar"><i class="fas fa-copy"></i></button></td>';
+            html += '<td><span class="badge ' + badgeClass + '">' + escapeHtml(item.descricaoRelacoesGovernoFederal || 'Não informado') + '</span></td>';
+            html += '</tr>';
+        }
+        html += '</tbody></table></div>';
+        el.results.innerHTML = html;
+        el.exportGroup.style.display = 'flex';
+
+        // eventos de ordenação
+        var ths = el.results.querySelectorAll('th[data-col]');
+        for (var t = 0; t < ths.length; t++) {
+            ths[t].addEventListener('click', function () {
+                var key = this.getAttribute('data-col');
+                if (state.sortCol === key) { state.sortDir *= -1; }
+                else { state.sortCol = key; state.sortDir = 1; }
+                renderizarTabela();
+            });
+        }
+        // eventos de cópia
+        var copyBtns = el.results.querySelectorAll('.copy-btn');
+        for (var cb = 0; cb < copyBtns.length; cb++) {
+            copyBtns[cb].addEventListener('click', function (e) {
+                e.stopPropagation();
+                var val = this.getAttribute('data-copy');
+                if (navigator.clipboard) { navigator.clipboard.writeText(val); }
+                var icon = this.querySelector('i');
+                icon.className = 'fas fa-check';
+                setTimeout(function () { icon.className = 'fas fa-copy'; }, 1200);
+            });
+        }
+
+        renderPaginacao(totalPaginas);
+    }
+
+    function renderPaginacao(totalPaginas) {
+        if (totalPaginas <= 1) { el.pagination.style.display = 'none'; return; }
+        el.pagination.style.display = 'flex';
+        var html = '';
+        html += '<button class="page-btn" id="pgPrev" ' + (state.paginaAtual === 1 ? 'disabled' : '') + '>&laquo;</button>';
+        var maxBtns = 7;
+        var startP = Math.max(1, state.paginaAtual - 3);
+        var endP = Math.min(totalPaginas, startP + maxBtns - 1);
+        startP = Math.max(1, endP - maxBtns + 1);
+        for (var p = startP; p <= endP; p++) {
+            html += '<button class="page-btn' + (p === state.paginaAtual ? ' active' : '') + '" data-pg="' + p + '">' + p + '</button>';
+        }
+        html += '<button class="page-btn" id="pgNext" ' + (state.paginaAtual === totalPaginas ? 'disabled' : '') + '>&raquo;</button>';
+        el.pagination.innerHTML = html;
+
+        var prev = document.getElementById('pgPrev');
+        var next = document.getElementById('pgNext');
+        if (prev) prev.addEventListener('click', function () { state.paginaAtual--; renderizarTabela(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        if (next) next.addEventListener('click', function () { state.paginaAtual++; renderizarTabela(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        var pgBtns = el.pagination.querySelectorAll('[data-pg]');
+        for (var i = 0; i < pgBtns.length; i++) {
+            pgBtns[i].addEventListener('click', function () {
+                state.paginaAtual = parseInt(this.getAttribute('data-pg'), 10);
+                renderizarTabela();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    }
+
+    function mostrarVazio(mensagem, isError) {
+        el.resultCount.textContent = state.totalRegistrosAPI.toLocaleString('pt-BR');
+        el.statsRow.style.display = 'none';
+        el.chipRow.style.display = 'none';
+        el.pagination.style.display = 'none';
+        el.exportGroup.style.display = 'none';
+        if (isError) {
+            el.results.innerHTML =
+                '<div class="empty-state error-state">' +
+                '<i class="fas fa-triangle-exclamation"></i>' +
+                '<h3>Não foi possível concluir a consulta</h3>' +
+                '<p>Tente novamente em instantes ou verifique sua conexão.</p>' +
+                '<div class="error-detail">' + escapeHtml(mensagem) + '</div>' +
+                '<div style="margin-top:16px;"><button class="btn btn-primary btn-sm" id="btnTentarNovamente"><i class="fas fa-rotate"></i> Tentar novamente</button></div>' +
+                '</div>';
+            var rb = document.getElementById('btnTentarNovamente');
+            if (rb) rb.addEventListener('click', function () { executarBusca(false); });
+        } else {
+            el.results.innerHTML = '<div class="empty-state"><i class="fas fa-circle-info"></i><h3>Sem resultados</h3><p>' + escapeHtml(mensagem) + '</p></div>';
+        }
+    }
+
+    function limparTudo() {
+        el.campoBusca.value = '';
+        el.campoBusca.classList.remove('invalid');
+        el.tipoBadge.style.display = 'none';
+        el.fieldHint.classList.remove('error');
+        el.fieldHint.textContent = 'Nome (mín. 3 letras), CPF (11 dígitos) ou SK Pessoa (número).';
+        state.dadosBrutos = [];
+        state.totalRegistrosAPI = 0;
+        state.filtroAtivo = 'todos';
+        state.buscaTexto = '';
+        state.paginaAtual = 1;
+        state.sortCol = null;
+        el.filtroTabela.value = '';
+        el.resultCount.textContent = '0';
+        el.statsRow.style.display = 'none';
+        el.chipRow.style.display = 'none';
+        el.pagination.style.display = 'none';
+        el.results.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>Realize uma consulta</h3><p>Digite um nome, CPF ou SK Pessoa no campo acima e clique em "Buscar".</p></div>';
+        el.exportGroup.style.display = 'none';
+    }
+
+    function exportarJSON() {
+        if (state.dadosBrutos.length === 0) { alert('Nenhum dado para exportar!'); return; }
+        var dataObj = {
+            consulta: new Date().toISOString(),
+            totalRegistros: state.totalRegistrosAPI,
+            termoBusca: el.campoBusca.value.trim(),
+            registros: dadosFiltrados()
+        };
+        baixarArquivo(JSON.stringify(dataObj, null, 2), 'application/json', 'consulta_portal_' + Date.now() + '.json');
+    }
+
+    function exportarCSV() {
+        var dados = dadosFiltrados();
+        if (dados.length === 0) { alert('Nenhum dado para exportar!'); return; }
+        var csv = 'SK_PESSOA;NOME_COMPLETO;CPF_NIS;RELACAO_GOVERNO_FEDERAL\r\n';
+        for (var i = 0; i < dados.length; i++) {
+            var item = dados[i];
+            csv += item.skPessoa + ';"' + (item.nome || '') + '";' + (item.cpfNis || '') + ';"' + (item.descricaoRelacoesGovernoFederal || '') + '"\r\n';
+        }
+        baixarArquivo(csv, 'text/csv;charset=utf-8;', 'consulta_portal_' + Date.now() + '.csv');
+    }
+
+    function baixarArquivo(conteudo, tipo, nomeArquivo) {
+        var blob = new Blob([conteudo], { type: tipo });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = nomeArquivo;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function escapeHtml(str) {
+        if (str == null) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+})();
+</script>
+</body>
+</html>
