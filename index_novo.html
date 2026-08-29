@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#02060c">
+<meta name="description" content="Central de ferramentas digitais com preview ao vivo.">
+<title>Ferramentas</title>
+<style>
+:root{
+  --bg:#02060c;--panel:#07101a;--panel2:#0a1521;--line:rgba(0,191,255,.16);
+  --blue:#00bfff;--blue2:#087eff;--text:#edf8ff;--muted:#6f899b;
+  --shadow:0 18px 60px rgba(0,0,0,.42),0 0 35px rgba(0,191,255,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+  color:var(--text);background:
+  radial-gradient(circle at 15% -10%,rgba(0,191,255,.13),transparent 35%),
+  radial-gradient(circle at 90% 10%,rgba(0,102,255,.08),transparent 30%),var(--bg);
+  min-height:100vh;overflow-x:hidden
+}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+background-image:linear-gradient(rgba(0,191,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,.025) 1px,transparent 1px);
+background-size:42px 42px;mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+.wrap{width:min(1440px,calc(100% - 32px));margin:auto;position:relative;z-index:1}
+.top{display:flex;align-items:center;justify-content:space-between;padding:25px 0 18px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.logo{width:38px;height:38px;border:1px solid rgba(0,191,255,.45);border-radius:11px;display:grid;place-items:center;color:var(--blue);
+background:linear-gradient(145deg,rgba(0,191,255,.14),rgba(0,60,120,.08));box-shadow:0 0 24px rgba(0,191,255,.13)}
+.status{font-size:11px;color:#73a1b8;border:1px solid var(--line);padding:7px 10px;border-radius:99px;background:rgba(4,15,24,.65)}
+.status i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e58a;box-shadow:0 0 9px #00e58a;margin-right:6px}
+.hero{padding:52px 0 34px;text-align:center}
+.kicker{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--blue);font-weight:800;margin-bottom:15px}
+.hero h1{font-size:clamp(2rem,6vw,4.4rem);line-height:.98;letter-spacing:-.055em;font-weight:950}
+.hero p{max-width:650px;margin:17px auto 0;color:var(--muted);line-height:1.65;font-size:15px}
+.tools{display:grid;grid-template-columns:1fr 1.7fr;gap:18px;align-items:start;padding-bottom:70px}
+.sidebar{position:sticky;top:18px}
+.search{position:relative}
+.search input{width:100%;height:56px;padding:0 18px 0 49px;background:rgba(5,14,23,.86);border:1px solid var(--line);border-radius:15px;color:var(--text);outline:none;font:inherit;box-shadow:var(--shadow)}
+.search input:focus{border-color:rgba(0,191,255,.5);box-shadow:0 0 0 4px rgba(0,191,255,.06),var(--shadow)}
+.search svg{position:absolute;left:17px;top:17px;width:21px;color:#55798c}
+.count{display:flex;justify-content:space-between;align-items:center;margin:12px 3px 9px;color:var(--muted);font-size:12px}
+.list{display:grid;gap:8px;max-height:calc(100vh - 190px);overflow:auto;padding-right:3px}
+.list::-webkit-scrollbar{width:5px}.list::-webkit-scrollbar-thumb{background:#153142;border-radius:9px}
+.item{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:12px;border:1px solid rgba(255,255,255,.055);background:rgba(6,15,24,.72);border-radius:13px;cursor:pointer;transition:.22s}
+.item:hover,.item.active{border-color:rgba(0,191,255,.34);background:linear-gradient(100deg,rgba(0,191,255,.09),rgba(7,18,29,.8));transform:translateX(2px)}
+.ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:12px;font-weight:900;color:var(--blue);border:1px solid rgba(0,191,255,.2);background:#06131f}
+.item strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item small{display:block;color:#587589;font-size:10px;margin-top:3px}
+.arrow{color:#35576b;font-size:16px}
+.preview{min-width:0}
+.preview-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.preview-title{font-size:13px;color:#80a4b8;font-weight:700}
+.preview-url{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:#466577;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
+.device{border:1px solid rgba(0,191,255,.2);background:#030910;border-radius:20px;padding:10px;box-shadow:var(--shadow);overflow:hidden}
+.devicebar{height:34px;border-bottom:1px solid rgba(255,255,255,.055);display:flex;align-items:center;gap:7px;padding:0 9px;background:#06101a}
+.dot{width:7px;height:7px;border-radius:50%;background:#234052}.dot.blue{background:var(--blue);box-shadow:0 0 8px rgba(0,191,255,.7)}
+.live{margin-left:auto;font-size:9px;color:#4f7890;letter-spacing:.12em}
+.framebox{height:560px;background:#fff;position:relative;overflow:hidden;border-radius:0 0 11px 11px}
+.framebox iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:white}
+.framebox.loading:after{content:"CARREGANDO PREVIEW…";position:absolute;inset:0;display:grid;place-items:center;background:#030910;color:#557789;font-size:11px;letter-spacing:.2em;pointer-events:none}
+.framebox.loaded:after{display:none}
+.empty{padding:35px;text-align:center;color:#557789;border:1px dashed rgba(0,191,255,.15);border-radius:14px}
+.footer{text-align:center;padding:0 0 35px;color:#355466;font-size:11px}
+@media(max-width:900px){
+ .tools{grid-template-columns:1fr}.sidebar{position:static}.list{max-height:290px}
+ .framebox{height:62vh;min-height:430px}.hero{padding-top:35px}
+}
+@media(max-width:520px){
+ .wrap{width:min(100% - 18px,1440px)}.top{padding-top:16px}.status{display:none}
+ .hero h1{font-size:2.25rem}.hero p{font-size:13px}.tools{gap:12px}
+ .framebox{height:68vh;min-height:420px}.device{padding:7px;border-radius:15px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="logo">KB</div><span>TOOLS</span></div>
+    <div class="status"><i></i>SITEMAP ONLINE</div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">live directory</div>
+    <h1>Explore as ferramentas.</h1>
+    <p>As páginas são descobertas diretamente pela raiz do <b>sitemap.xml</b>. Escolha uma rota e veja o site em um preview ao vivo antes de abrir.</p>
+  </section>
+
+  <main class="tools">
+    <aside class="sidebar">
+      <div class="search">
+        <input id="search" autocomplete="off" placeholder="Buscar por rota…">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </div>
+      <div class="count"><span id="count">Lendo sitemap…</span><span>/rotas</span></div>
+      <div class="list" id="list"></div>
+    </aside>
+
+    <section class="preview">
+      <div class="preview-head">
+        <span class="preview-title" id="previewTitle">Preview ao vivo</span>
+        <span class="preview-url" id="previewUrl">—</span>
+      </div>
+      <div class="device">
+        <div class="devicebar"><i class="dot"></i><i class="dot"></i><i class="dot blue"></i><span class="live">LIVE PREVIEW</span></div>
+        <div class="framebox loading" id="framebox">
+          <iframe id="frame" title="Preview da ferramenta" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">Diretório automático • sitemap.xml • preview em tempo real</footer>
+</div>
+
+<script>
+const BASE = location.origin;
+const SITEMAP = new URL('/sitemap.xml', BASE).href;
+const list = document.getElementById('list');
+const search = document.getElementById('search');
+const count = document.getElementById('count');
+const frame = document.getElementById('frame');
+const framebox = document.getElementById('framebox');
+const previewTitle = document.getElementById('previewTitle');
+const previewUrl = document.getElementById('previewUrl');
+let routes = [], selected = '';
+
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function routeName(url){
+  try{
+    const u=new URL(url,BASE);
+    let p=u.pathname.replace(/^\/+|\/+$/g,'');
+    if(!p) return 'Início';
+    return p.split('/').pop().replace(/\.(html?|php)$/i,'').replace(/[-_]+/g,' ');
+  }catch{return url}
+}
+function shortPath(url){
+  try{return new URL(url,BASE).pathname || '/'}catch{return url}
+}
+function icon(url){
+  const n=routeName(url).replace(/\s/g,'').slice(0,2).toUpperCase();
+  return n || 'KB';
+}
+function render(){
+  const q=search.value.trim().toLowerCase();
+  const filtered=routes.filter(u=>routeName(u).toLowerCase().includes(q)||shortPath(u).toLowerCase().includes(q));
+  count.textContent=filtered.length+' '+(filtered.length===1?'rota':'rotas');
+  list.innerHTML=filtered.length?filtered.map((u,i)=>`
+    <div class="item ${u===selected?'active':''}" data-url="${esc(u)}">
+      <div class="ico">${esc(icon(u))}</div>
+      <div><strong>${esc(routeName(u))}</strong><small>${esc(shortPath(u))}</small></div>
+      <span class="arrow">›</span>
+    </div>`).join(''):`<div class="empty">Nenhuma rota encontrada.</div>`;
+  list.querySelectorAll('.item').forEach(el=>el.onclick=()=>openPreview(el.dataset.url));
+}
+function openPreview(url){
+  selected=url; render();
+  previewTitle.textContent=routeName(url);
+  previewUrl.textContent=shortPath(url);
+  framebox.classList.remove('loaded'); frame.src='about:blank';
+  requestAnimationFrame(()=>{frame.src=url});
+}
+frame.addEventListener('load',()=>framebox.classList.add('loaded'));
+
+async function loadSitemap(){
+  try{
+    const res=await fetch(SITEMAP,{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const xml=await res.text();
+    const doc=new DOMParser().parseFromString(xml,'application/xml');
+    if(doc.querySelector('parsererror')) throw new Error('XML inválido');
+    const urls=[...doc.querySelectorAll('url > loc')].map(x=>x.textContent.trim()).filter(Boolean);
+    routes=[...new Set(urls)].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    // Não mostrar a própria raiz como ferramenta.
+    routes=routes.filter(u=>new URL(u,BASE).pathname!=='/');
+    if(!routes.length) throw new Error('Nenhuma rota encontrada');
+    render();
+    openPreview(routes[0]);
+  }catch(e){
+    count.textContent='erro no sitemap';
+    list.innerHTML=`<div class="empty">Não foi possível ler <b>/sitemap.xml</b>.<br><br>${esc(e.message)}</div>`;
+    previewTitle.textContent='Preview indisponível';
+    previewUrl.textContent=SITEMAP;
+    framebox.classList.remove('loading'); framebox.classList.add('loaded');
+    frame.src='about:blank';
+  }
+}
+search.addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/' && document.activeElement!==search){e.preventDefault();search.focus()}
+});
+loadSitemap();
+</script>
+</body>
+</html>
