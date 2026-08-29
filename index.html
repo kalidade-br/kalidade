@@ -24,7 +24,7 @@ h1{font-size:clamp(2.5rem,7vw,5.6rem);line-height:.94;letter-spacing:-.065em;mar
 .search{max-width:720px;margin:28px auto 0;position:relative}.search input{width:100%;height:53px;background:#0b0b0b;border:1px solid #252525;border-radius:12px;color:#fff;padding:0 18px;outline:none}.search input:focus{border-color:#7613aa;box-shadow:0 0 0 3px rgba(143,0,255,.08)}
 .store{padding:18px 0 70px}.storetop{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;color:#777;font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
 .card{background:linear-gradient(145deg,#0c0c0c,#080808);border:1px solid #222;border-radius:15px;overflow:hidden;transition:.22s;cursor:pointer}.card:hover{transform:translateY(-4px);border-color:#6c0e9a;box-shadow:0 18px 45px rgba(0,0,0,.5),0 0 25px rgba(143,0,255,.09)}
-.shot{height:205px;background:#fff;position:relative;overflow:hidden}.shot iframe{width:100%;height:100%;border:0;background:#fff;pointer-events:none}.loading{position:absolute;inset:0;background:#090909;color:#6f6f6f;display:grid;place-items:center;font-size:9px;letter-spacing:.2em;z-index:1}.loaded{display:none}
+.shot{height:205px;background:#fff;position:relative;overflow:hidden}.mini-viewport{position:absolute;inset:0;overflow:hidden;background:#fff}.shot iframe{position:absolute;left:0;top:0;border:0;background:#fff;pointer-events:none}.loading{position:absolute;inset:0;background:#090909;color:#6f6f6f;display:grid;place-items:center;font-size:9px;letter-spacing:.2em;z-index:1}.loaded{display:none}
 .info{padding:14px}.name{font-weight:800;font-size:14px;text-transform:lowercase}.route{margin-top:5px;color:#666;font:10px monospace}.go{margin-top:13px;color:#ae5cff;font-size:10px;font-weight:800;letter-spacing:.08em}
 .drawer{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(5px);z-index:10;display:none}.drawer.open{display:block}.panel{position:absolute;top:0;left:0;height:100%;width:min(390px,88vw);background:#090909;border-right:1px solid #292929;box-shadow:20px 0 70px #000;padding:22px;overflow:auto}.close{float:right;border:1px solid #2a2a2a;background:#101010;color:#aaa;border-radius:8px;padding:7px 10px;cursor:pointer}.panel h2{clear:both;padding-top:35px;font-size:20px}.panel p,.panel li{color:#818181;font-size:13px;line-height:1.65}.docs{display:grid;gap:8px;margin-top:20px}.docs a{color:#bbb;text-decoration:none;border:1px solid #202020;border-radius:10px;padding:11px}.docs a:hover{border-color:#7213a1;color:#fff}
 .footer{border-top:1px solid #171717;padding:28px 0 40px;color:#555;text-align:center;font-size:11px}.footer a{color:#a44cff;text-decoration:none}
@@ -67,15 +67,15 @@ h1{font-size:clamp(2.5rem,7vw,5.6rem);line-height:.94;letter-spacing:-.065em;mar
   <p>Guia de uso das APIs da Kalidade. Esta área é separada da vitrine de ferramentas.</p>
   <div class="docs">
    <a href="/document-dev/">Central de documentação →</a>
-   <a href="https://kalidade.vercel.app/cep.html" target="_blank">CEP</a>
-   <a href="https://kalidade.vercel.app/cnpj.html" target="_blank">CNPJ</a>
-   <a href="https://kalidade.vercel.app/cors-proxy.html" target="_blank">CORS Proxy</a>
-   <a href="https://kalidade.vercel.app/cpf.html" target="_blank">CPF</a>
-   <a href="https://kalidade.vercel.app/cpf-parentes.html" target="_blank">CPF Parentes</a>
-   <a href="https://kalidade.vercel.app/freefire-id.html" target="_blank">Free Fire ID</a>
-   <a href="https://kalidade.vercel.app/ip-whois.html" target="_blank">IP Whois</a>
-   <a href="https://kalidade.vercel.app/pdt.html" target="_blank">PDT</a>
-   <a href="https://kalidade.vercel.app/pdt-busca.html" target="_blank">PDT Busca</a>
+   <a href="/document-dev/CEP.html" target="_blank">CEP</a>
+   <a href="/document-dev/CNPJ.html" target="_blank">CNPJ</a>
+   <a href="/document-dev/CORS-Proxy.html" target="_blank">CORS Proxy</a>
+   <a href="/document-dev/CPF.html" target="_blank">CPF</a>
+   <a href="/document-dev/CPF-Parentes.html" target="_blank">CPF Parentes</a>
+   <a href="/document-dev/FreeFire-ID.html" target="_blank">Free Fire ID</a>
+   <a href="/document-dev/IP-Whois.html" target="_blank">IP Whois</a>
+   <a href="/document-dev/PDT.html" target="_blank">PDT</a>
+   <a href="/document-dev/PDT-Busca.html" target="_blank">PDT Busca</a>
   </div>
  </aside>
 </div>
@@ -92,11 +92,19 @@ function card(name){
  const c=document.createElement('article');c.className='card';c.dataset.name=name;
  const shot=document.createElement('div');shot.className='shot';
  const load=document.createElement('div');load.className='loading';load.textContent='CARREGANDO PREVIEW…';
+ const viewport=document.createElement('div');viewport.className='mini-viewport';
  const frame=document.createElement('iframe');
  frame.loading='lazy';frame.src='/'+name+'/';frame.title='Preview '+name;
  frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups');
- frame.addEventListener('load',()=>load.classList.add('loaded'));
- shot.append(load,frame);
+ frame.addEventListener('load',()=>{
+   load.classList.add('loaded');
+   // Keep a desktop-like virtual viewport inside the small card.
+   const w=Math.max(900,shot.clientWidth*3.2), h=Math.round(w*0.72);
+   frame.style.width=w+'px'; frame.style.height=h+'px';
+   frame.style.transformOrigin='0 0';
+   frame.style.transform='scale('+(shot.clientWidth/w)+')';
+ });
+ viewport.append(frame); shot.append(load,viewport);
  const info=document.createElement('div');info.className='info';
  info.innerHTML='<div class="name">'+pretty(name)+'</div><div class="route">/'+name+'/</div><div class="go">ABRIR FERRAMENTA →</div>';
  c.append(shot,info);
