@@ -445,7 +445,7 @@
                     if (signal.aborted) return;
                     const cpf = cpfs[idx];
                     try {
-                        const res = await fetch(`https://api-web-br.vercel.app/api/cpf-all.js?cpf=${cpf}`, { signal });
+                        const res = await fetch(`https://api-kalidade.vercel.app/api/cpf-all.js?cpf=${cpf}`, { signal });
                         if (!res.ok) throw new Error('HTTP ' + res.status);
                         const data = await res.json();
 
