@@ -524,7 +524,7 @@
             btn.classList.add('loading');
 
             try {
-                const response = await fetch(`https://corsproxy.io/?https://api-web-br.vercel.app/api/cep.js?cep=${cep}`);
+                const response = await fetch(`https://api-kalidade.vercel.app/api/cep.js?cep=${cep}`);
 
                 if (!response.ok) {
                     throw new Error('CEP não encontrado');
