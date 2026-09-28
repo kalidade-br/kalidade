@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05080a">
+<title>KALIDADE_BR • App Store</title>
+
+<style>
+:root{
+  --bg:#030608;
+  --panel:#071014;
+  --panel2:#0a151a;
+  --line:#143039;
+  --text:#eaffff;
+  --muted:#6e8a91;
+  --cyan:#00e5ff;
+  --green:#00ff9c;
+  --blue:#0099ff;
+  --danger:#ff3b81;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 50% -15%,rgba(0,229,255,.13),transparent 35%),
+    radial-gradient(circle at 10% 30%,rgba(0,255,156,.055),transparent 25%),
+    #030608;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.16;
+  background-image:
+    linear-gradient(rgba(0,229,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.035) 1px,transparent 1px);
+  background-size:42px 42px;
+}
+
+body:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgba(255,255,255,.012) 4px
+  );
+}
+
+button,input{font:inherit}
+
+.shell{
+  max-width:1450px;
+  margin:auto;
+  padding:0 22px;
+  position:relative;
+  z-index:2;
+}
+
+.nav{
+  height:72px;
+  border-bottom:1px solid rgba(0,229,255,.10);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+
+.logo{
+  font-weight:950;
+  letter-spacing:.16em;
+  font-size:15px;
+  text-shadow:0 0 16px rgba(0,229,255,.35);
+}
+
+.logo span{
+  color:var(--cyan);
+}
+
+.navbtn{
+  border:1px solid #16323b;
+  background:#071014;
+  color:#9ab3b9;
+  border-radius:9px;
+  padding:9px 13px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.navbtn:hover{
+  border-color:var(--cyan);
+  color:#fff;
+  box-shadow:0 0 18px rgba(0,229,255,.10);
+}
+
+.hero{
+  padding:76px 0 42px;
+  text-align:center;
+}
+
+.tag{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  color:var(--green);
+  font-size:10px;
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  font-weight:900;
+}
+
+.tag i{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:.5;box-shadow:0 0 5px var(--green)}
+  50%{opacity:1;box-shadow:0 0 16px var(--green)}
+}
+
+h1{
+  font-size:clamp(2.5rem,7vw,5.8rem);
+  line-height:.94;
+  letter-spacing:-.065em;
+  margin:17px 0 16px;
+  text-transform:uppercase;
+}
+
+.hero h1{
+  background:linear-gradient(90deg,#fff,var(--cyan),#fff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  text-shadow:0 0 35px rgba(0,229,255,.13);
+}
+
+.hero p{
+  max-width:620px;
+  margin:auto;
+  color:var(--muted);
+  line-height:1.7;
+  font-size:13px;
+}
+
+.search{
+  max-width:720px;
+  margin:28px auto 0;
+  position:relative;
+}
+
+.search:before{
+  content:"⌕";
+  position:absolute;
+  left:17px;
+  top:50%;
+  transform:translateY(-52%);
+  color:var(--cyan);
+  font-size:21px;
+  z-index:1;
+}
+
+.search input{
+  width:100%;
+  height:54px;
+  background:rgba(5,13,16,.9);
+  border:1px solid #17343d;
+  border-radius:12px;
+  color:#fff;
+  padding:0 18px 0 48px;
+  outline:none;
+  transition:.2s;
+}
+
+.search input::placeholder{color:#557078}
+
+.search input:focus{
+  border-color:var(--cyan);
+  box-shadow:0 0 0 3px rgba(0,229,255,.06),0 0 25px rgba(0,229,255,.08);
+}
+
+.store{
+  padding:18px 0 70px;
+}
+
+.storetop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:15px;
+  color:#57727a;
+  font-size:11px;
+  letter-spacing:.12em;
+}
+
+.status{
+  color:var(--green);
+  text-shadow:0 0 10px rgba(0,255,156,.3);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:13px;
+}
+
+.card{
+  position:relative;
+  min-height:112px;
+  padding:18px;
+  background:
+    linear-gradient(145deg,rgba(9,23,28,.96),rgba(4,10,13,.96));
+  border:1px solid #143039;
+  border-radius:13px;
+  overflow:hidden;
+  transition:.22s;
+  cursor:pointer;
+}
+
+.card:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:2px;
+  height:100%;
+  background:linear-gradient(var(--cyan),var(--green));
+  opacity:.55;
+}
+
+.card:after{
+  content:"";
+  position:absolute;
+  right:-35px;
+  bottom:-45px;
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:rgba(0,229,255,.045);
+  filter:blur(15px);
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  border-color:#00aeca;
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.55),
+    0 0 25px rgba(0,229,255,.08);
+}
+
+.card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.index{
+  color:#35545d;
+  font:10px ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+.folder{
+  color:var(--green);
+  font-size:18px;
+  filter:drop-shadow(0 0 7px rgba(0,255,156,.3));
+}
+
+.name{
+  position:relative;
+  z-index:1;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:#ecffff;
+  overflow-wrap:anywhere;
+}
+
+.route{
+  margin-top:8px;
+  color:#4d6971;
+  font:10px ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+.open{
+  margin-top:14px;
+  color:var(--cyan);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.14em;
+}
+
+.empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:55px 20px;
+  border:1px dashed #17343d;
+  border-radius:14px;
+  color:#59727a;
+}
+
+.error{
+  grid-column:1/-1;
+  padding:25px;
+  border:1px solid rgba(255,59,129,.3);
+  border-radius:14px;
+  background:rgba(255,59,129,.04);
+  color:#ff8eb6;
+  text-align:center;
+}
+
+.loader{
+  grid-column:1/-1;
+  min-height:180px;
+  display:grid;
+  place-items:center;
+  color:var(--cyan);
+  font:11px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.18em;
+}
+
+.loader:after{
+  content:"";
+  width:8px;
+  height:8px;
+  margin-left:8px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 15px var(--green);
+  animation:pulse 1s infinite;
+}
+
+.footer{
+  border-top:1px solid #10272e;
+  padding:28px 0 40px;
+  color:#45616a;
+  text-align:center;
+  font-size:10px;
+  letter-spacing:.04em;
+}
+
+.footer a{
+  color:var(--cyan);
+  text-decoration:none;
+}
+
+.drawer{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(6px);
+  z-index:10;
+  display:none;
+}
+
+.drawer.open{display:block}
+
+.panel{
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  width:min(390px,88vw);
+  background:#050d10;
+  border-right:1px solid #17404a;
+  box-shadow:20px 0 70px #000;
+  padding:22px;
+  overflow:auto;
+}
+
+.close{
+  float:right;
+  border:1px solid #18343d;
+  background:#081217;
+  color:#8ca5ab;
+  border-radius:8px;
+  padding:7px 10px;
+  cursor:pointer;
+}
+
+.panel h2{
+  clear:both;
+  padding-top:35px;
+  font-size:20px;
+  text-transform:uppercase;
+}
+
+.panel p,.panel li{
+  color:#6d858c;
+  font-size:13px;
+  line-height:1.65;
+}
+
+.docs{
+  display:grid;
+  gap:8px;
+  margin-top:20px;
+}
+
+.docs a{
+  color:#9eb5ba;
+  text-decoration:none;
+  border:1px solid #16323a;
+  border-radius:10px;
+  padding:11px;
+  transition:.2s;
+}
+
+.docs a:hover{
+  border-color:var(--cyan);
+  color:#fff;
+  box-shadow:0 0 15px rgba(0,229,255,.07);
+}
+
+@media(max-width:1100px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media(max-width:760px){
+  .shell{padding:0 12px}
+  .nav{height:62px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .hero{padding:55px 0 30px}
+  h1{font-size:2.65rem}
+  .card{min-height:105px;padding:15px}
+}
+
+@media(max-width:430px){
+  .grid{grid-template-columns:1fr 1fr}
+  .name{font-size:12px}
+  .card{padding:13px}
+  .open{font-size:8px}
+}
+</style>
+</head>
+
+<body>
+<div class="shell">
+
+<header class="nav">
+  <div class="logo">KALIDADE<span>_BR</span></div>
+  <button class="navbtn" id="docsBtn">☰ Documentações</button>
+</header>
+
+<section class="hero">
+  <div class="tag"><i></i> KALIDADE BR • REPOSITORY</div>
+  <h1>KALIDADE<br>TOOLS</h1>
+  <p>
+    Ferramentas e projetos disponíveis no repositório.
+    Os nomes são carregados automaticamente pela API.
+  </p>
+
+  <div class="search">
+    <input id="search" placeholder="Pesquisar ferramenta…" autocomplete="off">
+  </div>
+</section>
+
+<main class="store">
+  <div class="storetop">
+    <span id="count">CARREGANDO...</span>
+    <span class="status">● API ONLINE</span>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="loader">CONSULTANDO API</div>
+  </div>
+</main>
+
+<footer class="footer">
+  KALIDADE BR • <a href="https://github.com/kalidade-br" target="_blank" rel="noopener">@kalidade-br</a>
+</footer>
+
+</div>
+
+<div class="drawer" id="drawer">
+  <aside class="panel">
+    <button class="close" id="close">×</button>
+
+    <div class="tag">DOCUMENTATION</div>
+    <h2>Documentações</h2>
+    <p>Central de documentação das ferramentas da Kalidade.</p>
+
+    <div class="docs">
+      <a href="/document-dev/">Central de documentação →</a>
+      <a href="/document-dev/CEP.html" target="_blank">CEP</a>
+      <a href="/document-dev/cnpj.html" target="_blank">CNPJ</a>
+      <a href="/document-dev/cors-proxy.html" target="_blank">CORS Proxy</a>
+      <a href="/document-dev/cpf.html" target="_blank">CPF</a>
+      <a href="/document-dev/cpf-parentes.html" target="_blank">CPF Parentes</a>
+      <a href="/document-dev/freefire-id.html" target="_blank">Free Fire ID</a>
+      <a href="/document-dev/ip-whois.html" target="_blank">IP Whois</a>
+      <a href="/document-dev/pdt.html" target="_blank">PDT</a>
+      <a href="/document-dev/pdt-busca.html" target="_blank">PDT Busca</a>
+    </div>
+  </aside>
+</div>
+
+<script>
+const API = "https://api-kalidade.vercel.app/api/github.js?repo=kalidade-br/kalidade";
+const grid = document.getElementById("grid");
+const search = document.getElementById("search");
+const count = document.getElementById("count");
+
+let tools = [];
+
+/*
+  /busca-cep -> BUSCA CEP
+  - vira espaço
+  O nome original da pasta continua sendo usado para abrir a ferramenta.
+*/
+function prettyName(name){
+  return name
+    .replace(/-/g, " ")
+    .toUpperCase();
+}
+
+function collectFolders(files){
+  return Object.entries(files || {})
+    .filter(([name, item]) => item && item.type === "folder")
+    .map(([name, item]) => ({
+      name,
+      path: item.path || name
+    }));
+}
+
+function card(tool, index){
+  const c = document.createElement("article");
+  c.className = "card";
+  c.dataset.name = tool.name.toLowerCase();
+
+  c.innerHTML = `
+    <div class="card-top">
+      <span class="index">#${String(index + 1).padStart(2, "0")}</span>
+      <span class="folder">▰</span>
+    </div>
+
+    <div class="name">${escapeHTML(prettyName(tool.name))}</div>
+    <div class="route">/${escapeHTML(tool.name)}</div>
+    <div class="open">ABRIR FERRAMENTA →</div>
+  `;
+
+  c.addEventListener("click", () => {
+    window.location.href = "/" + tool.path.replace(/^\/+|\/+$/g, "") + "/";
+  });
+
+  return c;
+}
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[char]));
+}
+
+function render(){
+  const q = search.value.toLowerCase().trim();
+
+  const list = tools.filter(tool =>
+    tool.name.toLowerCase().includes(q) ||
+    prettyName(tool.name).toLowerCase().includes(q)
+  );
+
+  grid.replaceChildren();
+
+  if(!list.length){
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "NENHUMA FERRAMENTA ENCONTRADA";
+    grid.appendChild(empty);
+  }else{
+    list.forEach((tool, index) => {
+      grid.appendChild(card(tool, index));
+    });
+  }
+
+  count.textContent =
+    `${list.length} ${list.length === 1 ? "FERRAMENTA" : "FERRAMENTAS"}`;
+}
+
+async function loadRepository(){
+  try{
+    const response = await fetch(API, {
+      method: "GET",
+      cache: "no-store"
+    });
+
+    if(!response.ok){
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if(!data.success || !data.files){
+      throw new Error("Resposta inválida da API");
+    }
+
+    tools = collectFolders(data.files)
+      .sort((a,b) => a.name.localeCompare(b.name, "pt-BR"));
+
+    render();
+  }catch(error){
+    console.error(error);
+
+    grid.innerHTML = `
+      <div class="error">
+        <strong>ERRO AO CONSULTAR A API</strong><br><br>
+        Não foi possível carregar o repositório agora.
+      </div>
+    `;
+
+    count.textContent = "API OFFLINE";
+  }
+}
+
+search.addEventListener("input", render);
+loadRepository();
+
+const drawer = document.getElementById("drawer");
+
+document.getElementById("docsBtn").onclick = () =>
+  drawer.classList.add("open");
+
+document.getElementById("close").onclick = () =>
+  drawer.classList.remove("open");
+
+drawer.addEventListener("click", e => {
+  if(e.target === drawer) drawer.classList.remove("open");
+});
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") drawer.classList.remove("open");
+});
+</script>
+
+</body>
+</html>
