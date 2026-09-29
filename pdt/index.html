@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Consulta – Pessoa Física</title>
+<style>
+:root{--azul:#1351b4;--azul-esc:#071d41;--azul-cl:#e8f0fb;--amarelo:#ffcd07;--fundo:#f4f6f9;--borda:#d4d9e1;--txt:#222;--mudo:#5b6472;--erro:#e52207;--ok:#168821}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--txt);font:16px/1.5 Rawline,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--azul-esc);color:#fff;border-bottom:4px solid var(--amarelo)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+header .wrap{padding:18px 16px}
+header h1{margin:0;font-size:1.35rem;font-weight:700}
+header p{margin:2px 0 0;color:#c5d3ea;font-size:.9rem}
+.card{background:#fff;border:1px solid var(--borda);border-radius:4px;margin-top:20px}
+.tabs{display:flex;border-bottom:1px solid var(--borda);overflow-x:auto}
+.tabs button{flex:1;min-width:110px;padding:14px 12px;background:none;border:0;border-bottom:3px solid transparent;font:inherit;font-weight:600;color:var(--mudo);cursor:pointer}
+.tabs button[aria-selected=true]{color:var(--azul);border-bottom-color:var(--azul);background:var(--azul-cl)}
+.tabs button:focus-visible,.btn:focus-visible,input:focus-visible,.link:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
+form{padding:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.campo{flex:1;min-width:220px}
+label{display:block;font-weight:600;margin-bottom:6px}
+input{width:100%;padding:11px 12px;font:inherit;border:1px solid #888;border-radius:4px}
+.dica{font-size:.85rem;color:var(--mudo);margin:6px 0 0}
+.btn{background:var(--azul);color:#fff;border:0;border-radius:100px;padding:11px 30px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:#0c3d8f}.btn:disabled{opacity:.6;cursor:wait}
+.btn.sec{background:#fff;color:var(--azul);border:1px solid var(--azul);padding:6px 18px;font-size:.9rem}
+#res{padding:0 0 20px}
+.msg{margin:20px;padding:14px 16px;border-left:5px solid var(--azul);background:var(--azul-cl)}
+.msg.erro{border-color:var(--erro);background:#fdeceb;color:#8a1300}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid #b9c8e6;border-top-color:var(--azul);border-radius:50%;vertical-align:-3px;margin-right:8px;animation:g .8s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+h2{font-size:1.15rem;margin:0;padding:16px 20px;border-bottom:1px solid var(--borda);background:#fafbfc}
+dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:0;padding:20px}
+dt{font-size:.85rem;color:var(--mudo)}dd{margin:0;font-weight:700;word-break:break-word}
+.tw{overflow-x:auto;padding:0 20px}
+table{width:100%;border-collapse:collapse;min-width:420px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid var(--borda)}
+th{background:var(--azul-cl);color:var(--azul-esc)}
+td.v,th.v{text-align:right;white-space:nowrap}
+tfoot td{font-weight:700;background:#fafbfc}
+.sub{padding:14px 20px 4px;font-weight:700}
+.lista{list-style:none;margin:0;padding:0 20px}
+.lista li{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--borda);flex-wrap:wrap}
+.lista b{display:block}.lista small{color:var(--mudo)}
+.mais{text-align:center;padding-top:16px}
+details{margin:16px 20px 0}summary{cursor:pointer;color:var(--azul);font-weight:600}
+pre{background:var(--azul-esc);color:#dbe6f7;padding:14px;border-radius:4px;overflow:auto;max-height:320px;font-size:.8rem}
+footer{max-width:1000px;margin:24px auto;padding:0 16px;color:var(--mudo);font-size:.85rem}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Painel de Consulta</h1>
+  <p>Pessoa física · benefícios e dados do Portal da Transparência</p>
+</div></header>
+
+<main class="wrap">
+  <section class="card" aria-label="Consulta">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="t-cpf" aria-selected="true" data-m="cpf">Consultar por CPF</button>
+      <button role="tab" id="t-nome" aria-selected="false" data-m="nome">Consultar por nome</button>
+      <button role="tab" id="t-sk" aria-selected="false" data-m="sk">Consultar por SK</button>
+    </div>
+    <form id="f">
+      <div class="campo">
+        <label for="q" id="lb">CPF</label>
+        <input id="q" autocomplete="off" required>
+        <p class="dica" id="dc"></p>
+      </div>
+      <button class="btn" id="go" type="submit">Consultar</button>
+    </form>
+    <div id="res" aria-live="polite">
+      <div class="msg">Escolha o tipo de consulta, preencha o campo e clique em Consultar.</div>
+    </div>
+  </section>
+</main>
+<footer>Painel com api portal da tranparencia "PDT", <code>©</code> KALIDADE</footer>
+
+<script>
+const API='https://api-kalidade.vercel.app/api/pdt.js';
+const M={
+  cpf:{l:'CPF',p:'000.000.000-00',d:'Digite os 11 números do CPF.',im:'numeric'},
+  nome:{l:'Nome completo',p:'Nome da pessoa',d:'Quanto mais completo o nome, mais preciso o resultado.',im:'text'},
+  sk:{l:'SK (identificador da pessoa)',p:'Ex.: 534012',d:'Código numérico do perfil no portal.',im:'numeric'}
+};
+let modo='cpf',lastRegs=[],shown=0;
+const $=id=>document.getElementById(id),q=$('q'),res=$('res'),go=$('go');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function setModo(m){
+  modo=m;
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
+  $('lb').textContent=M[m].l;q.placeholder=M[m].p;q.inputMode=M[m].im;$('dc').textContent=M[m].d;
+  q.value='';q.focus();
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setModo(b.dataset.m));
+q.addEventListener('input',()=>{
+  if(modo==='cpf'){
+    let v=q.value.replace(/\D/g,'').slice(0,11);
+    v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    q.value=v;
+  }else if(modo==='sk')q.value=q.value.replace(/\D/g,'');
+});
+
+const brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const num=s=>parseFloat(String(s).replace(/[^\d,]/g,'').replace(',','.'))||0;
+
+async function chamar(param,valor){
+  const r=await fetch(API+'?'+param+'='+encodeURIComponent(valor));
+  let d;try{d=await r.json()}catch{throw new Error('Resposta inválida da API.')}
+  if(!r.ok||d.erro)throw new Error(d.erro||'Falha na consulta ('+r.status+').');
+  return d;
+}
+
+async function consultar(param,valor){
+  go.disabled=true;
+  res.innerHTML='<div class="msg"><span class="spin"></span>Consultando…</div>';
+  try{
+    const d=await chamar(param,valor);
+    param==='nome'?renderNome(d):renderPerfil(d);
+  }catch(e){
+    res.innerHTML='<div class="msg erro"><b>Não foi possível concluir a consulta.</b><br>'+esc(e.message)+'</div>';
+  }finally{go.disabled=false}
+}
+
+function renderPerfil(d){
+  const campos=[['Nome',d.NOME],['CPF',d.CPF],['NIS',d.NIS],['SK',d.SK],['Localidade',d.UF]].filter(c=>c[1]);
+  const b=d.BENEFICIOS||[];
+  const total=b.reduce((s,x)=>s+num(x.VALOR),0);
+  res.innerHTML='<h2>Dados da pessoa</h2><dl>'+campos.map(c=>'<div><dt>'+c[0]+'</dt><dd>'+esc(c[1])+'</dd></div>').join('')+'</dl>'+
+  '<div class="sub">Benefícios recebidos</div>'+
+  (b.length?'<div class="tw"><table><thead><tr><th>Benefício</th><th class="v">Valor</th></tr></thead><tbody>'+
+    b.map(x=>'<tr><td>'+esc(x.BENEFICIO)+'</td><td class="v">'+esc(x.VALOR)+'</td></tr>').join('')+
+    '</tbody><tfoot><tr><td>Total</td><td class="v">'+brl(total)+'</td></tr></tfoot></table></div>'
+   :'<div class="msg">Nenhum benefício encontrado para esta pessoa.</div>')+
+  '<details><summary>Ver resposta completa (JSON)</summary><pre>'+esc(JSON.stringify(d,null,2))+'</pre></details>';
+}
+
+function renderNome(d){
+  lastRegs=d.registros||[];shown=0;
+  const tot=d.totalRegistros??d.total??lastRegs.length;
+  if(!lastRegs.length){res.innerHTML='<div class="msg">Nenhuma pessoa encontrada com esse nome.</div>';return}
+  res.innerHTML='<h2>'+tot+' resultado'+(tot==1?'':'s')+'</h2><ul class="lista" id="ul"></ul><div class="mais" id="mais"></div>';
+  mais();
+}
+function mais(){
+  const ul=$('ul'),fim=Math.min(shown+50,lastRegs.length);
+  for(;shown<fim;shown++){
+    const r=lastRegs[shown];
+    const nome=r.nome||r.nomePessoa||r.nomeCompleto||r.descricao||'(sem nome)';
+    const sk=r.skPessoa||r.sk||'';
+    const extra=Object.entries(r).filter(([k,v])=>v&&typeof v!=='object'&&!/^(nome|nomePessoa|nomeCompleto|skPessoa|sk|descricao)$/.test(k)).slice(0,3).map(([k,v])=>esc(v)).join(' · ');
+    const li=document.createElement('li');
+    li.innerHTML='<div><b>'+esc(nome)+'</b><small>'+(extra||'SK '+esc(sk))+'</small></div>'+(sk?'<button class="btn sec" data-sk="'+esc(sk)+'">Ver detalhes</button>':'');
+    ul.appendChild(li);
+  }
+  $('mais').innerHTML=shown<lastRegs.length?'<button class="btn sec" id="bm">Mostrar mais ('+(lastRegs.length-shown)+')</button>':'';
+  if($('bm'))$('bm').onclick=mais;
+}
+res.addEventListener('click',e=>{
+  const b=e.target.closest('[data-sk]');
+  if(b){setModo('sk');q.value=b.dataset.sk;consultar('sk',b.dataset.sk);window.scrollTo({top:0,behavior:'smooth'})}
+});
+
+$('f').onsubmit=e=>{
+  e.preventDefault();
+  const v=q.value.trim();
+  if(modo==='cpf'){
+    const c=v.replace(/\D/g,'');
+    if(c.length!==11){res.innerHTML='<div class="msg erro">CPF inválido. Digite os 11 números.</div>';return}
+    return consultar('cpf',c);
+  }
+  if(!v)return;
+  consultar(modo,v);
+};
+setModo('cpf');
+</script>
+</body>
+</html>
