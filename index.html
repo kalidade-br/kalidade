@@ -1,12 +1,11 @@
 <!doctype html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05080a">
-<title>KALIDADE_BR • App Store</title>
-
-<style>
+<title>KALIDADE_BR • App Store</title><style>
 :root{
   --bg:#030608;
   --panel:#071014;
@@ -85,9 +84,7 @@ button,input{font:inherit}
   text-shadow:0 0 16px rgba(0,229,255,.35);
 }
 
-.logo span{
-  color:var(--cyan);
-}
+.logo span{color:var(--cyan)}
 
 .navbtn{
   border:1px solid #16323b;
@@ -430,6 +427,36 @@ h1{
   box-shadow:0 0 15px rgba(0,229,255,.07);
 }
 
+/* DOCUMENTAÇÃO CARREGADA PELA API */
+
+.docs-api{
+  display:grid;
+  gap:8px;
+  margin-top:20px;
+}
+
+.docs-api a{
+  color:#9eb5ba;
+  text-decoration:none;
+  border:1px solid #16323a;
+  border-radius:10px;
+  padding:11px;
+  transition:.2s;
+  display:block;
+}
+
+.docs-api a:hover{
+  border-color:var(--cyan);
+  color:#fff;
+  box-shadow:0 0 15px rgba(0,229,255,.07);
+}
+
+.docs-loading{
+  color:#59727a;
+  font:11px ui-monospace,SFMono-Regular,Consolas,monospace;
+  padding:15px 0;
+}
+
 @media(max-width:1100px){
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
@@ -449,210 +476,728 @@ h1{
   .card{padding:13px}
   .open{font-size:8px}
 }
-</style>
-</head>
-
-<body>
-<div class="shell">
-
-<header class="nav">
-  <div class="logo">KALIDADE<span>_BR</span></div>
-  <button class="navbtn" id="docsBtn">☰ Documentações</button>
-</header>
-
-<section class="hero">
-  <div class="tag"><i></i> KALIDADE BR • REPOSITORY</div>
-  <h1>KALIDADE<br>TOOLS</h1>
-  <p>
+</style></head><body><div class="shell"><header class="nav">
+  <div class="logo">KALIDADE<span>_BR</span></div>  <button class="navbtn" id="docsBtn">
+    ☰ Documentações
+  </button>
+</header><section class="hero">  <div class="tag">
+    <i></i> KALIDADE BR • REPOSITORY
+  </div>  <h1>
+    KALIDADE<br>TOOLS
+  </h1>  <p>
     Ferramentas e projetos disponíveis no repositório.
     Os nomes são carregados automaticamente pela API.
-  </p>
-
-  <div class="search">
-    <input id="search" placeholder="Pesquisar ferramenta…" autocomplete="off">
-  </div>
-</section>
-
-<main class="store">
-  <div class="storetop">
+  </p>  <div class="search">
+    <input
+      id="search"
+      placeholder="Pesquisar ferramenta…"
+      autocomplete="off"
+    >
+  </div></section><main class="store">  <div class="storetop">
     <span id="count">CARREGANDO...</span>
     <span class="status">● API ONLINE</span>
-  </div>
-
-  <div class="grid" id="grid">
-    <div class="loader">CONSULTANDO API</div>
-  </div>
-</main>
-
-<footer class="footer">
-  KALIDADE BR • <a href="https://github.com/kalidade-br" target="_blank" rel="noopener">@kalidade-br</a>
-</footer>
-
+  </div>  <div class="grid" id="grid"><div class="loader">
+  CONSULTANDO API
 </div>
 
-<div class="drawer" id="drawer">
-  <aside class="panel">
-    <button class="close" id="close">×</button>
+  </div></main><footer class="footer">
+  KALIDADE BR •
+  <a
+    href="https://github.com/kalidade-br"
+    target="_blank"
+    rel="noopener"
+  >
+    @kalidade-br
+  </a>
+</footer></div><!-- DOCUMENTAÇÕES --><div class="drawer" id="drawer">  <aside class="panel"><button class="close" id="close">×</button>
 
-    <div class="tag">DOCUMENTATION</div>
-    <h2>Documentações</h2>
-    <p>Central de documentação das ferramentas da Kalidade.</p>
-
-    <div class="docs">
-      <a href="kalidade/document-dev/">Central de documentação →</a>
-      <a href="kalidade/document-dev/CEP.html" target="_blank">CEP</a>
-      <a href="kalidade/document-dev/cnpj.html" target="_blank">CNPJ</a>
-      <a href="kalidade/document-dev/cors-proxy.html" target="_blank">CORS Proxy</a>
-      <a href="kalidade/document-dev/cpf.html" target="_blank">CPF</a>
-      <a href="kalidade/document-dev/cpf-parentes.html" target="_blank">CPF Parentes</a>
-      <a href="kalidade/document-dev/freefire-id.html" target="_blank">Free Fire ID</a>
-      <a href="kalidade/document-dev/ip-whois.html" target="_blank">IP Whois</a>
-      <a href="kalidade/document-dev/pdt.html" target="_blank">PDT</a>
-      <a href="kalidade/document-dev/pdt-busca.html" target="_blank">PDT Busca</a>
-    </div>
-  </aside>
+<div class="tag">
+  DOCUMENTATION
 </div>
 
-<script>
-const API = "https://api-kalidade.vercel.app/api/github.js?repo=kalidade-br/kalidade";
-const grid = document.getElementById("grid");
-const search = document.getElementById("search");
-const count = document.getElementById("count");
+<h2>
+  Documentações
+</h2>
+
+<p>
+  Central de documentação das ferramentas da Kalidade.
+</p>
+
+<!--
+  A lista abaixo NÃO é fixa.
+  Ela será preenchida automaticamente
+  com os arquivos existentes em document-dev.
+-->
+
+<div
+  class="docs-api"
+  id="docsList"
+>
+  <div class="docs-loading">
+    CARREGANDO DOCUMENTAÇÕES...
+  </div>
+</div>
+
+  </aside></div><script>
+
+/* =========================================================
+   CONFIGURAÇÃO
+   ========================================================= */
+
+const API =
+  "https://api-kalidade.vercel.app/api/github.js?repo=kalidade-br/kalidade";
+
+const GITHUB_PAGES =
+  "https://kalidade-br.github.io/kalidade";
+
+
+/* =========================================================
+   ELEMENTOS
+   ========================================================= */
+
+const grid =
+  document.getElementById("grid");
+
+const search =
+  document.getElementById("search");
+
+const count =
+  document.getElementById("count");
+
+const docsList =
+  document.getElementById("docsList");
+
+const drawer =
+  document.getElementById("drawer");
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
 
 let tools = [];
 
-/*
-  /busca-cep -> BUSCA CEP
-  - vira espaço
-  O nome original da pasta continua sendo usado para abrir a ferramenta.
+let documentFiles = [];
+
+
+/* =========================================================
+   NOME BONITO
+   =========================================================
+
+   busca-cep
+   ↓
+   BUSCA CEP
+
+   meu-site
+   ↓
+   MEU SITE
 */
+
 function prettyName(name){
-  return name
+
+  return String(name)
     .replace(/-/g, " ")
     .toUpperCase();
+
 }
 
-function collectFolders(files){
-  return Object.entries(files || {})
-    .filter(([name, item]) => item && item.type === "folder")
-    .map(([name, item]) => ({
-      name,
-      path: item.path || name
-    }));
-}
 
-function card(tool, index){
-  const c = document.createElement("article");
-  c.className = "card";
-  c.dataset.name = tool.name.toLowerCase();
-
-  c.innerHTML = `
-    <div class="card-top">
-      <span class="index">#${String(index + 1).padStart(2, "0")}</span>
-      <span class="folder">▰</span>
-    </div>
-
-    <div class="name">${escapeHTML(prettyName(tool.name))}</div>
-    <div class="route">/${escapeHTML(tool.name)}</div>
-    <div class="open">ABRIR FERRAMENTA →</div>
-  `;
-
-  c.addEventListener("click", () => {
-    window.location.href = "/" + tool.path.replace(/^\/+|\/+$/g, "") + "/";
-  });
-
-  return c;
-}
+/* =========================================================
+   ESCAPAR HTML
+   ========================================================= */
 
 function escapeHTML(value){
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  }[char]));
+
+  return String(value)
+    .replace(/[&<>"']/g, char => ({
+
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+
+    }[char]));
+
 }
 
-function render(){
-  const q = search.value.toLowerCase().trim();
 
-  const list = tools.filter(tool =>
-    tool.name.toLowerCase().includes(q) ||
-    prettyName(tool.name).toLowerCase().includes(q)
+/* =========================================================
+   ENCONTRAR PASTAS DA RAIZ
+   ========================================================= */
+
+function collectFolders(files){
+
+  return Object.entries(files || {})
+
+    .filter(([name, item]) => {
+
+      if(!item) return false;
+
+      if(item.type !== "folder") return false;
+
+      /*
+       * DOCUMENT-DEV É INTERNO.
+       * NÃO APARECE NA VITRINE.
+       */
+
+      return name.toLowerCase() !== "document-dev";
+
+    })
+
+    .map(([name, item]) => ({
+
+      name,
+
+      path:
+        item.path ||
+        name
+
+    }));
+
+}
+
+
+/* =========================================================
+   ENCONTRAR DOCUMENT-DEV
+   =========================================================
+
+   A API continua exatamente igual.
+
+   Procuramos document-dev dentro de files.
+*/
+
+function findDocumentDev(files){
+
+  for(const [name, item] of Object.entries(files || {})){
+
+    if(
+      name.toLowerCase() === "document-dev" &&
+      item &&
+      item.type === "folder"
+    ){
+
+      return item;
+
+    }
+
+  }
+
+  return null;
+
+}
+
+
+/* =========================================================
+   PERCORRER ARQUIVOS DE DOCUMENT-DEV
+   ========================================================= */
+
+function collectDocumentFiles(node, result = []){
+
+  if(!node) return result;
+
+  if(node.type === "file"){
+
+    result.push({
+      name:
+        node.path
+          ? node.path.split("/").pop()
+          : "arquivo",
+
+      path:
+        node.path || ""
+
+    });
+
+    return result;
+
+  }
+
+
+  if(node.children){
+
+    for(
+      const [name, child]
+      of Object.entries(node.children)
+    ){
+
+      if(child.type === "file"){
+
+        result.push({
+
+          name,
+
+          path:
+            child.path ||
+            ("document-dev/" + name)
+
+        });
+
+      }
+
+      else if(child.type === "folder"){
+
+        collectDocumentFiles(
+          child,
+          result
+        );
+
+      }
+
+    }
+
+  }
+
+  return result;
+
+}
+
+
+/* =========================================================
+   URL DO GITHUB PAGES
+   ========================================================= */
+
+function getPageUrl(path){
+
+  path =
+    String(path || "")
+      .replace(/^\/+/, "");
+
+  /*
+   * INDEX DA RAIZ
+   */
+
+  if(
+    path === "" ||
+    path.toLowerCase() === "index.html"
+  ){
+
+    return GITHUB_PAGES + "/";
+
+  }
+
+  return (
+    GITHUB_PAGES +
+    "/" +
+    path
+      .split("/")
+      .map(part =>
+        encodeURIComponent(part)
+      )
+      .join("/")
   );
+
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+function card(tool, index){
+
+  const c =
+    document.createElement("article");
+
+  c.className = "card";
+
+  c.dataset.name =
+    tool.name.toLowerCase();
+
+  c.innerHTML = `
+
+    <div class="card-top">
+
+      <span class="index">
+        #${String(index + 1).padStart(2, "0")}
+      </span>
+
+      <span class="folder">
+        ▰
+      </span>
+
+    </div>
+
+    <div class="name">
+      ${escapeHTML(
+        prettyName(tool.name)
+      )}
+    </div>
+
+    <div class="route">
+      /${escapeHTML(tool.name)}
+    </div>
+
+    <div class="open">
+      ABRIR FERRAMENTA →
+    </div>
+
+  `;
+
+
+  c.addEventListener("click", () => {
+
+    window.location.href =
+      getPageUrl(tool.path);
+
+  });
+
+
+  return c;
+
+}
+
+
+/* =========================================================
+   RENDER PRINCIPAL
+   ========================================================= */
+
+function render(){
+
+  const q =
+    search.value
+      .toLowerCase()
+      .trim();
+
+
+  const list =
+    tools.filter(tool =>
+
+      tool.name
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      prettyName(tool.name)
+        .toLowerCase()
+        .includes(q)
+
+    );
+
 
   grid.replaceChildren();
 
+
   if(!list.length){
-    const empty = document.createElement("div");
+
+    const empty =
+      document.createElement("div");
+
     empty.className = "empty";
-    empty.textContent = "NENHUMA FERRAMENTA ENCONTRADA";
+
+    empty.textContent =
+      "NENHUMA FERRAMENTA ENCONTRADA";
+
     grid.appendChild(empty);
-  }else{
-    list.forEach((tool, index) => {
-      grid.appendChild(card(tool, index));
-    });
+
   }
+
+  else{
+
+    list.forEach((tool, index) => {
+
+      grid.appendChild(
+        card(tool, index)
+      );
+
+    });
+
+  }
+
 
   count.textContent =
-    `${list.length} ${list.length === 1 ? "FERRAMENTA" : "FERRAMENTAS"}`;
+    `${list.length} ${
+      list.length === 1
+        ? "FERRAMENTA"
+        : "FERRAMENTAS"
+    }`;
+
 }
+
+
+/* =========================================================
+   RENDER DOCUMENTAÇÕES
+   ========================================================= */
+
+function renderDocuments(){
+
+  docsList.replaceChildren();
+
+
+  if(!documentFiles.length){
+
+    const empty =
+      document.createElement("div");
+
+    empty.className =
+      "docs-loading";
+
+    empty.textContent =
+      "NENHUMA DOCUMENTAÇÃO ENCONTRADA.";
+
+    docsList.appendChild(empty);
+
+    return;
+
+  }
+
+
+  /*
+   * Ordena alfabeticamente.
+   */
+
+  documentFiles.sort((a,b) =>
+    a.path.localeCompare(
+      b.path,
+      "pt-BR"
+    )
+  );
+
+
+  documentFiles.forEach(file => {
+
+    const link =
+      document.createElement("a");
+
+    link.href =
+      getPageUrl(file.path);
+
+    link.target =
+      "_blank";
+
+    link.rel =
+      "noopener";
+
+    link.textContent =
+      prettyName(file.name);
+
+
+    docsList.appendChild(link);
+
+  });
+
+}
+
+
+/* =========================================================
+   CARREGAR API
+   ========================================================= */
 
 async function loadRepository(){
+
   try{
-    const response = await fetch(API, {
-      method: "GET",
-      cache: "no-store"
-    });
+
+    const response =
+      await fetch(API, {
+
+        method:"GET",
+
+        cache:"no-store"
+
+      });
+
 
     if(!response.ok){
-      throw new Error("HTTP " + response.status);
+
+      throw new Error(
+        "HTTP " + response.status
+      );
+
     }
 
-    const data = await response.json();
 
-    if(!data.success || !data.files){
-      throw new Error("Resposta inválida da API");
+    const data =
+      await response.json();
+
+
+    if(
+      !data ||
+      !data.success ||
+      !data.files
+    ){
+
+      throw new Error(
+        "Resposta inválida da API"
+      );
+
     }
 
-    tools = collectFolders(data.files)
-      .sort((a,b) => a.name.localeCompare(b.name, "pt-BR"));
+
+    /*
+     * =====================================================
+     * FERRAMENTAS PRINCIPAIS
+     * =====================================================
+     *
+     * document-dev NÃO entra aqui.
+     */
+
+    tools =
+      collectFolders(
+        data.files
+      )
+      .sort((a,b) =>
+        a.name.localeCompare(
+          b.name,
+          "pt-BR"
+        )
+      );
+
+
+    /*
+     * =====================================================
+     * DOCUMENT-DEV
+     * =====================================================
+     *
+     * Continua vindo da MESMA API.
+     */
+
+    const documentDev =
+      findDocumentDev(
+        data.files
+      );
+
+
+    if(documentDev){
+
+      documentFiles =
+        collectDocumentFiles(
+          documentDev
+        );
+
+    }
+
+    else{
+
+      documentFiles = [];
+
+    }
+
+
+    /*
+     * Renderiza.
+     */
 
     render();
-  }catch(error){
+
+    renderDocuments();
+
+
+  }
+
+  catch(error){
+
     console.error(error);
 
+
     grid.innerHTML = `
+
       <div class="error">
-        <strong>ERRO AO CONSULTAR A API</strong><br><br>
-        Não foi possível carregar o repositório agora.
+
+        <strong>
+          ERRO AO CONSULTAR A API
+        </strong>
+
+        <br><br>
+
+        Não foi possível carregar
+        o repositório agora.
+
       </div>
+
     `;
 
-    count.textContent = "API OFFLINE";
+
+    count.textContent =
+      "API OFFLINE";
+
+
+    docsList.innerHTML = `
+
+      <div class="docs-loading">
+        Não foi possível carregar as documentações.
+      </div>
+
+    `;
+
   }
+
 }
 
-search.addEventListener("input", render);
+
+/* =========================================================
+   PESQUISA
+   ========================================================= */
+
+search.addEventListener(
+  "input",
+  render
+);
+
+
+/* =========================================================
+   DRAWER
+   ========================================================= */
+
+document
+  .getElementById("docsBtn")
+  .onclick = () => {
+
+    drawer.classList.add(
+      "open"
+    );
+
+  };
+
+
+document
+  .getElementById("close")
+  .onclick = () => {
+
+    drawer.classList.remove(
+      "open"
+    );
+
+  };
+
+
+drawer.addEventListener(
+  "click",
+  event => {
+
+    if(event.target === drawer){
+
+      drawer.classList.remove(
+        "open"
+      );
+
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Escape"){
+
+      drawer.classList.remove(
+        "open"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INICIAR
+   ========================================================= */
+
 loadRepository();
 
-const drawer = document.getElementById("drawer");
-
-document.getElementById("docsBtn").onclick = () =>
-  drawer.classList.add("open");
-
-document.getElementById("close").onclick = () =>
-  drawer.classList.remove("open");
-
-drawer.addEventListener("click", e => {
-  if(e.target === drawer) drawer.classList.remove("open");
-});
-
-document.addEventListener("keydown", e => {
-  if(e.key === "Escape") drawer.classList.remove("open");
-});
-</script>
-
-</body>
+</script></body>
 </html>
