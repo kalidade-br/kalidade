@@ -45,6 +45,8 @@ tfoot td{font-weight:700;background:#fafbfc}
 .lista{list-style:none;margin:0;padding:0 20px}
 .lista li{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--borda);flex-wrap:wrap}
 .lista b{display:block}.lista small{color:var(--mudo)}
+.filtro{padding:16px 20px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;border-bottom:1px solid var(--borda)}
+.ex{display:flex;align-items:center;gap:8px;font-weight:600;margin:30px 0 0}.ex input{width:auto}
 .mais{text-align:center;padding-top:16px}
 details{margin:16px 20px 0}summary{cursor:pointer;color:var(--azul);font-weight:600}
 pre{background:var(--azul-esc);color:#dbe6f7;padding:14px;border-radius:4px;overflow:auto;max-height:320px;font-size:.8rem}
@@ -77,7 +79,7 @@ footer{max-width:1000px;margin:24px auto;padding:0 16px;color:var(--mudo);font-s
     </div>
   </section>
 </main>
-<footer>Painel com api portal da tranparencia "PDT", <code>©</code> KALIDADE</footer>
+<footer>PAINEL PORTAL DA TRANSPARÊNCIA (PESSOA FISICA)<code>CONSULTA</code> © KALIDADE</footer>
 
 <script>
 const API='https://api-kalidade.vercel.app/api/pdt.js';
@@ -139,22 +141,45 @@ function renderPerfil(d){
   '<details><summary>Ver resposta completa (JSON)</summary><pre>'+esc(JSON.stringify(d,null,2))+'</pre></details>';
 }
 
+let todos=[];
+const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const nomeDe=r=>r.nome||r.nomePessoa||r.nomeCompleto||r.descricao||'';
+const skDe=r=>String(r.skPessoa||r.sk||'');
+const cpfDe=r=>{const k=Object.keys(r).find(k=>/cpf/i.test(k));return k?String(r[k]||''):''};
+
 function renderNome(d){
-  lastRegs=d.registros||[];shown=0;
-  const tot=d.totalRegistros??d.total??lastRegs.length;
-  if(!lastRegs.length){res.innerHTML='<div class="msg">Nenhuma pessoa encontrada com esse nome.</div>';return}
-  res.innerHTML='<h2>'+tot+' resultado'+(tot==1?'':'s')+'</h2><ul class="lista" id="ul"></ul><div class="mais" id="mais"></div>';
+  todos=d.registros||[];
+  if(!todos.length){res.innerHTML='<div class="msg">Nenhuma pessoa encontrada com esse nome.</div>';return}
+  res.innerHTML='<h2 id="h2"></h2>'+
+   '<div class="filtro"><div class="campo"><label for="flt">Filtrar resultados</label>'+
+   '<input id="flt" type="search" autocomplete="off" placeholder="Nome, SK ou números do meio do CPF (ex.: 456.789)">'+
+   '<p class="dica">Só números busca por SK ou pelo CPF (***.456.789-**). Texto busca pelo nome.</p></div>'+
+   '<label class="ex"><input type="checkbox" id="exato"> Nome exato</label></div>'+
+   '<ul class="lista" id="ul"></ul><div class="mais" id="mais"></div>';
+  $('flt').oninput=aplicar;$('exato').onchange=aplicar;aplicar();
+}
+function aplicar(){
+  const t=$('flt').value.trim(),ex=$('exato').checked;
+  if(!t)lastRegs=todos;
+  else{
+    const dig=t.replace(/\D/g,''),soNum=dig&&/^[\d.\-*\s]+$/.test(t);
+    lastRegs=todos.filter(r=>{
+      if(soNum)return skDe(r)===dig||cpfDe(r).replace(/\D/g,'').includes(dig);
+      const n=norm(nomeDe(r));
+      return ex?n===norm(t):n.includes(norm(t));
+    });
+  }
+  $('h2').textContent=lastRegs.length+(t?' de '+todos.length:'')+' resultado'+(lastRegs.length==1?'':'s');
+  $('ul').innerHTML='';shown=0;
+  if(!lastRegs.length){$('ul').innerHTML='<li>Nenhuma pessoa corresponde ao filtro.</li>';$('mais').innerHTML='';return}
   mais();
 }
 function mais(){
   const ul=$('ul'),fim=Math.min(shown+50,lastRegs.length);
   for(;shown<fim;shown++){
-    const r=lastRegs[shown];
-    const nome=r.nome||r.nomePessoa||r.nomeCompleto||r.descricao||'(sem nome)';
-    const sk=r.skPessoa||r.sk||'';
-    const extra=Object.entries(r).filter(([k,v])=>v&&typeof v!=='object'&&!/^(nome|nomePessoa|nomeCompleto|skPessoa|sk|descricao)$/.test(k)).slice(0,3).map(([k,v])=>esc(v)).join(' · ');
+    const r=lastRegs[shown],sk=skDe(r),cpf=cpfDe(r);
     const li=document.createElement('li');
-    li.innerHTML='<div><b>'+esc(nome)+'</b><small>'+(extra||'SK '+esc(sk))+'</small></div>'+(sk?'<button class="btn sec" data-sk="'+esc(sk)+'">Ver detalhes</button>':'');
+    li.innerHTML='<div><b>'+esc(nomeDe(r)||'(sem nome)')+'</b><small>'+(cpf?'CPF '+esc(cpf)+' · ':'')+'SK '+esc(sk)+'</small></div>'+(sk?'<button class="btn sec" data-sk="'+esc(sk)+'">Ver detalhes</button>':'');
     ul.appendChild(li);
   }
   $('mais').innerHTML=shown<lastRegs.length?'<button class="btn sec" id="bm">Mostrar mais ('+(lastRegs.length-shown)+')</button>':'';
