@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="KALIDADE">
+<meta name="description" content="KALIDADE — ferramentas e projetos da KALIDADE-BR.">
+<meta name="theme-color" content="#05070d">
+<title>KALIDADE — KALIDADE-BR</title>
+<link rel="icon" href="https://github.com/kalidade-br.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#05070d;
+  --bg2:#0a0e18;
+  --card:rgba(13,18,31,.78);
+  --border:rgba(255,255,255,.09);
+  --text:#f5f7ff;
+  --muted:#8e99ad;
+  --blue:#4f8cff;
+  --cyan:#27d8ff;
+  --green:#22c98b;
+  --danger:#ff5577;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; min-height:100vh; color:var(--text);
+  font-family:Inter,system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 15% -10%,rgba(39,216,255,.13),transparent 32%),
+    radial-gradient(circle at 90% 0%,rgba(79,140,255,.13),transparent 30%),
+    linear-gradient(145deg,var(--bg),var(--bg2) 55%,#050811);
+}
+a{text-decoration:none;color:inherit}
+.nav{
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid var(--border);
+  background:rgba(5,7,13,.78);backdrop-filter:blur(18px);
+}
+.nav-inner{max-width:1180px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;font-family:"Space Grotesk",sans-serif;font-weight:800;letter-spacing:.5px}
+.logo{
+  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#1b73ff,#21d9ff);
+  box-shadow:0 0 28px rgba(39,216,255,.22);
+}
+.logo i{font-size:21px;color:white}
+.brand small{display:block;color:var(--muted);font:500 11px Inter,sans-serif;letter-spacing:1.5px;margin-top:2px}
+.api-btn{
+  border:1px solid rgba(39,216,255,.25);color:#dffaff;
+  background:rgba(39,216,255,.08);border-radius:12px;padding:10px 14px;
+  font-weight:700;font-size:13px;cursor:pointer;transition:.2s;
+}
+.api-btn:hover{transform:translateY(-1px);border-color:rgba(39,216,255,.55);background:rgba(39,216,255,.13)}
+.hero{max-width:1180px;margin:auto;padding:74px 20px 35px;text-align:center}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--border);
+  border-radius:999px;background:rgba(255,255,255,.035);color:#aeb9cc;font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.2px
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+h1{
+  margin:18px 0 10px;font-family:"Space Grotesk",sans-serif;font-size:clamp(2.8rem,7vw,5.4rem);
+  line-height:.95;letter-spacing:-3px;
+  background:linear-gradient(100deg,#fff 10%,#9edaff 48%,#4f8cff 90%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{max-width:680px;margin:0 auto;color:var(--muted);font-size:16px;line-height:1.7}
+.search-wrap{max-width:650px;margin:28px auto 0;position:relative}
+.search-wrap i{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#71809a;font-size:19px}
+.search{
+  width:100%;padding:16px 18px 16px 50px;border-radius:15px;
+  border:1px solid var(--border);outline:none;color:white;background:rgba(255,255,255,.045);
+  font-size:15px;box-shadow:0 18px 45px rgba(0,0,0,.2)
+}
+.search:focus{border-color:rgba(79,140,255,.65);box-shadow:0 0 0 4px rgba(79,140,255,.09)}
+.status{
+  max-width:1180px;margin:0 auto;padding:0 20px 14px;display:flex;justify-content:space-between;
+  gap:12px;color:var(--muted);font-size:12px
+}
+.status strong{color:#dce5f5}
+.status .live{color:#5ee7b1}
+.container{max-width:1180px;margin:auto;padding:12px 20px 70px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.card{
+  position:relative;min-height:132px;padding:20px;border:1px solid var(--border);
+  border-radius:18px;background:linear-gradient(150deg,rgba(17,24,40,.82),rgba(8,12,22,.86));
+  overflow:hidden;transition:.25s;cursor:pointer
+}
+.card:before{content:"";position:absolute;inset:-60% -30%;background:radial-gradient(circle,rgba(39,216,255,.08),transparent 52%);opacity:0;transition:.25s}
+.card:hover{transform:translateY(-4px);border-color:rgba(79,140,255,.4);box-shadow:0 18px 45px rgba(0,0,0,.3)}
+.card:hover:before{opacity:1}
+.icon{
+  width:45px;height:45px;border-radius:13px;display:grid;place-items:center;
+  color:#6fe7ff;background:rgba(39,216,255,.1);border:1px solid rgba(39,216,255,.13);
+  margin-bottom:16px;position:relative
+}
+.icon i{font-size:21px}
+.card h2{margin:0 0 7px;font:700 16px "Space Grotesk",sans-serif;letter-spacing:.2px;position:relative}
+.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5;position:relative}
+.arrow{position:absolute;right:18px;top:19px;color:#52617a;transition:.2s}
+.card:hover .arrow{color:#70dfff;transform:translateX(3px)}
+.empty{
+  display:none;text-align:center;padding:70px 20px;color:var(--muted);
+  border:1px dashed var(--border);border-radius:18px
+}
+.empty i{font-size:35px;display:block;margin-bottom:10px}
+.footer{max-width:1180px;margin:auto;padding:20px;border-top:1px solid var(--border);color:#69758a;text-align:center;font-size:12px}
+.modal{
+  position:fixed;inset:0;z-index:500;display:none;place-items:center;padding:20px;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(9px)
+}
+.modal.show{display:grid}
+.modal-box{
+  width:min(410px,100%);padding:28px;border:1px solid rgba(39,216,255,.2);border-radius:22px;
+  background:linear-gradient(150deg,#0c1322,#070b14);text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.55)
+}
+.count{
+  width:86px;height:86px;border-radius:50%;margin:0 auto 17px;display:grid;place-items:center;
+  border:2px solid rgba(39,216,255,.3);color:#70eaff;font:800 34px "Space Grotesk",sans-serif;
+  box-shadow:0 0 40px rgba(39,216,255,.1)
+}
+.modal-box h3{margin:0 0 7px;font:700 21px "Space Grotesk",sans-serif}
+.modal-box p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+.close{
+  margin-top:20px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:#cbd5e5;
+  padding:9px 14px;border-radius:10px;cursor:pointer
+}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){
+  .nav-inner{padding:12px 14px}.api-btn{padding:9px 10px;font-size:11px}
+  .hero{padding:55px 15px 30px}h1{letter-spacing:-2px}
+  .container{padding:10px 14px 50px}.grid{grid-template-columns:1fr}
+  .status{padding:0 14px 12px}.brand small{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/">
+      <span class="logo"><i class="bi bi-code-slash"></i></span>
+      <span>KALIDADE<small>KALIDADE-BR</small></span>
+    </a>
+    <button class="api-btn" onclick="openDocs()"><i class="bi bi-tools"></i> APIs ABERTAS ⚒️</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow"><span class="dot"></span> KALIDADE-BR / PROJECTS</span>
+  <h1>KALIDADE</h1>
+  <p>Projetos, ferramentas e APIs públicas do GitHub <strong>@KALIDADE-BR</strong>, carregados diretamente do repositório.</p>
+  <div class="search-wrap">
+    <i class="bi bi-search"></i>
+    <input id="search" class="search" type="search" autocomplete="off" placeholder="Buscar projeto..." oninput="render()">
+  </div>
+</header>
+
+<div class="status">
+  <span id="status">Carregando projetos...</span>
+  <span id="count"></span>
+</div>
+
+<main class="container">
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty"><i class="bi bi-search"></i>Nenhum projeto encontrado.</div>
+</main>
+
+<footer class="footer">KALIDADE • @KALIDADE-BR • projetos carregados do GitHub</footer>
+
+<div id="docsModal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div id="counter" class="count">3</div>
+    <h3>APIs ABERTAS ⚒️</h3>
+    <p>Redirecionando para a documentação em <strong>kalidade.vercel.app/document-dev</strong>...</p>
+    <button class="close" onclick="closeDocs()">Cancelar</button>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://api-kalidade.vercel.app/api/github.js?repo=kalidade-br/kalidade";
+const CACHE_KEY = "kalidade_projects_v1";
+const DOCS_URL = "https://kalidade.vercel.app/document-dev";
+const BASE_URL = "https://kalidade.vercel.app/";
+let projects = [];
+let countdownTimer = null;
+
+function prettyName(name){
+  return String(name || "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase();
+}
+
+function iconFor(name){
+  const n = name.toLowerCase();
+  if(n.includes("cep")) return "bi-geo-alt";
+  if(n.includes("cpf")) return "bi-person-vcard";
+  if(n.includes("cnpj")) return "bi-building";
+  if(n.includes("freefire")) return "bi-controller";
+  if(n.includes("qr")) return "bi-qr-code";
+  if(n.includes("chat")) return "bi-chat-dots";
+  if(n.includes("cdn")) return "bi-cloud-arrow-down";
+  if(n.includes("proxy") || n.includes("cors")) return "bi-shield-check";
+  if(n.includes("ip") || n.includes("whois")) return "bi-globe2";
+  if(n.includes("pdt")) return "bi-search";
+  if(n.includes("placa")) return "bi-car-front";
+  if(n.includes("calculadora")) return "bi-calculator";
+  if(n.includes("git")) return "bi-git";
+  return "bi-folder2-open";
+}
+
+function getFolders(data){
+  if(!data || !data.files) return [];
+  return Object.entries(data.files)
+    .filter(([name,item]) => item && item.type === "folder" && name.toLowerCase() !== "document-dev")
+    .map(([name,item]) => ({
+      name,
+      title: prettyName(name),
+      path: item.path || name
+    }))
+    .sort((a,b) => a.title.localeCompare(b.title, "pt-BR"));
+}
+
+function saveCache(list){
+  try{
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      savedAt: Date.now(),
+      projects: list
+    }));
+  }catch(e){}
+}
+
+function loadCache(){
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if(!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed.projects) ? parsed.projects : [];
+  }catch(e){ return []; }
+}
+
+function render(){
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  const q = document.getElementById("search").value.trim().toLowerCase();
+
+  const filtered = projects.filter(p =>
+    p.name.toLowerCase().includes(q) || p.title.toLowerCase().includes(q)
+  );
+
+  grid.innerHTML = filtered.map(p => `
+    <a class="card" href="${BASE_URL}${encodeURIComponent(p.path)}/" aria-label="${p.title}">
+      <span class="arrow"><i class="bi bi-arrow-up-right"></i></span>
+      <div class="icon"><i class="bi ${iconFor(p.name)}"></i></div>
+      <h2>${escapeHtml(p.title)}</h2>
+      <p>Projeto ${escapeHtml(p.name)} • KALIDADE-BR</p>
+    </a>
+  `).join("");
+
+  empty.style.display = filtered.length ? "none" : "block";
+  document.getElementById("count").textContent =
+    filtered.length + (filtered.length === 1 ? " projeto" : " projetos");
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
+
+async function loadProjects(){
+  const cached = loadCache();
+
+  if(cached.length){
+    projects = cached;
+    document.getElementById("status").innerHTML = '<span class="live">● Cache local carregado</span>';
+    render();
+  }
+
+  try{
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const response = await fetch(API_URL, {
+      method:"GET",
+      headers:{Accept:"application/json"},
+      cache:"no-store",
+      signal:controller.signal
+    });
+    clearTimeout(timeout);
+
+    if(!response.ok) throw new Error("HTTP " + response.status);
+    const data = await response.json();
+    const fresh = getFolders(data);
+
+    if(!fresh.length) throw new Error("Nenhuma pasta encontrada");
+    projects = fresh;
+    saveCache(fresh);
+    document.getElementById("status").innerHTML =
+      '<span class="live">● API online</span> • lista atualizada agora';
+    render();
+  }catch(error){
+    if(!projects.length){
+      projects = loadCache();
+      render();
+    }
+    document.getElementById("status").textContent =
+      projects.length ? "API indisponível • usando última lista salva" : "Não foi possível carregar os projetos";
+  }
+}
+
+function openDocs(){
+  const modal = document.getElementById("docsModal");
+  const counter = document.getElementById("counter");
+  modal.classList.add("show");
+  let n = 3;
+  counter.textContent = n;
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    n--;
+    counter.textContent = n;
+    if(n <= 0){
+      clearInterval(countdownTimer);
+      window.location.href = DOCS_URL;
+    }
+  }, 1000);
+}
+
+function closeDocs(){
+  clearInterval(countdownTimer);
+  document.getElementById("docsModal").classList.remove("show");
+  document.getElementById("counter").textContent = "3";
+}
+
+document.getElementById("docsModal").addEventListener("click", e => {
+  if(e.target.id === "docsModal") closeDocs();
+});
+
+loadProjects();
+</script>
+</body>
+</html>
