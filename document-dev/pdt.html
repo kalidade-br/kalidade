@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Documentação da API KALIDADE PDT com consultas por CPF, nome e SK.">
+<title>KALIDADE API — PDT</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Arial,sans-serif;background:#080808;color:#f5f5f5;line-height:1.6}
+a{color:inherit;text-decoration:none}
+.container{width:min(1150px,92%);margin:auto}
+header{position:sticky;top:0;z-index:1000;background:rgba(8,8,8,.92);backdrop-filter:blur(15px);border-bottom:1px solid #202020}
+.nav{height:70px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:20px;font-weight:800}.logo span{color:#777}
+.nav-links{display:flex;gap:25px;color:#aaa;font-size:14px}.nav-links a:hover{color:#fff}
+.hero{padding:85px 0 55px;text-align:center}
+.badge{display:inline-block;padding:7px 14px;border:1px solid #292929;border-radius:50px;color:#aaa;font-size:13px;margin-bottom:20px;background:#111}
+.hero h1{font-size:clamp(42px,7vw,76px);line-height:1;letter-spacing:-4px;margin-bottom:22px}
+.hero h1 span{color:#777}.hero p{max-width:760px;margin:auto;color:#999;font-size:17px}
+.endpoint-box{margin:40px auto;max-width:1000px;display:flex;align-items:center;background:#101010;border:1px solid #252525;border-radius:14px;overflow:hidden;text-align:left}
+.method{padding:16px 18px;background:#171717;font-weight:bold;font-size:13px}
+.endpoint{flex:1;padding:16px;color:#bbb;font-family:monospace;overflow-x:auto;white-space:nowrap}
+.copy{border:0;border-left:1px solid #252525;background:transparent;color:#aaa;padding:16px;cursor:pointer}.copy:hover{color:#fff}
+section{padding:50px 0}
+.section-title{font-size:28px;margin-bottom:10px}.section-description{color:#888;margin-bottom:25px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:#101010;border:1px solid #202020;border-radius:14px;padding:25px}
+.card h3{margin-bottom:8px}.card p{color:#888;font-size:14px}
+.card .tag{display:inline-block;color:#aaa;background:#171717;border:1px solid #292929;border-radius:8px;padding:4px 8px;font-size:11px;margin-bottom:15px}
+.code-wrapper{margin-top:22px;border:1px solid #252525;border-radius:14px;overflow:hidden;background:#0d0d0d}
+.code-header{height:45px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#131313;border-bottom:1px solid #252525;color:#888;font-size:13px}
+.code-copy{cursor:pointer;color:#999}.code-copy:hover{color:#fff}
+pre{padding:22px;overflow-x:auto;color:#ddd;font-family:"Courier New",monospace;font-size:13px;line-height:1.7}
+.table-wrapper{overflow-x:auto;border:1px solid #222;border-radius:14px}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:15px;text-align:left;border-bottom:1px solid #222}
+th{background:#111;color:#aaa;font-size:13px}td{color:#ccc;font-size:14px}tr:last-child td{border-bottom:0}
+.response{background:#050505;border:1px solid #222;border-radius:14px;margin-top:25px}
+.note{margin-top:20px;padding:18px;border:1px solid #252525;background:#101010;border-radius:12px;color:#888;font-size:14px}
+.note strong{color:#ddd}
+footer{border-top:1px solid #202020;margin-top:50px;padding:35px 0;color:#666;text-align:center;font-size:13px}
+footer a{color:#aaa}
+@media(max-width:800px){.nav-links{display:none}.hero{padding-top:65px}.hero h1{letter-spacing:-2px}.grid{grid-template-columns:1fr}.endpoint-box{display:block}.method{border-bottom:1px solid #252525}.copy{width:100%;border-left:0;border-top:1px solid #252525}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="container nav">
+  <div class="logo">KALIDADE <span>API</span></div>
+  <nav class="nav-links">
+    <a href="#inicio">Início</a>
+    <a href="#consultas">Consultas</a>
+    <a href="#codigo">Códigos</a>
+    <a href="#parametros">Parâmetros</a>
+    <a href="#resposta">Respostas</a>
+  </nav>
+</div>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+<div class="container">
+  <div class="badge">KALIDADE API • PDT • GET • JSON • 3 CONSULTAS</div>
+  <h1>PDT <span>API</span></h1>
+  <p>
+    Uma única API com três formas de consulta: por <b>CPF</b>, por <b>nome</b>
+    e por <b>SK</b>.
+  </p>
+
+  <div class="endpoint-box">
+    <div class="method">GET</div>
+    <div class="endpoint">https://api-kalidade.vercel.app/api/pdt.js</div>
+    <button class="copy" onclick="copyText('https://api-kalidade.vercel.app/api/pdt.js')">Copiar</button>
+  </div>
+</div>
+</section>
+
+<section id="consultas">
+<div class="container">
+  <h2 class="section-title">Três funções de consulta</h2>
+  <p class="section-description">Use somente um dos parâmetros por requisição.</p>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="tag">?cpf=</div>
+      <h3>Consulta por CPF</h3>
+      <p>
+        Pesquisa uma pessoa utilizando o CPF informado. Conforme os dados
+        disponíveis, a resposta pode trazer informações como nome, município,
+        SK, NIS e outros campos públicos retornados pela API.
+      </p>
+      <div class="code-wrapper">
+        <div class="code-header"><span>Endpoint</span><span class="code-copy" onclick="copyText('https://api-kalidade.vercel.app/api/pdt.js?cpf=SEU_CPF')">Copiar</span></div>
+        <pre>https://api-kalidade.vercel.app/api/pdt.js?cpf=SEU_CPF</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tag">?nome=</div>
+      <h3>Consulta por nome</h3>
+      <p>
+        Pesquisa pelo nome. A resposta desta função é destinada a retornar
+        o SK, o nome completo e o CPF com parte do número mascarada no formato
+        <b>***.456.789-**</b>, conforme você definiu.
+      </p>
+      <div class="code-wrapper">
+        <div class="code-header"><span>Endpoint</span><span class="code-copy" onclick="copyText('https://api-kalidade.vercel.app/api/pdt.js?nome=SEU_NOME')">Copiar</span></div>
+        <pre>https://api-kalidade.vercel.app/api/pdt.js?nome=SEU_NOME</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tag">?sk=</div>
+      <h3>Consulta por SK</h3>
+      <p>
+        Pesquisa diretamente pelo identificador SK retornado pelo sistema.
+        Informe o SK no parâmetro da requisição.
+      </p>
+      <div class="code-wrapper">
+        <div class="code-header"><span>Endpoint</span><span class="code-copy" onclick="copyText('https://api-kalidade.vercel.app/api/pdt.js?sk=123456')">Copiar</span></div>
+        <pre>https://api-kalidade.vercel.app/api/pdt.js?sk=123456</pre>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<section id="codigo">
+<div class="container">
+<h2 class="section-title">Exemplos de código</h2>
+<p class="section-description">Todos os exemplos usam o mesmo endpoint base.</p>
+
+<div class="code-wrapper">
+<div class="code-header"><span>JavaScript — CPF</span><span class="code-copy" onclick="copyCode('cpfCode')">Copiar</span></div>
+<pre id="cpfCode">const cpf = "SEU_CPF";
+
+const url =
+  `https://api-kalidade.vercel.app/api/pdt.js?cpf=${encodeURIComponent(cpf)}`;
+
+const response = await fetch(url);
+const data = await response.json();
+
+console.log(data);</pre>
+</div>
+
+<div class="code-wrapper">
+<div class="code-header"><span>JavaScript — Nome</span><span class="code-copy" onclick="copyCode('nomeCode')">Copiar</span></div>
+<pre id="nomeCode">const nome = "NOME COMPLETO";
+
+const url =
+  `https://api-kalidade.vercel.app/api/pdt.js?nome=${encodeURIComponent(nome)}`;
+
+const response = await fetch(url);
+const data = await response.json();
+
+console.log(data);</pre>
+</div>
+
+<div class="code-wrapper">
+<div class="code-header"><span>JavaScript — SK</span><span class="code-copy" onclick="copyCode('skCode')">Copiar</span></div>
+<pre id="skCode">const sk = "123456";
+
+const url =
+  `https://api-kalidade.vercel.app/api/pdt.js?sk=${encodeURIComponent(sk)}`;
+
+const response = await fetch(url);
+const data = await response.json();
+
+console.log(data);</pre>
+</div>
+
+<div class="code-wrapper">
+<div class="code-header"><span>cURL</span><span class="code-copy" onclick="copyCode('curlCode')">Copiar</span></div>
+<pre id="curlCode"># CPF
+curl "https://api-kalidade.vercel.app/api/pdt.js?cpf=SEU_CPF"
+
+# Nome
+curl "https://api-kalidade.vercel.app/api/pdt.js?nome=SEU_NOME"
+
+# SK
+curl "https://api-kalidade.vercel.app/api/pdt.js?sk=123456"</pre>
+</div>
+
+<div class="code-wrapper">
+<div class="code-header"><span>Python</span><span class="code-copy" onclick="copyCode('pythonCode')">Copiar</span></div>
+<pre id="pythonCode">import requests
+
+url = "https://api-kalidade.vercel.app/api/pdt.js"
+
+# Escolha UMA consulta:
+params = {"cpf": "SEU_CPF"}
+# params = {"nome": "NOME COMPLETO"}
+# params = {"sk": "123456"}
+
+response = requests.get(url, params=params)
+response.raise_for_status()
+
+data = response.json()
+print(data)</pre>
+</div>
+
+<div class="code-wrapper">
+<div class="code-header"><span>PHP</span><span class="code-copy" onclick="copyCode('phpCode')">Copiar</span></div>
+<pre id="phpCode">&lt;?php
+
+$base = "https://api-kalidade.vercel.app/api/pdt.js";
+
+// Escolha UMA consulta:
+$params = [
+    "cpf" =&gt; "SEU_CPF"
+];
+
+// $params = ["nome" =&gt; "NOME COMPLETO"];
+// $params = ["sk" =&gt; "123456"];
+
+$url = $base . "?" . http_build_query($params);
+
+echo file_get_contents($url);</pre>
+</div>
+
+</div>
+</section>
+
+<section id="parametros">
+<div class="container">
+<h2 class="section-title">Parâmetros</h2>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>Parâmetro</th><th>Função</th><th>Exemplo</th><th>Retorno descrito</th></tr></thead>
+<tbody>
+<tr>
+<td><b>cpf</b></td>
+<td>Consulta por CPF</td>
+<td>07068093868</td>
+<td>Dados públicos disponíveis, como município, SK, NIS e outros campos retornados.</td>
+</tr>
+<tr>
+<td><b>nome</b></td>
+<td>Consulta por nome</td>
+<td>NOME COMPLETO</td>
+<td>SK, nome completo e CPF parcialmente mascarado.</td>
+</tr>
+<tr>
+<td><b>sk</b></td>
+<td>Consulta por identificador</td>
+<td>123456</td>
+<td>Dados associados ao SK retornado pela API.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<strong>Importante:</strong> envie apenas um parâmetro de consulta por requisição:
+<code>?cpf=</code>, <code>?nome=</code> ou <code>?sk=</code>.
+</div>
+</div>
+</section>
+
+<section id="resposta">
+<div class="container">
+<h2 class="section-title">Formato das respostas</h2>
+<p class="section-description">
+Os campos exatos podem variar conforme a função e os registros encontrados.
+</p>
+
+<div class="grid">
+<div class="card">
+<h3>CPF</h3>
+<p>Use esta seção para documentar o JSON efetivamente retornado pela consulta <code>?cpf=</code>, incluindo município, SK, NIS e demais campos disponíveis.</p>
+</div>
+<div class="card">
+<h3>Nome</h3>
+<p>A consulta <code>?nome=</code> deve apresentar o nome completo, o SK e o CPF em formato parcialmente mascarado.</p>
+</div>
+<div class="card">
+<h3>SK</h3>
+<p>A consulta <code>?sk=</code> permite localizar o registro diretamente pelo identificador.</p>
+</div>
+</div>
+
+<div class="note">
+<strong>Privacidade:</strong> esta documentação não exibe CPF completo como exemplo.
+Quando a consulta por nome retornar CPF, mantenha a máscara aplicada pela API.
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<h2 class="section-title">CORS</h2>
+<p class="section-description">Exemplo de consumo diretamente pelo navegador.</p>
+
+<div class="code-wrapper">
+<div class="code-header"><span>Fetch</span><span class="code-copy" onclick="copyCode('corsCode')">Copiar</span></div>
+<pre id="corsCode">async function consultarPDT(params) {
+  const query = new URLSearchParams(params);
+
+  const response = await fetch(
+    `https://api-kalidade.vercel.app/api/pdt.js?${query}`
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// Exemplos:
+consultarPDT({ cpf: "SEU_CPF" });
+consultarPDT({ nome: "NOME COMPLETO" });
+consultarPDT({ sk: "123456" });</pre>
+</div>
+</div>
+</section>
+</main>
+
+<footer>
+KALIDADE API © 2026 — PDT • Documentação para desenvolvedores
+</footer>
+
+<script>
+function copyText(text){
+  navigator.clipboard.writeText(text)
+    .then(()=>alert("Copiado!"))
+    .catch(()=>alert("Não foi possível copiar automaticamente."));
+}
+function copyCode(id){
+  copyText(document.getElementById(id).textContent);
+}
+</script>
+</body>
+</html>
