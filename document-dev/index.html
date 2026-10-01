@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE API — Documentação</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,system-ui,sans-serif;background:#07090d;color:#f5f7fa;min-height:100vh}
+.header{border-bottom:1px solid #1c2531;background:#090c11}.nav{max-width:1100px;margin:auto;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;letter-spacing:2px}.logo span{color:#00e5ff}.badge{font-size:11px;color:#00e5ff;border:1px solid #174854;padding:7px 10px;border-radius:999px;font-weight:800}
+.hero,.section{max-width:1100px;margin:auto;padding-left:22px;padding-right:22px}.hero{padding-top:70px;padding-bottom:35px}.kicker{color:#00e5ff;font-size:12px;font-weight:900;letter-spacing:2px;margin-bottom:14px}
+h1{font-size:clamp(40px,7vw,68px);line-height:1;letter-spacing:-3px}.hero p{margin-top:20px;color:#8994a3;line-height:1.7;max-width:680px}
+.endpoint{margin-top:25px;background:#0a0e14;border:1px solid #1c2531;border-radius:12px;padding:15px;color:#bceff5;font:13px monospace;overflow:auto}
+.section{padding-bottom:70px}.top{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.top h2{font-size:25px}.top span{color:#8994a3;font-size:13px}
+.search{width:300px;max-width:100%;background:#0d1118;border:1px solid #1c2531;color:#fff;border-radius:10px;padding:12px;outline:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px}.card{background:#0d1118;border:1px solid #1c2531;border-radius:15px;padding:20px;min-height:165px;transition:.18s}.card:hover{transform:translateY(-3px);border-color:#27606b}
+.icon{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:#091c21;border:1px solid #153f47;color:#00e5ff;font-size:11px;font-weight:900;margin-bottom:17px}
+.card h3{font-size:17px;margin-bottom:8px}.card p{font-size:13px;line-height:1.6;color:#8994a3}.path{display:block;margin-top:14px;color:#657280;font:11px monospace}
+.empty{display:none;text-align:center;color:#8994a3;padding:35px}.footer{border-top:1px solid #1c2531;text-align:center;padding:25px;color:#626d79;font-size:12px}
+@media(max-width:600px){.hero{padding-top:50px}.top{flex-direction:column;align-items:stretch}.search{width:100%}}
+</style>
+</head>
+<body>
+<header class="header"><nav class="nav"><div class="logo">KALI<span>DADE</span></div><div class="badge">DOCUMENT-DEV</div></nav></header>
+<main>
+<section class="hero">
+<div class="kicker">KALIDADE API • DOCUMENTAÇÃO</div>
+<h1>Documentação das APIs.</h1>
+<p>Acesse a documentação individual de cada ferramenta disponível no <strong>document-dev</strong>.</p>
+<div class="endpoint">https://kalidade.vercel.app/document-dev/</div>
+</section>
+<section class="section">
+<div class="top"><div><h2>APIs disponíveis</h2><span>8 documentações</span></div><input id="search" class="search" placeholder="Pesquisar API..." autocomplete="off"></div>
+<div id="grid" class="grid">
+<a class="card" href="/document-dev/cep.html" data-s="consulta cep cep.html"><div class="icon">API</div><h3>CONSULTA CEP</h3><p>Consulta de CEP e informações de endereço.</p><span class="path">/document-dev/cep.html</span></a>
+<a class="card" href="/document-dev/cnpj.html" data-s="consulta cnpj cnpj.html"><div class="icon">API</div><h3>CONSULTA CNPJ</h3><p>Consulta de dados públicos relacionados a CNPJ.</p><span class="path">/document-dev/cnpj.html</span></a>
+<a class="card" href="/document-dev/cors-proxy.html" data-s="cors proxy cors-proxy.html"><div class="icon">API</div><h3>CORS PROXY</h3><p>Ferramenta para requisições e integração via CORS.</p><span class="path">/document-dev/cors-proxy.html</span></a>
+<a class="card" href="/document-dev/cpf.html" data-s="consulta cpf cpf.html"><div class="icon">API</div><h3>CONSULTA CPF</h3><p>Documentação da API de consulta de CPF.</p><span class="path">/document-dev/cpf.html</span></a>
+<a class="card" href="/document-dev/cpf-parentes.html" data-s="cpf parentes cpf-parentes.html"><div class="icon">API</div><h3>CPF PARENTES</h3><p>Documentação da consulta de parentes.</p><span class="path">/document-dev/cpf-parentes.html</span></a>
+<a class="card" href="/document-dev/freefire-id.html" data-s="free fire id freefire-id.html"><div class="icon">API</div><h3>FREE FIRE ID</h3><p>Consulta de informações relacionadas ao ID do Free Fire.</p><span class="path">/document-dev/freefire-id.html</span></a>
+<a class="card" href="/document-dev/ip-whois.html" data-s="ip whois ip-whois.html"><div class="icon">API</div><h3>IP WHOIS</h3><p>Consulta de informações de IP e WHOIS.</p><span class="path">/document-dev/ip-whois.html</span></a>
+<a class="card" href="/document-dev/pdt.html" data-s="pdt pdt.html portal transparencia"><div class="icon">API</div><h3>PDT</h3><p>Consulta de dados públicos do Portal da Transparência.</p><span class="path">/document-dev/pdt.html</span></a>
+</div><div id="empty" class="empty">Nenhuma documentação encontrada.</div>
+</section>
+</main>
+<footer class="footer">KALIDADE • DOCUMENT-DEV</footer>
+<script>
+const input=document.getElementById("search"),cards=[...document.querySelectorAll(".card")],empty=document.getElementById("empty");
+input.addEventListener("input",()=>{let q=input.value.toLowerCase().trim(),n=0;cards.forEach(c=>{let ok=c.dataset.s.includes(q);c.style.display=ok?"":"none";if(ok)n++});empty.style.display=n?"none":"block"});
+</script>
+</body>
+</html>
