@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE - Consulta de Número</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-x:hidden}
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+.particle{position:absolute;width:4px;height:4px;background:rgba(255,255,255,.3);border-radius:50%;animation:float 15s infinite}
+@keyframes float{0%,100%{transform:translateY(100vh) rotate(0);opacity:0}10%,90%{opacity:1}100%{transform:translateY(-10vh) rotate(720deg);opacity:0}}
+.logo-container{position:relative;z-index:1;margin-bottom:40px;text-align:center}
+.logo{font-size:6rem;line-height:1;font-weight:800;letter-spacing:-3px;background:linear-gradient(90deg,#00d4ff,#7b2ff7,#00d4ff);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shine 3s linear infinite;filter:drop-shadow(0 0 20px rgba(0,212,255,.3))}
+.logo-sub{font-size:.9rem;color:rgba(255,255,255,.5);letter-spacing:8px;text-transform:uppercase;margin-top:-5px}
+@keyframes shine{to{background-position:200% center}}
+.main-card{position:relative;z-index:1;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:40px;width:100%;max-width:520px;box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.05) inset}
+.main-card::before{content:'';position:absolute;inset:-1px;background:linear-gradient(135deg,rgba(0,212,255,.3),transparent 40%,transparent 60%,rgba(123,47,247,.3));border-radius:24px;z-index:-1;opacity:.5}
+.main-card.has-result{box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 40px rgba(0,212,255,.1),0 0 0 1px rgba(255,255,255,.05) inset}
+.input-section{margin-bottom:30px}
+.input-label{color:rgba(255,255,255,.7);font-size:.85rem;margin-bottom:12px;display:block;text-transform:uppercase;letter-spacing:2px}
+.input-wrapper{display:flex;gap:10px}
+.num-input{flex:1;min-width:0;background:rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.1);border-radius:16px;padding:16px 20px;color:#fff;font-size:1.2rem;font-family:inherit;font-weight:600;letter-spacing:1px;outline:none;transition:.3s}
+.num-input::placeholder{color:rgba(255,255,255,.25);font-weight:400}
+.num-input:focus{border-color:#00d4ff;box-shadow:0 0 20px rgba(0,212,255,.2);background:rgba(0,0,0,.4)}
+.hint{color:rgba(255,255,255,.35);font-size:.72rem;margin-top:10px}
+.search-btn{background:linear-gradient(135deg,#00d4ff,#7b2ff7);border:none;border-radius:16px;padding:16px 24px;color:#fff;font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer;transition:.3s;display:flex;align-items:center;gap:8px;box-shadow:0 4px 15px rgba(0,212,255,.3)}
+.search-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,212,255,.4)}
+.search-btn.loading{pointer-events:none;opacity:.7}
+.search-btn svg{width:20px;height:20px}
+.spinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+.search-btn.loading .spinner{display:block}
+.search-btn.loading .btn-text,.search-btn.loading svg{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-container{display:none;animation:slideUp .5s ease}
+.result-container.show{display:block}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.profile{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.avatar{width:72px;height:72px;min-width:72px;border-radius:50%;object-fit:cover;border:2px solid #00d4ff;box-shadow:0 0 20px rgba(0,212,255,.3);background:rgba(0,0,0,.3)}
+.p-name{color:#fff;font-size:1.1rem;font-weight:700;overflow-wrap:anywhere}
+.p-num{color:#00d4ff;font-size:.9rem;font-weight:600}
+.p-country{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.6);font-size:.8rem;margin-top:4px}
+.p-country img{width:22px;height:auto;border-radius:3px}
+.section-title{color:rgba(255,255,255,.7);font-size:.75rem;text-transform:uppercase;letter-spacing:2px;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1)}
+.info-grid{display:grid;gap:10px}
+.info-grid.two{grid-template-columns:1fr 1fr}
+.info-item{background:rgba(0,0,0,.2);border-radius:12px;padding:13px 16px;border-left:3px solid transparent;transition:.3s;min-width:0}
+.info-item:hover{background:rgba(0,0,0,.3);border-left-color:#00d4ff;transform:translateX(5px)}
+.info-label{color:rgba(255,255,255,.4);font-size:.68rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
+.info-value{color:#fff;font-size:.95rem;font-weight:600;overflow-wrap:anywhere;display:flex;align-items:center;gap:8px}
+.info-value img{width:22px;height:22px;object-fit:contain}
+.badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(123,47,247,.2));border:1px solid rgba(0,212,255,.3);border-radius:8px;padding:4px 12px;font-size:.85rem;font-weight:700;color:#00d4ff}
+a.map-link{color:#00d4ff;text-decoration:none}
+a.map-link:hover{text-decoration:underline}
+.map-box{display:none;margin-top:10px;border-radius:14px;overflow:hidden;border:1px solid rgba(0,212,255,.3);box-shadow:0 0 20px rgba(0,212,255,.1)}
+.map-box.show{display:block}
+.map-box iframe{display:block;width:100%;height:260px;border:0}
+.mono{font-size:.78rem;font-weight:400;color:rgba(255,255,255,.7)}
+.error-message{display:none;background:rgba(255,50,50,.1);border:1px solid rgba(255,50,50,.3);border-radius:12px;padding:16px;color:#ff6b6b;font-size:.9rem;text-align:center;margin-top:20px;animation:shake .5s ease}
+.error-message.show{display:block}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.footer{position:relative;z-index:1;margin-top:30px;text-align:center;color:rgba(255,255,255,.3);font-size:.75rem;letter-spacing:1px}
+.footer a{color:rgba(0,212,255,.6);text-decoration:none}
+@media (max-width:600px){
+body{justify-content:flex-start;padding:18px 12px 24px;min-height:100svh}
+.logo-container{margin:12px 0 24px}
+.logo{font-size:clamp(2.8rem,17vw,4.2rem);letter-spacing:-2px;white-space:nowrap}
+.logo-sub{font-size:.72rem;letter-spacing:4px;margin-top:6px}
+.main-card{padding:22px 16px;border-radius:20px}
+.main-card::before{border-radius:20px}
+.input-wrapper{flex-direction:column}
+.num-input,.search-btn{width:100%;min-height:54px}
+.num-input{font-size:1.05rem;text-align:center;border-radius:14px}
+.search-btn{justify-content:center;border-radius:14px}
+.info-grid.two{grid-template-columns:1fr}
+.footer{font-size:.68rem;padding:0 8px}
+}
+</style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+
+<div class="logo-container">
+  <div class="logo">KALIDADE</div>
+  <div class="logo-sub">Consulta de Número</div>
+</div>
+
+<div class="main-card" id="mainCard">
+  <div class="input-section">
+    <label class="input-label" for="numInput">Digite o número com DDI</label>
+    <div class="input-wrapper">
+      <input type="tel" class="num-input" id="numInput" placeholder="+55 83 99999-5666" maxlength="24" autocomplete="off" inputmode="tel">
+      <button class="search-btn" id="searchBtn" onclick="consultar()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        <span class="btn-text">Buscar</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+    <div class="hint">Qualquer país: o país é detectado automaticamente pelo DDI (ex.: +55, +1, +351).</div>
+  </div>
+
+  <div class="result-container" id="result">
+    <div class="profile">
+      <img class="avatar" id="foto" alt="Foto do perfil">
+      <div>
+        <div class="p-name" id="nome"></div>
+        <div class="p-num" id="numero"></div>
+        <div class="p-country"><img id="bandeira" alt=""><span id="paisTopo"></span></div>
+      </div>
+    </div>
+
+    <div class="section-title">Localização</div>
+    <div class="info-grid two">
+      <div class="info-item"><div class="info-label">País</div><div class="info-value" id="pais">-</div></div>
+      <div class="info-item"><div class="info-label">Estado / Região</div><div class="info-value"><span class="badge" id="regiao">-</span></div></div>
+      <div class="info-item"><div class="info-label">Cidade</div><div class="info-value" id="cidade">-</div></div>
+      <div class="info-item"><div class="info-label">Coordenadas</div><div class="info-value" id="coordCidade">-</div></div>
+    </div>
+    <div class="map-box" id="mapBox"><iframe id="mapa" title="Mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+
+    <div class="section-title">Operadora</div>
+    <div class="info-grid two">
+      <div class="info-item"><div class="info-label">Nome</div><div class="info-value"><img id="opIcone" alt="" style="display:none"><span id="opNome">-</span></div></div>
+      <div class="info-item"><div class="info-label">Razão social</div><div class="info-value" id="opCompleto">-</div></div>
+    </div>
+
+    <div class="section-title">Volume de dados</div>
+    <div class="info-grid two">
+      <div class="info-item"><div class="info-label">Total</div><div class="info-value" id="volTotal">-</div></div>
+      <div class="info-item"><div class="info-label">Mensagens</div><div class="info-value" id="volMsg">-</div></div>
+      <div class="info-item"><div class="info-label">Mídias</div><div class="info-value" id="volMid">-</div></div>
+      <div class="info-item"><div class="info-label">Contatos</div><div class="info-value" id="volCon">-</div></div>
+    </div>
+
+    <div class="section-title">Identificadores</div>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Hash ID</div><div class="info-value mono" id="hashId">-</div></div>
+      <div class="info-item"><div class="info-label">API ID</div><div class="info-value mono" id="apiId">-</div></div>
+    </div>
+  </div>
+
+  <div class="error-message" id="erro"></div>
+</div>
+
+<div class="footer">Desenvolvido por KALIDADE <a href="https://kalidade.vercel.app" target="_blank" rel="noopener">KALIDADE.VERCEL.APP</a></div>
+
+<script>
+const API = 'https://api-kalidade.vercel.app/api/numero.js?numero=';
+const $ = (id) => document.getElementById(id);
+const input = $('numInput');
+
+// Partículas
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const s = 2 + Math.random() * 4;
+  p.style.cssText = `left:${Math.random() * 100}%;animation-delay:${Math.random() * 15}s;animation-duration:${10 + Math.random() * 10}s;width:${s}px;height:${s}px`;
+  $('particles').appendChild(p);
+}
+
+// Máscara simples: + e dígitos agrupados
+input.addEventListener('input', (e) => {
+  const d = e.target.value.replace(/\D/g, '').slice(0, 15);
+  e.target.value = d ? '+' + d.replace(/^(\d{2})(\d{2})?(\d{5})?(\d+)?/, (_, a, b, c, r) =>
+    [a, b, c, r].filter(Boolean).join(' ')) : '';
+});
+input.addEventListener('keypress', (e) => { if (e.key === 'Enter') consultar(); });
+
+const val = (v, alt = 'Não informado') => (v === null || v === undefined || v === '') ? alt : String(v);
+const urlSegura = (u) => (typeof u === 'string' && u.startsWith('https://')) ? u : '';
+
+function setImg(el, url) {
+  const u = urlSegura(url);
+  if (u) { el.src = u; el.style.display = ''; } else { el.removeAttribute('src'); el.style.display = 'none'; }
+}
+
+function coord(c) {
+  if (!c || !c.latitude || !c.longitude) return null;
+  return { lat: c.latitude, lon: c.longitude };
+}
+
+async function consultar() {
+  const digitos = input.value.replace(/\D/g, '');
+  const btn = $('searchBtn'), res = $('result'), erro = $('erro'), card = $('mainCard');
+
+  res.classList.remove('show'); erro.classList.remove('show'); card.classList.remove('has-result');
+
+  if (digitos.length < 7 || digitos.length > 15) {
+    erro.textContent = '⚠️ Digite um número válido com DDI (7 a 15 dígitos)';
+    erro.classList.add('show');
+    return;
+  }
+
+  btn.classList.add('loading');
+  try {
+    const r = await fetch(API + digitos);
+    const d = await r.json().catch(() => null);
+    if (!r.ok || !d || d.status !== 'Sucesso') {
+      throw new Error((d && d.mensagem) || 'Número não encontrado');
+    }
+    preencher(d);
+    res.classList.add('show');
+    card.classList.add('has-result');
+  } catch (e) {
+    erro.textContent = '❌ ' + (e.message || 'Não foi possível consultar. Tente novamente.');
+    erro.classList.add('show');
+  } finally {
+    btn.classList.remove('loading');
+  }
+}
+
+let buscaId = 0;
+async function buscarCidade(c) {
+  const id = ++buscaId;
+  const alvo = $('cidade');
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&accept-language=pt-BR&lat=${encodeURIComponent(c.lat)}&lon=${encodeURIComponent(c.lon)}`);
+    const j = await r.json();
+    const a = j.address || {};
+    const cidade = a.city || a.town || a.village || a.municipality || a.city_district || a.county;
+    if (id === buscaId) alvo.textContent = cidade || 'Não informada';
+  } catch {
+    if (id === buscaId) alvo.textContent = 'Não informada';
+  }
+}
+
+function preencher(d) {
+  const loc = d.localizacao || {}, op = d.operadora || {}, vol = d.volume_de_dados || {},
+        per = d.perfil || {}, ids = d.identificadores || {};
+
+  // Perfil
+  const nomeCompleto = [per.nome, per.sobrenome].filter((x) => x && x !== 'Não informado').join(' ');
+  $('nome').textContent = nomeCompleto || 'Nome não informado';
+  $('numero').textContent = val(d.numero_consultado, '');
+  const foto = $('foto');
+  foto.onerror = () => { foto.onerror = null; foto.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72"><rect width="72" height="72" fill="#1a1740"/><circle cx="36" cy="28" r="12" fill="#00d4ff" opacity=".5"/><path d="M12 66c2-16 14-22 24-22s22 6 24 22z" fill="#7b2ff7" opacity=".5"/></svg>'); };
+  foto.src = urlSegura(per.foto) || '';
+  if (!urlSegura(per.foto)) foto.onerror();
+
+  const band = $('bandeira');
+  setImg(band, loc.bandeira);
+  $('paisTopo').textContent = val(loc.pais, '') + (d.pais_detectado ? ` (${d.pais_detectado})` : '');
+
+  // Localização
+  $('pais').textContent = val(loc.pais);
+  $('regiao').textContent = val(loc.estado_regiao, '-');
+  const c = coord(loc.coordenadas_da_cidade) || coord(loc.coordenadas_do_pais);
+  const temCidade = loc.cidade && loc.cidade !== 'Não informada';
+  $('cidade').textContent = temCidade ? loc.cidade : (c ? 'Buscando...' : 'Não informada');
+  if (!temCidade && c) buscarCidade(c);
+
+  // Mapa do Google
+  const mapBox = $('mapBox');
+  if (c) {
+    $('mapa').src = `https://www.google.com/maps?q=${encodeURIComponent(c.lat)},${encodeURIComponent(c.lon)}&z=11&output=embed`;
+    mapBox.classList.add('show');
+  } else {
+    $('mapa').removeAttribute('src');
+    mapBox.classList.remove('show');
+  }
+
+  const alvo = $('coordCidade');
+  alvo.textContent = '';
+  if (c) {
+    const a = document.createElement('a');
+    a.className = 'map-link';
+    a.target = '_blank'; a.rel = 'noopener';
+    a.href = `https://www.google.com/maps?q=${encodeURIComponent(c.lat)},${encodeURIComponent(c.lon)}`;
+    a.textContent = `${Number(c.lat).toFixed(4)}, ${Number(c.lon).toFixed(4)} ↗`;
+    alvo.appendChild(a);
+  } else alvo.textContent = 'Não informado';
+
+  // Operadora
+  setImg($('opIcone'), op.icone);
+  $('opNome').textContent = val(op.nome);
+  $('opCompleto').textContent = val(op.nome_completo);
+
+  // Volume
+  $('volTotal').textContent = val(vol.total);
+  $('volMsg').textContent = val(vol.mensagens);
+  $('volMid').textContent = val(vol.midias);
+  $('volCon').textContent = val(vol.contatos);
+
+  // IDs
+  $('hashId').textContent = val(ids.hash_id);
+  $('apiId').textContent = val(ids.api_id);
+}
+</script>
+</body>
+  </html>
+  
