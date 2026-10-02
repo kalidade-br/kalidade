@@ -6,12 +6,6 @@
         "plataforma": "windows"
     },
     {
-        "nome": "WEB-BR TOOLS",
-        "link": "web-br.apk",
-        "icon": "https://avatars.githubusercontent.com/u/286726470?v=4",
-        "plataforma": "android"
-    },
-    {
         "nome": "DOLPHIN EMULADOR PC",
         "link": "dolphin-2609-x64.7z",
         "icon": "https://static0.howtogeekimages.com/wordpress/wp-content/uploads/2023/08/dolphin-emulator-logo-2.jpg",
