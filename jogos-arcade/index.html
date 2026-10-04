@@ -1,1 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>KALIDADE ARCADES GAMES</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0b0b0f;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 25px 18px;
+      text-align: center;
+      border-bottom: 1px solid #222;
+      background: #101016;
+    }
+
+    header h1 {
+      font-size: clamp(24px, 6vw, 40px);
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin-top: 7px;
+      color: #888;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    #status {
+      text-align: center;
+      color: #888;
+      padding: 30px 10px;
+    }
+
+    .jogos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .jogo {
+      display: block;
+      text-decoration: none;
+      color: white;
+      background: #15151c;
+      border: 1px solid #24242d;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform .15s, border-color .15s;
+    }
+
+    .jogo:hover {
+      transform: translateY(-4px);
+      border-color: #555;
+    }
+
+    .capa {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #202027;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .capa img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .sem-capa {
+      color: #666;
+      font-size: 13px;
+      text-align: center;
+      padding: 15px;
+    }
+
+    .nome {
+      padding: 13px 10px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 14px;
+      }
+
+      .jogos {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>KALIDADE ARCADES GAMES</h1>
+    <p>Jogos Arcade</p>
+  </header>
+
+  <main class="container">
+    <div id="status">Carregando jogos...</div>
+    <div id="jogos" class="jogos"></div>
+  </main>
+
+  <script>
+    const status = document.getElementById("status");
+    const lista = document.getElementById("jogos");
+
+    // Converte:
+    // metal-slug -> METAL SLUG
+    // cadillacs-dinosaurs -> CADILLACS DINOSAURS
+    function formatarNome(nome) {
+      return nome
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toUpperCase();
+    }
+
+    async function carregarJogos() {
+      try {
+        const resposta = await fetch("./jogos.json", {
+          cache: "no-store"
+        });
+
+        if (!resposta.ok) {
+          throw new Error("Não foi possível carregar jogos.json");
+        }
+
+        const jogos = await resposta.json();
+
+        if (!Array.isArray(jogos)) {
+          throw new Error("O jogos.json precisa ser uma lista.");
+        }
+
+        lista.innerHTML = "";
+
+        jogos.forEach(jogo => {
+
+          // Aceita:
+          // "metal-slug"
+          // ou
+          // { "pasta": "metal-slug", "capa": "capa.png" }
+
+          let pasta;
+          let capa = null;
+
+          if (typeof jogo === "string") {
+            pasta = jogo;
+          } else if (jogo && typeof jogo === "object") {
+            pasta = jogo.pasta || jogo.nome || jogo.folder;
+            capa = jogo.capa || null;
+          }
+
+          if (!pasta) return;
+
+          // Sempre começa a partir da pasta onde está o index.html
+          const caminhoJogo = "./" + pasta + "/";
+
+          // Se capa foi informada no JSON
+          let caminhoCapa = null;
+
+          if (capa) {
+            caminhoCapa = caminhoJogo + capa;
+          }
+
+          const card = document.createElement("a");
+          card.className = "jogo";
+          card.href = caminhoJogo;
+
+          const areaCapa = document.createElement("div");
+          areaCapa.className = "capa";
+
+          if (caminhoCapa) {
+            const img = document.createElement("img");
+
+            img.src = caminhoCapa;
+            img.alt = formatarNome(pasta);
+            img.loading = "lazy";
+
+            img.onerror = () => {
+              areaCapa.innerHTML = "";
+              
+              const semCapa = document.createElement("div");
+              semCapa.className = "sem-capa";
+              semCapa.textContent = "SEM CAPA";
+
+              areaCapa.appendChild(semCapa);
+            };
+
+            areaCapa.appendChild(img);
+
+          } else {
+            const semCapa = document.createElement("div");
+            semCapa.className = "sem-capa";
+            semCapa.textContent = "SEM CAPA";
+
+            areaCapa.appendChild(semCapa);
+          }
+
+          const nome = document.createElement("div");
+          nome.className = "nome";
+          nome.textContent = formatarNome(pasta);
+
+          card.appendChild(areaCapa);
+          card.appendChild(nome);
+
+          lista.appendChild(card);
+        });
+
+        status.style.display = "none";
+
+        if (!lista.children.length) {
+          status.textContent = "Nenhum jogo encontrado.";
+          status.style.display = "block";
+        }
+
+      } catch (erro) {
+        console.error(erro);
+
+        status.textContent =
+          "Não foi possível carregar a lista de jogos.";
+
+        status.style.display = "block";
+      }
+    }
+
+    carregarJogos();
+  </script>
+
+</body>
+</html>
