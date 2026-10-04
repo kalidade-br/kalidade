@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KALIDADE RADIO FM</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #0d0d0d;
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 25px 20px;
+            text-align: center;
+            background: #151515;
+            border-bottom: 1px solid #292929;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .search {
+            width: 100%;
+            padding: 15px 18px;
+            border: 1px solid #333;
+            border-radius: 12px;
+            outline: none;
+            background: #181818;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .search:focus {
+            border-color: #666;
+        }
+
+        #lista {
+            display: grid;
+            gap: 12px;
+        }
+
+        .radio {
+            background: #171717;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            padding: 16px;
+            transition: .2s;
+        }
+
+        .radio:hover {
+            background: #1d1d1d;
+            transform: translateY(-1px);
+        }
+
+        .radio-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .radio h2 {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .radio .estilo {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .play {
+            border: none;
+            background: white;
+            color: black;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .play:hover {
+            opacity: .85;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 14px;
+            display: none;
+        }
+
+        .radio.tocando audio {
+            display: block;
+        }
+
+        .id {
+            color: #555;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        #status {
+            text-align: center;
+            color: #888;
+            padding: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 14px;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            .radio {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📻 KALIDADE Rádio FM</h1>
+    <p>Ouça suas rádios favoritas online</p>
+</header>
+
+<div class="container">
+
+    <input
+        type="search"
+        id="pesquisa"
+        class="search"
+        placeholder="🔎 Pesquisar rádio ou estilo..."
+        autocomplete="off"
+    >
+
+    <div id="status">Carregando rádios...</div>
+
+    <div id="lista"></div>
+
+</div>
+
+<script>
+    let radios = [];
+    let audioAtual = null;
+
+    async function carregarRadios() {
+        try {
+            const resposta = await fetch("1.json");
+
+            if (!resposta.ok) {
+                throw new Error("Não foi possível carregar 1.json");
+            }
+
+            radios = await resposta.json();
+
+            mostrarRadios(radios);
+
+        } catch (erro) {
+            console.error(erro);
+
+            document.getElementById("status").textContent =
+                "❌ Erro ao carregar a lista de rádios.";
+        }
+    }
+
+    function mostrarRadios(lista) {
+
+        const container = document.getElementById("lista");
+        const status = document.getElementById("status");
+
+        container.innerHTML = "";
+
+        if (lista.length === 0) {
+            status.textContent = "Nenhuma rádio encontrada.";
+            return;
+        }
+
+        status.textContent = `${lista.length} rádio(s) encontrada(s)`;
+
+        lista.forEach(radio => {
+
+            const card = document.createElement("div");
+            card.className = "radio";
+
+            card.innerHTML = `
+                <div class="radio-info">
+
+                    <div>
+                        <div class="id">ID ${radio.id}</div>
+
+                        <h2>${escaparHTML(radio.titulo)}</h2>
+
+                        <div class="estilo">
+                            🎵 ${escaparHTML(radio.estilo)}
+                        </div>
+                    </div>
+
+                    <button class="play" title="Tocar rádio">
+                        ▶
+                    </button>
+
+                </div>
+
+                <audio controls preload="none"></audio>
+            `;
+
+            const botao = card.querySelector(".play");
+            const audio = card.querySelector("audio");
+
+            botao.addEventListener("click", () => {
+
+                // Para qualquer rádio que esteja tocando
+                if (audioAtual && audioAtual !== audio) {
+                    audioAtual.pause();
+                    audioAtual.currentTime = 0;
+
+                    document
+                        .querySelectorAll(".radio")
+                        .forEach(item => item.classList.remove("tocando"));
+                }
+
+                if (audio.paused) {
+
+                    audio.src = radio.link;
+
+                    audio.play()
+                        .then(() => {
+                            card.classList.add("tocando");
+                            botao.textContent = "⏸";
+                            audioAtual = audio;
+                        })
+                        .catch(erro => {
+                            console.error(erro);
+                            alert("Não foi possível reproduzir esta rádio.");
+                        });
+
+                } else {
+                    audio.pause();
+                    botao.textContent = "▶";
+                    card.classList.remove("tocando");
+                }
+            });
+
+            audio.addEventListener("play", () => {
+                botao.textContent = "⏸";
+                card.classList.add("tocando");
+                audioAtual = audio;
+            });
+
+            audio.addEventListener("pause", () => {
+                botao.textContent = "▶";
+            });
+
+            container.appendChild(card);
+        });
+    }
+
+    document.getElementById("pesquisa").addEventListener("input", function () {
+
+        const termo = this.value
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+        const filtradas = radios.filter(radio => {
+
+            const titulo = String(radio.titulo || "")
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+
+            const estilo = String(radio.estilo || "")
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+
+            return titulo.includes(termo) || estilo.includes(termo);
+        });
+
+        mostrarRadios(filtradas);
+    });
+
+    function escaparHTML(texto) {
+        return String(texto)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    carregarRadios();
+</script>
+
+</body>
+</html>
