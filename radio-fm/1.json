@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "titulo": "O Canal Sertanejo",
+    "link": "https://live.hunter.fm/sertanejo_high",
+    "estilo": "sertanejo"
+  },
+  {
+    "id": 2,
+    "titulo": "O Canal Pop",
+    "link": "https://live.hunter.fm/pop_high",
+    "estilo": "pop"
+  },
+  {
+    "id": 3,
+    "titulo": "O Canal Pagode",
+    "link": "https://live.hunter.fm/pagode_high",
+    "estilo": "pagode"
+  },
+  {
+    "id": 4,
+    "titulo": "O Canal Rock",
+    "link": "https://live.hunter.fm/rock_high",
+    "estilo": "rock"
+  },
+  {
+    "id": 5,
+    "titulo": "O Canal Moda Sertaneja",
+    "link": "https://live.hunter.fm/modasertaneja_high",
+    "estilo": "sertanejo"
+  },
+  {
+    "id": 6,
+    "titulo": "O Canal Gospel",
+    "link": "https://live.hunter.fm/gospel_high",
+    "estilo": "gospel"
+  },
+  {
+    "id": 7,
+    "titulo": "O Canal Hits Brasil",
+    "link": "https://live.hunter.fm/hitsbrasil_high",
+    "estilo": "hits brasileiros"
+  },
+  {
+    "id": 8,
+    "titulo": "O Canal MPB",
+    "link": "https://live.hunter.fm/mpb_high",
+    "estilo": "MPB"
+  },
+  {
+    "id": 9,
+    "titulo": "O Canal Pop2K",
+    "link": "https://live.hunter.fm/pop2k_high",
+    "estilo": "pop anos 2000"
+  },
+  {
+    "id": 10,
+    "titulo": "O Canal 80",
+    "link": "https://live.hunter.fm/80s_high",
+    "estilo": "anos 80"
+  },
+  {
+    "id": 11,
+    "titulo": "O Canal Master",
+    "link": "https://live.hunter.fm/master_high",
+    "estilo": "hits / variedades"
+  },
+  {
+    "id": 12,
+    "titulo": "O Canal Pisadinha",
+    "link": "https://live.hunter.fm/pisadinha_high",
+    "estilo": "pisadinha"
+  },
+  {
+    "id": 13,
+    "titulo": "O Canal Tropical",
+    "link": "https://live.hunter.fm/tropical_high",
+    "estilo": "tropical / dance"
+  },
+  {
+    "id": 14,
+    "titulo": "O Canal Lo-Fi",
+    "link": "https://live.hunter.fm/lofi_high",
+    "estilo": "lo-fi"
+  },
+  {
+    "id": 15,
+    "titulo": "O Canal K-pop",
+    "link": "https://live.hunter.fm/kpop_high",
+    "estilo": "K-pop"
+  }
+]
