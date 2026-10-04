@@ -1,90 +1,420 @@
 [
   {
     "id": 1,
+    "titulo": "Rádio Ankh",
+    "link": "https://s08.maxcast.com.br:8622/live"
+  },
+  {
+    "id": 2,
+    "titulo": "Rádio Cidade 100.7 FM",
+    "link": "https://servidor.centralstream.com.br/listen/cidadefm/stream"
+  },
+  {
+    "id": 3,
+    "titulo": "Rádio Sinai Web Gospel",
+    "link": "https://centova4.transmissaodigital.com:20278/stream"
+  },
+  {
+    "id": 4,
+    "titulo": "Rádio CBN Salvador 107.9 FM",
+    "link": "https://sv1.audiostream.com.br/radio/8030/stream"
+  },
+  {
+    "id": 5,
+    "titulo": "Rádio 105 FM",
+    "link": "https://wz7.servidoresbrasil.com:8070/stream"
+  },
+  {
+    "id": 6,
+    "titulo": "Rede Benção",
+    "link": "https://01.megadinamica.com:7040/live"
+  },
+  {
+    "id": 7,
+    "titulo": "Rádio Bandeirantes 107.3 FM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/RadioBandeirantesAAC.aac?dist=RADIOSNET"
+  },
+  {
+    "id": 8,
+    "titulo": "Radio Saudade 99.7 FM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/SAUDADE_FMAAC.aac?dist=radios.com.br"
+  },
+  {
+    "id": 9,
+    "titulo": "Rádio Morada Sertaneja",
+    "link": "https://srv.soundstream.com.br/listen/moradasertaneja/radio.mp3"
+  },
+  {
+    "id": 10,
+    "titulo": "Rádio Cidade Verde 93.5 FM",
+    "link": "https://ssl1.transmissaodigital.com:20010/;"
+  },
+  {
+    "id": 11,
+    "titulo": "Rádio Tropical 94.1 FM",
+    "link": "https://tropical.jmvstream.com/stream"
+  },
+  {
+    "id": 12,
+    "titulo": "Rádio Trans Mundial - RTM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOTRANSMUNDIALAAC_SC?dist=RadiosNet"
+  },
+  {
+    "id": 13,
+    "titulo": "Rádio Kboing 100.3 FM",
+    "link": "https://www.radios.com.br/b61f9120-e013-42de-9f7a-12c16bf468b9"
+  },
+  {
+    "id": 14,
+    "titulo": "Rádio João Pessoa 97.7 FM",
+    "link": "https://live8.livemus.com.br:27984/stream"
+  },
+  {
+    "id": 15,
+    "titulo": "Rádio 93 FM",
+    "link": "https://www.radios.com.br/4a2ddb33-e2d1-46be-ba9b-74da037743da"
+  },
+  {
+    "id": 16,
+    "titulo": "Rádio CV Mais 97.5 FM",
+    "link": "https://ssl1.transmissaodigital.com:20098/;"
+  },
+  {
+    "id": 17,
+    "titulo": "Rádio Metropolitana 98.5 FM",
+    "link": "https://ice.fabricahost.com.br/metropolitana985sp"
+  },
+  {
+    "id": 18,
+    "titulo": "Rádio Fan 99.7 FM",
+    "link": "https://08.stmip.net:7114/;"
+  },
+  {
+    "id": 19,
+    "titulo": "Rádio Feliz 98.3 FM",
+    "link": "http://sv1.audiostream.com.br:8200/cultura"
+  },
+  {
+    "id": 20,
+    "titulo": "Rádio Costa do Sol 101.7 FM",
+    "link": "https://ice.fabricahost.com.br/radiocostadosol"
+  },
+  {
+    "id": 21,
+    "titulo": "VIP FM",
+    "link": "https://streaming.inweb.com.br/vipfm1"
+  },
+  {
+    "id": 22,
+    "titulo": "Rádio Nativa 101.1 FM",
+    "link": "https://stm7.xcast.com.br:7460/stream"
+  },
+  {
+    "id": 23,
+    "titulo": "Rádio Nova Difusora 88.1 FM",
+    "link": "https://str1.streamhostpg.com.br:8072/stream"
+  },
+  {
+    "id": 24,
+    "titulo": "Rádio Difusora Pantanal 101.9 FM",
+    "link": "https://aovivo.difusorapantanal.com.br/listen/difusora_pantanal/radio.mp3"
+  },
+  {
+    "id": 25,
+    "titulo": "Rádio Doce Louvor",
+    "link": "https://servidor28-2.brlogic.com:7204/live"
+  },
+  {
+    "id": 26,
+    "titulo": "MS Web Rádio",
+    "link": "https://s25.maxcast.com.br:8108/live"
+  },
+  {
+    "id": 27,
+    "titulo": "Rádio Cidade das Águas 101.3 FM",
+    "link": "http://stm17.xcast.com.br:8846/stream"
+  },
+  {
+    "id": 28,
+    "titulo": "Radio Gospel Life",
+    "link": "https://s11.maxcast.com.br:9165/live"
+  },
+  {
+    "id": 29,
+    "titulo": "Rádio Rio FM 102.3",
+    "link": "http://1.stmip.net:8010/stream"
+  },
+  {
+    "id": 30,
+    "titulo": "Rádio Aquele Som",
+    "link": "https://servidor14.brlogic.com:7070/live?identifier=RadiosNet&source=14024"
+  },
+  {
+    "id": 31,
+    "titulo": "Rádio FM O Dia 99.7 FM",
+    "link": "https://wz7.servidoresbrasil.com:8274/stream"
+  },
+  {
+    "id": 32,
+    "titulo": "Rádio Jornal 91.3 FM",
+    "link": "https://str1.streamhostpg.com.br:8124/stream"
+  },
+  {
+    "id": 33,
+    "titulo": "Rádio 98.1 FM",
+    "link": "https://9526.brasilstream.com.br/stream"
+  },
+  {
+    "id": 34,
+    "titulo": "Stereo Sul Radio Web",
+    "link": "https://sv15.hdradios.net:9222/stream"
+  },
+  {
+    "id": 35,
+    "titulo": "Rádio Gospel Um Novo Tempo",
+    "link": "https://stm11.xcast.com.br:10052/stream"
+  },
+  {
+    "id": 36,
+    "titulo": "Rádio Liberdade 92.9 FM",
+    "link": "https://8335.brasilstream.com.br/stream"
+  },
+  {
+    "id": 37,
+    "titulo": "Rádio Pavio Que Fumega",
+    "link": "https://play.brlogic.co/radio/4925816df8442853"
+  },
+  {
+    "id": 38,
+    "titulo": "Rádio Brasil Novo 94.3 FM",
+    "link": "https://stream.loopert.com/stream/56"
+  },
+  {
+    "id": 39,
+    "titulo": "Rádio Circuito das Águas 90.3 FM",
+    "link": "http://sl.dnip.com.br:8822/stream"
+  },
+  {
+    "id": 40,
+    "titulo": "Rádio Nordeste FM Brasília",
+    "link": "https://centova3.transmissaodigital.com:20018/stream"
+  },
+  {
+    "id": 41,
+    "titulo": "Rádio Minas 99.3 FM",
+    "link": "https://minasfmaac.jmvstream.com/stream"
+  },
+  {
+    "id": 42,
+    "titulo": "Rádio Colméia 98.7 FM",
+    "link": "https://live.virtualcast.com.br/colmeiamaringa"
+  },
+  {
+    "id": 43,
+    "titulo": "Rádio Atlântida 94.3 FM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/RBS_RADIOSAAC.aac?dist=RadiosNet"
+  },
+  {
+    "id": 44,
+    "titulo": "Rádio Nova Geração FM",
+    "link": "https://virtues.live:8138/stream"
+  },
+  {
+    "id": 45,
+    "titulo": "Rádio Turbo FM Web",
+    "link": "https://stm11.srvstm.com:7640/stream"
+  },
+  {
+    "id": 46,
+    "titulo": "Radio Antenna 1 107.1 FM",
+    "link": "https://a1-it.newradio.it/stream3"
+  },
+  {
+    "id": 47,
+    "titulo": "Bem Boa Rádio Web",
+    "link": "http://stm1.streaminghd.net.br:17706/"
+  },
+  {
+    "id": 48,
+    "titulo": "Rádio Urbana",
+    "link": "https://servidor19.brlogic.com:7156/live"
+  },
+  {
+    "id": 49,
+    "titulo": "Rádio Tropical Vale 96.1 FM",
+    "link": "https://8442.brasilstream.com.br/stream"
+  },
+  {
+    "id": 50,
+    "titulo": "Rádio Difusora 92.3 FM",
+    "link": "https://stream.zeno.fm/fxgzgrqmxegvv"
+  },
+  {
+    "id": 51,
+    "titulo": "Rádio Paraíso 89.7 FM",
+    "link": "https://str02.kfmidia.com.br:8084/stream"
+  },
+  {
+    "id": 52,
+    "titulo": "Rádio Band 96.1 FM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/BANDFM_SPAAC.aac?dist=radios.com.br"
+  },
+  {
+    "id": 53,
+    "titulo": "Rádio Light 103.9 FM",
+    "link": "https://8231.brasilstream.com.br/stream"
+  },
+  {
+    "id": 54,
+    "titulo": "Rádio Antena 1 FM 103.7",
+    "link": "https://antena1campanha.crossradio.com.br:29090/camp2;"
+  },
+  {
+    "id": 55,
+    "titulo": "Rádio FM O Dia 100.5",
+    "link": "https://streaming.livespanel.com:8016/fmodia"
+  },
+  {
+    "id": 56,
+    "titulo": "Rádio Globo 98.1 FM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_GLOBO_RJAAC.aac?dist=radioscombr"
+  },
+  {
+    "id": 57,
+    "titulo": "Rádio Verdinha 92.5 FM",
+    "link": "https://www.radios.com.br/5ad36d1c-d677-47fb-b45e-6c254c9bb64f"
+  },
+  {
+    "id": 58,
+    "titulo": "Rádio Antena 1 94.7 FM",
+    "link": "https://antenaone.crossradio.com.br/stream/1;"
+  },
+  {
+    "id": 59,
+    "titulo": "Rádio Inconfidência 880 AM",
+    "link": "https://ssl.zoeweb.net/proxy/inconfidencia2?mp=/stream"
+  },
+  {
+    "id": 60,
+    "titulo": "Rádio Itatiaia 610 AM 95.7 FM",
+    "link": "https://8903.brasilstream.com.br/stream"
+  },
+  {
+    "id": 61,
+    "titulo": "Radio CBN Grandes Lagos 90.9 FM",
+    "link": "https://stm10.srvstm.com:8276/stream"
+  },
+  {
+    "id": 62,
+    "titulo": "Rádio BandNews SP 96.9 FM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM_SPAAC.aac?dist=radios.com.br"
+  },
+  {
+    "id": 63,
+    "titulo": "Bons Tempos FM",
+    "link": "https://server02.ouvir.radio.br:8050/stream"
+  },
+  {
+    "id": 64,
+    "titulo": "Radio Jovem Pan 100.9 FM",
+    "link": "https://stream.zeno.fm/c45wbq2us3buv"
+  },
+  {
+    "id": 65,
+    "titulo": "Rádio Melodia 97.5 FM",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/MELODIAFMAAC.aac"
+  },
+  {
+    "id": 66,
+    "titulo": "Rádio 89 FM Rádio Rock",
+    "link": "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_89FM_ADP.aac?dist=RadiosNet"
+  },
+  {
+    "id": 67,
     "titulo": "O Canal Sertanejo",
     "link": "https://live.hunter.fm/sertanejo_high",
     "estilo": "sertanejo"
   },
   {
-    "id": 2,
+    "id": 68,
     "titulo": "O Canal Pop",
     "link": "https://live.hunter.fm/pop_high",
     "estilo": "pop"
   },
   {
-    "id": 3,
+    "id": 69,
     "titulo": "O Canal Pagode",
     "link": "https://live.hunter.fm/pagode_high",
     "estilo": "pagode"
   },
   {
-    "id": 4,
+    "id": 70,
     "titulo": "O Canal Rock",
     "link": "https://live.hunter.fm/rock_high",
     "estilo": "rock"
   },
   {
-    "id": 5,
+    "id": 71,
     "titulo": "O Canal Moda Sertaneja",
     "link": "https://live.hunter.fm/modasertaneja_high",
     "estilo": "sertanejo"
   },
   {
-    "id": 6,
+    "id": 72,
     "titulo": "O Canal Gospel",
     "link": "https://live.hunter.fm/gospel_high",
     "estilo": "gospel"
   },
   {
-    "id": 7,
+    "id": 73,
     "titulo": "O Canal Hits Brasil",
     "link": "https://live.hunter.fm/hitsbrasil_high",
     "estilo": "hits brasileiros"
   },
   {
-    "id": 8,
+    "id": 74,
     "titulo": "O Canal MPB",
     "link": "https://live.hunter.fm/mpb_high",
     "estilo": "MPB"
   },
   {
-    "id": 9,
+    "id": 75,
     "titulo": "O Canal Pop2K",
     "link": "https://live.hunter.fm/pop2k_high",
     "estilo": "pop anos 2000"
   },
   {
-    "id": 10,
+    "id": 76,
     "titulo": "O Canal 80",
     "link": "https://live.hunter.fm/80s_high",
     "estilo": "anos 80"
   },
   {
-    "id": 11,
+    "id": 77,
     "titulo": "O Canal Master",
     "link": "https://live.hunter.fm/master_high",
     "estilo": "hits / variedades"
   },
   {
-    "id": 12,
+    "id": 78,
     "titulo": "O Canal Pisadinha",
     "link": "https://live.hunter.fm/pisadinha_high",
     "estilo": "pisadinha"
   },
   {
-    "id": 13,
+    "id": 79,
     "titulo": "O Canal Tropical",
     "link": "https://live.hunter.fm/tropical_high",
     "estilo": "tropical / dance"
   },
   {
-    "id": 14,
+    "id": 80,
     "titulo": "O Canal Lo-Fi",
     "link": "https://live.hunter.fm/lofi_high",
     "estilo": "lo-fi"
   },
   {
-    "id": 15,
+    "id": 81,
     "titulo": "O Canal K-pop",
     "link": "https://live.hunter.fm/kpop_high",
     "estilo": "K-pop"
