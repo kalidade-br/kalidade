@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE RADIO</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--cyan:#00f5ff;--purple:#8b5cf6;--pink:#ff2bd6;--bg:#030305;--text:#fff;--muted:#85858f}
+html,body{width:100%;height:100%}
+body{overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+.background{position:fixed;inset:0;overflow:hidden;pointer-events:none;background:radial-gradient(circle at 50% 42%,rgba(0,245,255,.09),transparent 28%),radial-gradient(circle at 15% 90%,rgba(139,92,246,.12),transparent 35%),#030305}
+.background:before{content:"";position:absolute;width:500px;height:500px;left:50%;top:42%;transform:translate(-50%,-50%);border-radius:50%;background:conic-gradient(from 0deg,transparent,rgba(0,245,255,.1),transparent,rgba(139,92,246,.1),transparent);filter:blur(50px);animation:rotateBg 15s linear infinite}
+@keyframes rotateBg{to{transform:translate(-50%,-50%) rotate(360deg)}}
+header{position:fixed;top:0;left:0;right:0;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;z-index:100;background:linear-gradient(to bottom,rgba(3,3,5,.88),rgba(3,3,5,.2));backdrop-filter:blur(12px)}
+.logo{font-size:17px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:9px}
+.logo-icon{width:35px;height:35px;display:grid;place-items:center;border-radius:11px;color:#000;background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 0 18px rgba(0,245,255,.35)}
+.search-button{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:white;font-size:20px;cursor:pointer;transition:.2s}
+.search-button:hover{border-color:rgba(0,245,255,.5);color:var(--cyan);box-shadow:0 0 20px rgba(0,245,255,.15)}
+.search-panel{position:fixed;top:66px;left:18px;width:min(390px,calc(100% - 36px));padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:17px;background:rgba(12,12,17,.9);backdrop-filter:blur(25px);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 30px rgba(0,245,255,.05);opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none;transition:.2s;z-index:200}
+.search-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.search-input{width:100%;height:44px;border:1px solid rgba(255,255,255,.08);border-radius:12px;outline:none;padding:0 14px;background:rgba(255,255,255,.05);color:white;font-size:14px}
+.search-input:focus{border-color:rgba(0,245,255,.5);box-shadow:0 0 0 3px rgba(0,245,255,.06)}
+.search-results{max-height:300px;overflow-y:auto;margin-top:7px}
+.result{display:flex;align-items:center;gap:10px;padding:11px;border-radius:11px;cursor:pointer;transition:.15s}
+.result:hover{background:rgba(0,245,255,.08)}
+.result-icon{width:35px;height:35px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.06);font-size:16px}
+.result-name{flex:1;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-style{color:var(--muted);font-size:10px;margin-top:3px}
+.player{position:relative;width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:90px 20px 70px;z-index:2}
+.cover-wrapper{position:relative;width:min(310px,68vw);aspect-ratio:1;display:grid;place-items:center;margin-bottom:34px}
+.cover-glow{position:absolute;inset:-25px;border-radius:50%;background:conic-gradient(var(--cyan),var(--purple),var(--pink),var(--cyan));filter:blur(35px);opacity:.2;animation:glow 4s ease-in-out infinite}
+@keyframes glow{50%{opacity:.35;transform:scale(1.08)}}
+.cover{position:relative;width:100%;height:100%;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,#181822 0%,#0c0c12 45%,#050507 70%);border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 0 50px rgba(0,245,255,.05),0 25px 70px rgba(0,0,0,.5);overflow:hidden}
+.cover:before{content:"";position:absolute;inset:18px;border-radius:50%;border:1px solid rgba(0,245,255,.2);box-shadow:0 0 25px rgba(0,245,255,.08)}
+.cover-icon{font-size:clamp(55px,13vw,95px);filter:drop-shadow(0 0 15px rgba(0,245,255,.45));animation:radioFloat 3s ease-in-out infinite}
+@keyframes radioFloat{50%{transform:translateY(-5px)}}
+.live{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:99px;background:rgba(0,0,0,.55);border:1px solid rgba(0,255,157,.18);color:#00ff9d;font-size:10px;font-weight:700;backdrop-filter:blur(8px)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#00ff9d;box-shadow:0 0 10px #00ff9d;animation:livePulse 1.3s infinite}
+@keyframes livePulse{50%{opacity:.3;transform:scale(.7)}}
+.info{text-align:center;width:min(600px,100%)}
+.current-label{color:var(--cyan);font-size:10px;text-transform:uppercase;letter-spacing:3px;font-weight:700;margin-bottom:9px}
+.radio-name{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.radio-style{margin-top:8px;color:var(--muted);font-size:13px}
+.visualizer{height:27px;display:flex;align-items:end;justify-content:center;gap:4px;margin:24px 0 18px}
+.visualizer i{width:4px;border-radius:5px;background:linear-gradient(to top,var(--purple),var(--cyan));animation:bars .8s infinite alternate}
+.visualizer i:nth-child(1){height:9px;animation-delay:.1s}.visualizer i:nth-child(2){height:18px;animation-delay:.3s}.visualizer i:nth-child(3){height:26px;animation-delay:.15s}.visualizer i:nth-child(4){height:14px;animation-delay:.4s}.visualizer i:nth-child(5){height:22px;animation-delay:.2s}.visualizer i:nth-child(6){height:12px;animation-delay:.5s}.visualizer i:nth-child(7){height:20px;animation-delay:.25s}
+@keyframes bars{to{transform:scaleY(.35)}}
+.controls{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:2px}
+.control{width:52px;height:52px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);color:white;cursor:pointer;font-size:18px;transition:.2s transform,.2s background,.2s box-shadow}
+.control:hover{transform:scale(1.08);border-color:rgba(0,245,255,.35);color:var(--cyan);box-shadow:0 0 20px rgba(0,245,255,.12)}
+.play{width:68px;height:68px;font-size:24px;color:#000;border:none;background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 0 25px rgba(0,245,255,.22),0 0 50px rgba(139,92,246,.12)}
+.play:hover{color:#000;box-shadow:0 0 35px rgba(0,245,255,.35)}
+audio{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.footer{position:fixed;bottom:18px;left:0;right:0;text-align:center;color:#484851;font-size:10px;z-index:5}
+@media(max-width:600px){header{padding:0 15px}.player{padding-top:75px;padding-bottom:50px}.cover-wrapper{width:min(250px,64vw);margin-bottom:28px}.controls{gap:18px}.control{width:48px;height:48px}.play{width:62px;height:62px}.radio-name{max-width:90vw}.footer{display:none}}
+</style>
+</head>
+<body>
+<div class="background"></div>
+<header>
+<div class="logo"><div class="logo-icon">📻</div>KALIDADE</div>
+<button class="search-button" id="abrirPesquisa" aria-label="Pesquisar rádio">⌕</button>
+</header>
+<div class="search-panel" id="searchPanel">
+<input type="search" id="pesquisa" class="search-input" placeholder="Pesquisar rádio..." autocomplete="off">
+<div class="search-results" id="resultados"></div>
+</div>
+<main class="player">
+<div class="cover-wrapper">
+<div class="cover-glow"></div>
+<div class="cover">
+<div class="live"><span class="live-dot"></span>AO VIVO</div>
+<div class="cover-icon">📻</div>
+</div>
+</div>
+<div class="info">
+<div class="current-label">KALIDADE RADIO FM</div>
+<div class="radio-name" id="radioNome">Carregando...</div>
+<div class="radio-style" id="radioEstilo">Aguarde...</div>
+<div class="visualizer"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="controls">
+<button class="control" id="anterior" title="Rádio anterior">⏮</button>
+<button class="control play" id="play" title="Tocar">▶</button>
+<button class="control" id="proxima" title="Próxima rádio">⏭</button>
+</div>
+</div>
+<audio id="audio" preload="none"></audio>
+</main>
+<div class="footer">KALIDADE RADIO • INTERNET FM</div>
+<script>
+let radios=[],indiceAtual=0;
+const audio=document.getElementById("audio"),radioNome=document.getElementById("radioNome"),radioEstilo=document.getElementById("radioEstilo"),playButton=document.getElementById("play"),pesquisa=document.getElementById("pesquisa"),resultados=document.getElementById("resultados"),searchPanel=document.getElementById("searchPanel");
+async function carregarRadios(){try{const resposta=await fetch("1.json");if(!resposta.ok)throw new Error("Erro no JSON");radios=await resposta.json();if(!radios.length){radioNome.textContent="Nenhuma rádio encontrada";return}indiceAtual=0;mostrarRadio()}catch(erro){console.error(erro);radioNome.textContent="Erro ao carregar rádios";radioEstilo.textContent="Verifique o arquivo 1.json"}}
+function mostrarRadio(){if(!radios.length)return;const radio=radios[indiceAtual];radioNome.textContent=radio.titulo||"Rádio";radioEstilo.textContent=radio.estilo||"Rádio online";audio.src=radio.link;audio.load();playButton.textContent="▶"}
+async function tocar(){try{await audio.play();playButton.textContent="❚❚"}catch(erro){console.error(erro);playButton.textContent="▶"}}
+playButton.addEventListener("click",()=>audio.paused?tocar():audio.pause());
+audio.addEventListener("play",()=>playButton.textContent="❚❚");
+audio.addEventListener("pause",()=>playButton.textContent="▶");
+document.getElementById("proxima").addEventListener("click",()=>{if(!radios.length)return;indiceAtual=(indiceAtual+1)%radios.length;mostrarRadio();tocar()});
+document.getElementById("anterior").addEventListener("click",()=>{if(!radios.length)return;indiceAtual--;if(indiceAtual<0)indiceAtual=radios.length-1;mostrarRadio();tocar()});
+document.getElementById("abrirPesquisa").addEventListener("click",()=>{searchPanel.classList.toggle("open");if(searchPanel.classList.contains("open"))pesquisa.focus()});
+pesquisa.addEventListener("input",()=>{const termo=normalizar(pesquisa.value);resultados.innerHTML="";if(!termo)return;const encontrados=radios.filter(r=>normalizar(r.titulo).includes(termo)||normalizar(r.estilo).includes(termo));encontrados.forEach(radio=>{const div=document.createElement("div");div.className="result";div.innerHTML=`<div class="result-icon">📻</div><div><div class="result-name">${escaparHTML(radio.titulo)}</div>${radio.estilo?`<div class="result-style">${escaparHTML(radio.estilo)}</div>`:""}</div>`;div.addEventListener("click",()=>{const novoIndice=radios.indexOf(radio);if(novoIndice!==-1){indiceAtual=novoIndice;mostrarRadio();tocar()}searchPanel.classList.remove("open");pesquisa.value="";resultados.innerHTML=""});resultados.appendChild(div)});if(!encontrados.length)resultados.innerHTML='<div style="padding:15px;text-align:center;color:#666;font-size:12px">Nenhuma rádio encontrada</div>'});
+document.addEventListener("click",e=>{if(!searchPanel.contains(e.target)&&e.target!==document.getElementById("abrirPesquisa"))searchPanel.classList.remove("open")});
+let touchStartX=0,touchEndX=0;
+document.addEventListener("touchstart",e=>{touchStartX=e.changedTouches[0].screenX},{passive:true});
+document.addEventListener("touchend",e=>{touchEndX=e.changedTouches[0].screenX;const distancia=touchEndX-touchStartX;if(distancia<-70)document.getElementById("proxima").click();if(distancia>70)document.getElementById("anterior").click()},{passive:true});
+function normalizar(texto){return String(texto||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function escaparHTML(texto){return String(texto||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+carregarRadios();
+</script>
+</body>
+</html>
