@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>KALIDADE SNES</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+.game {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100dvh;
+    aspect-ratio: 4 / 3;
+    border: 0;
+    display: block;
+}
+
+.voltar {
+    position: fixed;
+    top: max(8px, env(safe-area-inset-top));
+    left: max(8px, env(safe-area-inset-left));
+    z-index: 10;
+    background: rgba(0, 0, 0, .55);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font: 14px "Trebuchet MS", system-ui, sans-serif;
+    cursor: pointer;
+    opacity: .4;
+}
+
+.voltar:hover,
+.voltar:focus-visible {
+    opacity: 1;
+}
+
+.erro {
+    color: #ddd;
+    font: 16px "Trebuchet MS", system-ui, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+.erro a {
+    color: #8fb0ff;
+}
+</style>
+</head>
+
+<body>
+
+<button class="voltar" id="voltar" type="button" aria-label="Voltar para a lista">← Voltar</button>
+
+<div class="game" id="game"></div>
+
+<script>
+(() => {
+    "use strict";
+
+    const params = new URLSearchParams(location.search);
+    const embed = params.get("embed");
+    const nome = params.get("nome");
+    const game = document.getElementById("game");
+
+    // Só aceita embeds https do retrogames.cc
+    function embedValido(valor) {
+        try {
+            const u = new URL(valor);
+            return (
+                u.protocol === "https:" &&
+                (u.hostname === "retrogames.cc" || u.hostname.endsWith(".retrogames.cc"))
+            );
+        } catch {
+            return false;
+        }
+    }
+
+    document.getElementById("voltar").onclick = () => {
+        if (history.length > 1) {
+            history.back();
+        } else {
+            location.href = "./";
+        }
+    };
+
+    if (embed && embedValido(embed)) {
+        if (nome) document.title = nome + " - KALIDADE SNES";
+
+        const iframe = document.createElement("iframe");
+        iframe.src = embed;
+        iframe.setAttribute("frameborder", "0");
+        iframe.setAttribute("scrolling", "no");
+        iframe.setAttribute("allowfullscreen", "");
+        iframe.setAttribute("webkitallowfullscreen", "");
+        iframe.setAttribute("mozallowfullscreen", "");
+        iframe.setAttribute("allow", "fullscreen; autoplay; gamepad; cross-origin-isolated");
+        if (nome) iframe.title = nome;
+
+        game.appendChild(iframe);
+    } else {
+        game.innerHTML =
+            '<div class="erro">Jogo não encontrado.<br><a href="./">Voltar para a lista</a></div>';
+    }
+})();
+</script>
+
+</body>
+</html>

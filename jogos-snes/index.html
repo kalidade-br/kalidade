@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KALIDADE SNES</title>
+<style>
+:root{
+  --corpo:#d9d6e2;
+  --painel:#eeecf3;
+  --tinta:#26233a;
+  --suave:#6a6680;
+  --roxo:#4b3f8c;
+  --linha:#b9b5c9;
+  --vermelho:#c9392f;
+  --amarelo:#e0b020;
+  --verde:#2f9a58;
+  --azul:#2e63c4;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --corpo:#1d1b2b;
+    --painel:#2a2740;
+    --tinta:#ecebf5;
+    --suave:#a09cbc;
+    --roxo:#9a8cf0;
+    --linha:#3d3a5a;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--corpo);
+  color:var(--tinta);
+  font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  line-height:1.4;
+}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+
+header{
+  position:sticky;top:0;z-index:5;
+  background:var(--corpo);
+  border-bottom:2px solid var(--linha);
+  padding:14px 16px 12px;
+}
+.topo{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.marca{display:flex;align-items:center;gap:12px}
+.botoes{
+  width:34px;height:34px;position:relative;flex:none;
+}
+.botoes i{
+  position:absolute;width:13px;height:13px;border-radius:50%;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.25);
+}
+.botoes i:nth-child(1){left:10.5px;top:0;background:var(--amarelo)}
+.botoes i:nth-child(2){left:0;top:10.5px;background:var(--azul)}
+.botoes i:nth-child(3){right:0;top:10.5px;background:var(--vermelho)}
+.botoes i:nth-child(4){left:10.5px;bottom:0;background:var(--verde)}
+h1{
+  margin:0;font-size:1.5rem;letter-spacing:.02em;font-weight:900;
+}
+h1 span{color:var(--roxo)}
+.busca{
+  flex:1 1 260px;display:flex;gap:8px;min-width:0;
+}
+.busca input{
+  flex:1;min-width:0;
+  background:var(--painel);
+  border:2px solid var(--linha);
+  border-radius:8px;
+  padding:10px 12px;
+}
+.busca input:focus{border-color:var(--roxo)}
+.busca button{
+  background:var(--painel);border:2px solid var(--linha);
+  border-radius:8px;padding:0 12px;cursor:pointer;
+}
+.info{
+  max-width:1200px;margin:8px auto 0;
+  font-size:.85rem;color:var(--suave);
+}
+
+main{max-width:1200px;margin:0 auto;padding:16px}
+.grade{
+  display:grid;gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+}
+.jogo{
+  display:flex;flex-direction:column;text-align:left;
+  background:var(--painel);
+  border:2px solid var(--linha);
+  border-radius:10px;overflow:hidden;cursor:pointer;padding:0;
+  text-decoration:none;color:inherit;
+}
+.jogo:hover{border-color:var(--roxo)}
+.capa{
+  aspect-ratio:4/3;background:var(--corpo);
+  display:grid;place-items:center;overflow:hidden;
+  font-size:2rem;font-weight:900;color:var(--suave);
+}
+.capa img{width:100%;height:100%;object-fit:contain;display:block}
+.nome{
+  padding:8px 10px 10px;font-size:.88rem;font-weight:700;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  min-height:3.1em;
+}
+
+.rodape{text-align:center;padding:22px 0 40px}
+.mais{
+  background:var(--roxo);color:#fff;border:0;border-radius:8px;
+  padding:12px 26px;font-weight:700;cursor:pointer;
+}
+.mais:hover{filter:brightness(1.1)}
+.vazio,.erro{
+  text-align:center;color:var(--suave);padding:50px 10px;
+}
+.erro label{
+  display:inline-block;margin-top:12px;background:var(--roxo);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:700;
+}
+.erro input{display:none}
+
+.busca button.ativo{background:var(--roxo);border-color:var(--roxo);color:#fff}
+.limpar-rec{
+  background:var(--painel);border:2px solid var(--linha);border-radius:8px;
+  padding:10px 20px;cursor:pointer;margin-left:8px;
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="topo">
+    <div class="marca">
+      <div class="botoes" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <h1>KALIDADE <span>SNES</span></h1>
+    </div>
+    <form class="busca" role="search" onsubmit="return false">
+      <input id="busca" type="search" placeholder="Pesquisar jogo (tecle / para focar)"
+             autocomplete="off" aria-label="Pesquisar jogo">
+      <button type="button" id="limpar" aria-label="Limpar pesquisa">Limpar</button>
+      <button type="button" id="recentes" aria-pressed="false">Recentes</button>
+    </form>
+  </div>
+  <div class="info" id="info" aria-live="polite">Carregando snes.json...</div>
+</header>
+
+<main>
+  <div class="grade" id="grade"></div>
+  <div class="rodape" id="rodape"></div>
+</main>
+
+
+<script>
+(() => {
+  "use strict";
+
+  const ARQUIVO = "snes.json";
+  const POR_PAGINA = 100;
+
+  const $ = id => document.getElementById(id);
+  const grade = $("grade"), rodape = $("rodape"), info = $("info");
+  const busca = $("busca"), btnRecentes = $("recentes");
+
+  let todos = [];
+  let filtrados = [];
+  let mostrados = 0;
+  let modoRecentes = false;
+
+  const CHAVE = "kalidade_snes_recentes";
+  const MAX_RECENTES = 40;
+
+  // Remove acentos e deixa minúsculo para a busca
+  const normalizar = t =>
+    (t || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  // ---------- carregar ----------
+  async function carregar() {
+    try {
+      const r = await fetch(ARQUIVO, { cache: "no-cache" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      iniciar(await r.json());
+    } catch (e) {
+      grade.innerHTML = "";
+      info.textContent = "Não foi possível carregar " + ARQUIVO + ".";
+      rodape.innerHTML = `
+        <div class="erro">
+          Coloque <b>${ARQUIVO}</b> na mesma pasta desta página e abra por um servidor
+          (o navegador bloqueia fetch em arquivo local).<br>
+          Ou escolha o arquivo manualmente:<br>
+          <label>Escolher snes.json<input type="file" accept=".json,application/json" id="arq"></label>
+        </div>`;
+      $("arq").onchange = async ev => {
+        const f = ev.target.files[0];
+        if (!f) return;
+        try { iniciar(JSON.parse(await f.text())); }
+        catch { info.textContent = "Arquivo JSON inválido."; }
+      };
+    }
+  }
+
+  function iniciar(dados) {
+    if (!Array.isArray(dados)) throw new Error("JSON inesperado");
+    todos = dados
+      .filter(j => j && (j.nome || j.jogo))
+      .map(j => ({ ...j, nome: j.nome || j.jogo, _n: normalizar(j.nome || j.jogo) }));
+    rodape.innerHTML = "";
+    filtrar();
+  }
+
+  // ---------- filtro + paginação ----------
+  function filtrar() {
+    const termos = normalizar(busca.value).split(/\s+/).filter(Boolean);
+    const base = modoRecentes
+      ? lerRecentes().map(j => ({ ...j, _n: normalizar(j.nome) }))
+      : todos;
+
+    filtrados = termos.length
+      ? base.filter(j => termos.every(t => j._n.includes(t)))
+      : base;
+
+    grade.innerHTML = "";
+    mostrados = 0;
+    maisJogos();
+  }
+
+  function maisJogos() {
+    const fim = Math.min(mostrados + POR_PAGINA, filtrados.length);
+    const frag = document.createDocumentFragment();
+
+    for (let i = mostrados; i < fim; i++) frag.appendChild(criarCard(filtrados[i]));
+
+    grade.appendChild(frag);
+    mostrados = fim;
+    atualizarRodape();
+  }
+
+  function atualizarRodape() {
+    const total = filtrados.length;
+    const buscando = busca.value.trim() !== "";
+
+    info.textContent = total
+      ? `Mostrando ${mostrados} de ${total} jogos${buscando ? " encontrados" : ""}`
+      : "";
+
+    rodape.innerHTML = "";
+
+    if (!total) {
+      rodape.innerHTML = modoRecentes && !buscando
+        ? '<div class="vazio">Você ainda não jogou nada. Os jogos que abrir aparecem aqui.</div>'
+        : '<div class="vazio">Nenhum jogo encontrado. Tente outro nome.</div>';
+      return;
+    }
+
+    if (mostrados < total) {
+      const resta = total - mostrados;
+      const b = document.createElement("button");
+      b.className = "mais";
+      b.textContent = `Ver mais ${Math.min(POR_PAGINA, resta)} (restam ${resta})`;
+      b.onclick = maisJogos;
+      rodape.appendChild(b);
+    }
+
+    if (modoRecentes && !buscando) {
+      const l = document.createElement("button");
+      l.className = "limpar-rec";
+      l.textContent = "Apagar recentes";
+      l.onclick = () => {
+        try { localStorage.removeItem(CHAVE); } catch {}
+        atualizarBotaoRecentes();
+        filtrar();
+      };
+      rodape.appendChild(l);
+    }
+  }
+
+  // ---------- recentes ----------
+  function lerRecentes() {
+    try {
+      const r = JSON.parse(localStorage.getItem(CHAVE));
+      return Array.isArray(r) ? r : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function salvarRecente(j) {
+    const lista = lerRecentes().filter(x => x.embed !== j.embed);
+    lista.unshift({ id: j.id, nome: j.nome, capa: j.capa, embed: j.embed, pagina: j.pagina });
+    try {
+      localStorage.setItem(CHAVE, JSON.stringify(lista.slice(0, MAX_RECENTES)));
+    } catch {}
+    atualizarBotaoRecentes();
+  }
+
+  function atualizarBotaoRecentes() {
+    const n = lerRecentes().length;
+    btnRecentes.textContent = n ? `Recentes (${n})` : "Recentes";
+    btnRecentes.classList.toggle("ativo", modoRecentes);
+    btnRecentes.setAttribute("aria-pressed", modoRecentes);
+  }
+
+  function criarCard(j) {
+    const b = document.createElement("a");
+    b.className = "jogo";
+    b.href = urlJogo(j);
+
+    if (j.embed) {
+      b.addEventListener("click", () => salvarRecente(j));
+    } else {
+      b.target = "_blank";
+      b.rel = "noopener";
+    }
+
+    const capa = document.createElement("div");
+    capa.className = "capa";
+
+    if (j.capa) {
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.alt = "";
+      img.src = j.capa;
+      img.onerror = () => { img.remove(); capa.textContent = j.nome.charAt(0).toUpperCase(); };
+      capa.appendChild(img);
+    } else {
+      capa.textContent = j.nome.charAt(0).toUpperCase();
+    }
+
+    const nome = document.createElement("div");
+    nome.className = "nome";
+    nome.textContent = j.nome;
+    nome.title = j.nome;
+
+    b.append(capa, nome);
+    return b;
+  }
+
+  // Jogo abre numa página isolada: play.html?embed=...
+  function urlJogo(j) {
+    if (!j.embed) return j.pagina || "#";
+    return "play.html?embed=" + encodeURIComponent(j.embed) +
+           "&nome=" + encodeURIComponent(j.nome);
+  }
+
+  // ---------- eventos ----------
+  let timer;
+  busca.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(filtrar, 150);
+  });
+
+  $("limpar").onclick = () => { busca.value = ""; filtrar(); busca.focus(); };
+
+  btnRecentes.onclick = () => {
+    modoRecentes = !modoRecentes;
+    atualizarBotaoRecentes();
+    filtrar();
+  };
+
+  // Ao voltar do jogo, atualiza a contagem (e a lista, se estiver em Recentes)
+  window.addEventListener("pageshow", e => {
+    if (!e.persisted) return;
+    atualizarBotaoRecentes();
+    if (modoRecentes) filtrar();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "/" && document.activeElement !== busca) {
+      e.preventDefault();
+      busca.focus();
+    }
+  });
+
+  atualizarBotaoRecentes();
+  carregar();
+})();
+</script>
+</body>
+</html>
