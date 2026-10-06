@@ -28,5 +28,11 @@
     "nome": "Granny 1",
     "capa": "https://static.playhop.com/images/10595_1892995_36298/6bc845326/2a0000018fb40fca_1bbb993/08acfaa3b034d9a9d4a0_10814b/pjpg128x128",
     "embed": "https://playhop.com/pt/dist-app/259805?skip-guard=1&header=no&utm_source=distrib&utm_medium=moosite&clid=6922196&flags=%7B%22adv_sticky_banner_disabled%22%3Atrue%7D&mp_game_id=229316&mp_game_uid=granny&mp_game_url=https%3A%2F%2Fwww.minijogos.com.br%2Fjogo%2Fgranny&mp_int=1&mp_locale=pt_BR&mp_mobile=1&mp_player_type=IFRAME&mp_site_name=minijogos.com.br&mp_site_url=https%3A%2F%2Fwww.minijogos.com.br%2F&mp_timezone=America%2FFortaleza"
+  },
+  {
+    "id": 6,
+    "nome": "MINECRAFT 1.8.8 PC",
+    "capa": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFOMheFqGupOnz2FKwAQ_0aES9d78WheCO-UdvRAwpKw&s",
+    "embed": "https://eaglercraft.q13x.com/1.8.8_2/wasm/?retina=true"
   }
 ]
