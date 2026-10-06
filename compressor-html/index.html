@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE HTML COMPRESSOR</title>
+<style>
+:root{--cyan:#00f7ff;--blue:#0066ff;--purple:#a000ff;--pink:#ff00cc;--green:#00ff88;--red:#ff3158;--bg:#03050b;--card:rgba(8,12,25,.88);--text:#eafcff;--muted:#91a2b8}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(circle at 15% 15%,rgba(0,247,255,.11),transparent 30%),radial-gradient(circle at 85% 85%,rgba(160,0,255,.13),transparent 30%),var(--bg);overflow-x:hidden}
+body:before,body:after{content:"";position:fixed;width:280px;height:280px;border-radius:50%;filter:blur(90px);opacity:.2;pointer-events:none;animation:float 9s infinite alternate ease-in-out}
+body:before{background:var(--cyan);top:-100px;left:-100px}body:after{background:var(--purple);right:-100px;bottom:-100px;animation-delay:2s}
+@keyframes float{from{transform:translate(0)}to{transform:translate(55px,40px)}}
+.container{width:min(1100px,94%);margin:auto;padding:28px 0 50px}
+header{text-align:center;margin-bottom:24px}.logo{font-size:clamp(2rem,7vw,4rem);font-weight:900;letter-spacing:4px;text-shadow:0 0 6px var(--cyan),0 0 18px var(--cyan),0 0 38px var(--blue);animation:pulse 2.5s infinite alternate}@keyframes pulse{to{filter:brightness(1.35)}}
+.subtitle{color:var(--muted);font-size:14px;margin-top:5px}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.nav button{padding:16px;border:1px solid rgba(0,247,255,.22);border-radius:14px;background:rgba(5,10,20,.8);color:#aebed0;font-weight:800;cursor:pointer;transition:.25s}
+.nav button.active,.nav button:hover{color:#fff;border-color:var(--cyan);background:rgba(0,247,255,.09);box-shadow:0 0 20px rgba(0,247,255,.13);transform:translateY(-2px)}
+.page{display:none;animation:in .3s ease}.page.active{display:block}@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card{position:relative;overflow:hidden;background:var(--card);border:1px solid rgba(0,247,255,.2);border-radius:20px;padding:20px;margin-bottom:18px;backdrop-filter:blur(15px);box-shadow:0 0 30px rgba(0,0,0,.35)}
+.card:before{content:"";position:absolute;top:0;left:-100%;width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:scan 4s linear infinite}@keyframes scan{to{left:100%}}
+h2{margin:0 0 8px}p{color:#9eafc3;line-height:1.55}.drop{border:2px dashed rgba(0,247,255,.3);border-radius:18px;padding:35px 20px;text-align:center;background:rgba(0,247,255,.025);transition:.2s}.drop.drag{border-color:var(--cyan);background:rgba(0,247,255,.08)}.drop-icon{font-size:44px;margin-bottom:8px}.drop-title{font-size:19px;font-weight:800}.drop-sub{color:#71839a;font-size:13px;margin:8px 0 18px}
+input[type=file]{display:none}.choose{display:inline-block;padding:12px 20px;border-radius:11px;background:var(--cyan);color:#001015;font-weight:800;cursor:pointer;box-shadow:0 0 18px rgba(0,247,255,.22)}
+textarea{width:100%;min-height:340px;resize:vertical;border:1px solid rgba(0,247,255,.2);outline:none;border-radius:13px;background:#02050c;color:#eaffff;padding:14px;font:13px Consolas,monospace;line-height:1.5}textarea:focus{border-color:var(--cyan);box-shadow:0 0 15px rgba(0,247,255,.12)}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}button.action{border:0;border-radius:11px;padding:12px 17px;font-weight:800;cursor:pointer;transition:.2s}button.action:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.primary{background:var(--cyan);color:#001015}.green{background:var(--green);color:#00150b}.purple{background:var(--purple);color:white}.danger{background:var(--pink);color:white}.secondary{background:#101827;color:white;border:1px solid #29384e}
+.status{margin-top:14px;padding:13px;border-radius:11px;background:rgba(255,255,255,.035);color:#a7b8ca;font-size:14px}.status.ok{color:var(--green);border:1px solid rgba(0,255,136,.2)}.status.error{color:#ff718b;border:1px solid rgba(255,49,88,.22)}
+.file-info{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px;border-radius:12px;background:rgba(255,255,255,.035);color:#b8c8d9}.file-name{font-weight:800;color:#fff;word-break:break-all}.file-size{color:var(--cyan);font-family:Consolas,monospace}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:15px}.stat{padding:14px;border-radius:12px;text-align:center;background:rgba(0,247,255,.035);border:1px solid rgba(0,247,255,.1)}.stat b{display:block;color:var(--cyan);font-size:19px;margin-bottom:4px}.stat span{font-size:10px;color:#71839a}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.info-box{padding:14px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);color:#a9b9ca;line-height:1.5;font-size:13px}.info-box b{color:var(--cyan)}
+@media(max-width:650px){.container{padding-top:20px}.stats{grid-template-columns:1fr 1fr}.info-grid{grid-template-columns:1fr}.buttons button{flex:1}.drop{padding:28px 14px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<div class="logo">KALIDADE</div>
+<div class="subtitle">HTML COMPRESSOR • PROFISSIONAL • OFFLINE</div>
+</header>
+
+<div class="nav">
+<button id="tabCode" class="active" onclick="showPage('code')">⌨️ COMPRIMIR CÓDIGO</button>
+<button id="tabFile" onclick="showPage('file')">📁 COMPRIMIR ARQUIVO</button>
+</div>
+
+<!-- PÁGINA 1 -->
+<section id="codePage" class="page active">
+<div class="card">
+<h2>⌨️ Comprimir código HTML</h2>
+<p>Cole seu HTML diretamente aqui. O compressor remove o excesso sem mexer no conteúdo protegido de scripts, estilos, textarea e pre.</p>
+<textarea id="codeInput" spellcheck="false" placeholder="Cole seu código HTML aqui..."></textarea>
+<div class="buttons">
+<button class="action primary" onclick="compressCode()">⚡ COMPRIMIR</button>
+<button class="action secondary" onclick="copyCode()">📋 COPIAR</button>
+<button class="action danger" onclick="clearCode()">🗑 LIMPAR</button>
+</div>
+<div id="codeStatus" class="status">Aguardando código...</div>
+</div>
+
+<div class="card">
+<h2>🚀 Resultado</h2>
+<textarea id="codeOutput" readonly spellcheck="false" placeholder="O HTML comprimido aparecerá aqui..."></textarea>
+<div class="stats">
+<div class="stat"><b id="cOrig">0 B</b><span>ORIGINAL</span></div>
+<div class="stat"><b id="cComp">0 B</b><span>COMPRIMIDO</span></div>
+<div class="stat"><b id="cSave">0 B</b><span>ECONOMIZADO</span></div>
+<div class="stat"><b id="cPct">0%</b><span>REDUÇÃO</span></div>
+</div>
+</div>
+</section>
+
+<!-- PÁGINA 2 -->
+<section id="filePage" class="page">
+<div class="card">
+<h2>📁 Comprimir arquivo HTML</h2>
+<p>Para arquivos grandes, envie o próprio <b>.html</b> ou <b>.htm</b>. O processamento acontece no seu aparelho, sem enviar o arquivo para servidor.</p>
+
+<div id="drop" class="drop">
+<div class="drop-icon">📦</div>
+<div class="drop-title">Arraste seu arquivo aqui</div>
+<div class="drop-sub">ou escolha um arquivo HTML do aparelho</div>
+<label class="choose" for="fileInput">📁 ESCOLHER ARQUIVO</label>
+<input id="fileInput" type="file" accept=".html,.htm,text/html">
+</div>
+
+<div id="fileInfo" class="file-info" style="display:none">
+<div>📄 <span id="fileName" class="file-name"></span></div>
+<div id="fileSize" class="file-size"></div>
+</div>
+
+<div class="buttons">
+<button id="compressFileBtn" class="action primary" onclick="compressFile()" disabled>⚡ COMPRIMIR ARQUIVO</button>
+<button class="action danger" onclick="clearFile()">🗑 LIMPAR</button>
+</div>
+
+<div id="fileStatus" class="status">Nenhum arquivo selecionado.</div>
+</div>
+
+<div class="card">
+<h2>📊 Resultado do arquivo</h2>
+<div class="stats">
+<div class="stat"><b id="fOrig">0 B</b><span>ORIGINAL</span></div>
+<div class="stat"><b id="fComp">0 B</b><span>COMPRIMIDO</span></div>
+<div class="stat"><b id="fSave">0 B</b><span>ECONOMIZADO</span></div>
+<div class="stat"><b id="fPct">0%</b><span>REDUÇÃO</span></div>
+</div>
+<div class="buttons">
+<button id="downloadBtn" class="action green" onclick="downloadFile()" disabled>⬇️ BAIXAR HTML COMPRIMIDO</button>
+</div>
+</div>
+</section>
+
+<div class="card">
+<h2>🧠 Compressor profissional</h2>
+<div class="info-grid">
+<div class="info-box"><b>✓ Comentários</b><br>Remove comentários HTML normais, preservando condicionais antigas.</div>
+<div class="info-box"><b>✓ Espaços</b><br>Reduz espaços, tabs e quebras desnecessárias entre elementos.</div>
+<div class="info-box"><b>✓ Scripts e CSS</b><br>Protege conteúdos de script e style para evitar alterações perigosas.</div>
+<div class="info-box"><b>✓ Arquivos grandes</b><br>A opção de upload permite trabalhar diretamente com arquivos HTML grandes.</div>
+<div class="info-box"><b>✓ Sem servidor</b><br>O arquivo não é enviado para a internet. Tudo roda no navegador.</div>
+<div class="info-box"><b>✓ Download</b><br>Depois da compressão, você baixa um novo HTML preservando o original.</div>
+</div>
+</div>
+</div>
+
+<script>
+let selectedFile=null;
+let compressedFileBlob=null;
+let compressedFileName="";
+
+function showPage(page){
+document.getElementById("codePage").classList.toggle("active",page==="code");
+document.getElementById("filePage").classList.toggle("active",page==="file");
+document.getElementById("tabCode").classList.toggle("active",page==="code");
+document.getElementById("tabFile").classList.toggle("active",page==="file");
+}
+
+function compressHTML(source){
+const protectedBlocks=[];
+let html=source.replace(/<(pre|textarea|script|style)\b[^>]*>[\s\S]*?<\/\1>/gi,m=>{
+const id="___KALIDADE_PROTECTED_"+protectedBlocks.length+"___";
+protectedBlocks.push(m);
+return id;
+});
+html=html.replace(/<!--(?!\[if)[\s\S]*?-->/g,"");
+html=html.replace(/>\s+</g,"><");
+html=html.replace(/[ \t]{2,}/g," ");
+html=html.replace(/>\s+/g,">");
+html=html.replace(/\s+</g,"<");
+html=html.trim();
+protectedBlocks.forEach((block,i)=>{
+html=html.replace("___KALIDADE_PROTECTED_"+i+"___",block);
+});
+return html;
+}
+
+function formatBytes(bytes){
+if(bytes<1024)return bytes+" B";
+if(bytes<1048576)return (bytes/1024).toFixed(2)+" KB";
+return (bytes/1048576).toFixed(2)+" MB";
+}
+
+function updateStats(prefix,original,compressed){
+const saved=Math.max(0,original-compressed);
+const pct=original?((saved/original)*100).toFixed(1):"0.0";
+document.getElementById(prefix+"Orig").textContent=formatBytes(original);
+document.getElementById(prefix+"Comp").textContent=formatBytes(compressed);
+document.getElementById(prefix+"Save").textContent=formatBytes(saved);
+document.getElementById(prefix+"Pct").textContent=pct+"%";
+return pct;
+}
+
+function compressCode(){
+const input=document.getElementById("codeInput").value;
+const status=document.getElementById("codeStatus");
+if(!input.trim()){
+status.className="status error";
+status.textContent="❌ Cole algum código HTML primeiro.";
+return;
+}
+try{
+const result=compressHTML(input);
+document.getElementById("codeOutput").value=result;
+const pct=updateStats("c",new Blob([input]).size,new Blob([result]).size);
+status.className="status ok";
+status.innerHTML="✓ Código comprimido com sucesso! Redução de <b>"+pct+"%</b>.";
+}catch(e){
+status.className="status error";
+status.textContent="❌ Erro: "+e.message;
+}
+}
+
+function copyCode(){
+const text=document.getElementById("codeOutput").value;
+if(!text)return;
+navigator.clipboard.writeText(text).then(()=>{
+const s=document.getElementById("codeStatus");
+s.className="status ok";s.textContent="✓ HTML comprimido copiado!";
+}).catch(()=>{
+const a=document.getElementById("codeOutput");a.removeAttribute("readonly");a.select();document.execCommand("copy");a.setAttribute("readonly","");
+});
+}
+
+function clearCode(){
+document.getElementById("codeInput").value="";
+document.getElementById("codeOutput").value="";
+updateStats("c",0,0);
+const s=document.getElementById("codeStatus");s.className="status";s.textContent="Aguardando código...";
+}
+
+document.getElementById("fileInput").addEventListener("change",function(){
+if(this.files[0]) selectFile(this.files[0]);
+});
+
+const drop=document.getElementById("drop");
+["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("drag")}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("drag")}));
+drop.addEventListener("drop",e=>{
+const file=e.dataTransfer.files[0];
+if(file)selectFile(file);
+});
+
+function selectFile(file){
+if(!/\.(html?|HTML?)$/.test(file.name)){
+document.getElementById("fileStatus").className="status error";
+document.getElementById("fileStatus").textContent="❌ Selecione um arquivo .html ou .htm.";
+return;
+}
+selectedFile=file;
+compressedFileBlob=null;
+document.getElementById("fileName").textContent=file.name;
+document.getElementById("fileSize").textContent=formatBytes(file.size);
+document.getElementById("fileInfo").style.display="flex";
+document.getElementById("compressFileBtn").disabled=false;
+document.getElementById("downloadBtn").disabled=true;
+document.getElementById("fileStatus").className="status";
+document.getElementById("fileStatus").textContent="✓ Arquivo pronto para compressão.";
+updateStats("f",file.size,0);
+}
+
+async function compressFile(){
+if(!selectedFile)return;
+const status=document.getElementById("fileStatus");
+try{
+status.className="status";
+status.textContent="⏳ Lendo e comprimindo arquivo...";
+const source=await selectedFile.text();
+const result=compressHTML(source);
+const originalBytes=new Blob([source]).size;
+const compressedBytes=new Blob([result]).size;
+compressedFileBlob=new Blob([result],{type:"text/html;charset=utf-8"});
+compressedFileName=selectedFile.name.replace(/\.(html?)$/i,"")+".min.html";
+const pct=updateStats("f",originalBytes,compressedBytes);
+document.getElementById("downloadBtn").disabled=false;
+status.className="status ok";
+status.innerHTML="✓ Arquivo comprimido! Redução de <b>"+pct+"%</b>. Agora você pode baixar o resultado.";
+}catch(e){
+status.className="status error";
+status.textContent="❌ Erro ao processar: "+e.message;
+}
+}
+
+function downloadFile(){
+if(!compressedFileBlob)return;
+const url=URL.createObjectURL(compressedFileBlob);
+const a=document.createElement("a");
+a.href=url;
+a.download=compressedFileName;
+document.body.appendChild(a);
+a.click();
+a.remove();
+setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function clearFile(){
+selectedFile=null;
+compressedFileBlob=null;
+compressedFileName="";
+document.getElementById("fileInput").value="";
+document.getElementById("fileInfo").style.display="none";
+document.getElementById("compressFileBtn").disabled=true;
+document.getElementById("downloadBtn").disabled=true;
+document.getElementById("fileStatus").className="status";
+document.getElementById("fileStatus").textContent="Nenhum arquivo selecionado.";
+updateStats("f",0,0);
+}
+</script>
+</body>
+</html>
