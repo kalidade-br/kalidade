@@ -34,5 +34,11 @@
     "nome": "MINECRAFT 1.8.8 PC",
     "capa": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFOMheFqGupOnz2FKwAQ_0aES9d78WheCO-UdvRAwpKw&s",
     "embed": "https://eaglercraft.q13x.com/1.8.8_2/wasm/?retina=true"
+  },
+  {
+    "id": 7,
+    "nome": "CS PORTABLE PC",
+    "capa": "https://data.gameflare.com/games/2594/jIBLk1kQN4kuDX-400-300.jpg",
+    "embed": "https://www.gameflare.com/embed/cs-portable/"
   }
 ]
