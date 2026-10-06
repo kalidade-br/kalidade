@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KALIDADE A1Z26</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at 20% 20%, #151044 0%, transparent 35%),
+        radial-gradient(circle at 80% 80%, #102d3d 0%, transparent 35%),
+        #050509;
+    color: #fff;
+    padding: 20px;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+    width: 100%;
+    max-width: 850px;
+    margin: auto;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo {
+    font-size: clamp(30px, 8vw, 58px);
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #fff;
+
+    text-shadow:
+        0 0 5px #00ffff,
+        0 0 15px #00ffff,
+        0 0 30px #00ffff,
+        0 0 60px #0066ff;
+}
+
+.subtitle {
+    margin-top: 8px;
+    color: #8fffff;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+    position: relative;
+    background: rgba(10, 10, 20, 0.85);
+    border: 1px solid #00ffff;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 0 8px rgba(0,255,255,.5),
+        inset 0 0 20px rgba(0,255,255,.04);
+}
+
+.card h2 {
+    margin: 0 0 15px;
+    color: #00ffff;
+    font-size: 21px;
+
+    text-shadow:
+        0 0 8px #00ffff;
+}
+
+/* =========================
+   TEXTAREA
+========================= */
+
+textarea {
+    width: 100%;
+    min-height: 130px;
+    resize: vertical;
+
+    background: #050509;
+    color: #fff;
+
+    border: 1px solid #333;
+    border-radius: 12px;
+
+    padding: 15px;
+
+    font-size: 16px;
+    font-family: monospace;
+
+    outline: none;
+
+    transition: .2s;
+}
+
+textarea:focus {
+    border-color: #00ffff;
+
+    box-shadow:
+        0 0 8px #00ffff,
+        inset 0 0 10px rgba(0,255,255,.05);
+}
+
+textarea::placeholder {
+    color: #666;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+button {
+    border: none;
+    border-radius: 10px;
+
+    padding: 13px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.btn-main {
+    background: #00ffff;
+    color: #001010;
+
+    box-shadow:
+        0 0 8px #00ffff,
+        0 0 20px rgba(0,255,255,.4);
+}
+
+.btn-main:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 0 12px #00ffff,
+        0 0 30px #00ffff;
+}
+
+.btn-copy {
+    background: transparent;
+    color: #00ffff;
+    border: 1px solid #00ffff;
+
+    box-shadow:
+        0 0 7px rgba(0,255,255,.4);
+}
+
+.btn-copy:hover {
+    background: rgba(0,255,255,.1);
+}
+
+.btn-clear {
+    background: transparent;
+    color: #ff4dff;
+    border: 1px solid #ff4dff;
+
+    box-shadow:
+        0 0 7px rgba(255,77,255,.4);
+}
+
+.btn-clear:hover {
+    background: rgba(255,77,255,.1);
+}
+
+/* =========================
+   RESULTADO
+========================= */
+
+.result-title {
+    margin-top: 18px;
+    margin-bottom: 8px;
+
+    color: #aaa;
+    font-size: 13px;
+}
+
+.resultado {
+    min-height: 60px;
+
+    background: #020204;
+
+    border: 1px solid #222;
+    border-radius: 12px;
+
+    padding: 15px;
+
+    color: #7affff;
+
+    font-family: monospace;
+    font-size: 17px;
+
+    word-break: break-word;
+
+    box-shadow:
+        inset 0 0 15px rgba(0,255,255,.04);
+}
+
+/* =========================
+   TABELA A1Z26
+========================= */
+
+.tabela {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    gap: 6px;
+
+    margin-top: 10px;
+}
+
+.letra {
+    background: #080810;
+
+    border: 1px solid #222;
+    border-radius: 7px;
+
+    text-align: center;
+
+    padding: 8px 3px;
+
+    font-family: monospace;
+
+    transition: .2s;
+}
+
+.letra:hover {
+    border-color: #00ffff;
+
+    color: #00ffff;
+
+    box-shadow:
+        0 0 8px #00ffff;
+}
+
+.letra strong {
+    display: block;
+    font-size: 16px;
+}
+
+.letra small {
+    color: #777;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #555;
+
+    font-size: 12px;
+}
+
+.footer span {
+    color: #00ffff;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .card {
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .tabela {
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    textarea {
+        min-height: 110px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="logo">
+            KALIDADE A1Z26
+        </div>
+
+        <div class="subtitle">
+            🔐 SISTEMA DE CODIFICAÇÃO
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ENCODE
+    ========================== -->
+
+    <div class="card">
+
+        <h2>⚡ ENCODE — TEXTO → NÚMEROS</h2>
+
+        <textarea
+            id="encodeInput"
+            placeholder="Digite sua palavra ou frase aqui..."
+        ></textarea>
+
+        <div class="buttons">
+
+            <button
+                class="btn-main"
+                onclick="encodeTexto()"
+            >
+                🔐 CODIFICAR
+            </button>
+
+            <button
+                class="btn-clear"
+                onclick="limparEncode()"
+            >
+                ✕ LIMPAR
+            </button>
+
+        </div>
+
+        <div class="result-title">
+            RESULTADO
+        </div>
+
+        <div
+            class="resultado"
+            id="encodeResult"
+        >
+            Aguardando texto...
+        </div>
+
+        <button
+            class="btn-copy"
+            onclick="copiar('encodeResult')"
+        >
+            📋 COPIAR RESULTADO
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         DECODE
+    ========================== -->
+
+    <div class="card">
+
+        <h2>⚡ DECODE — NÚMEROS → TEXTO</h2>
+
+        <textarea
+            id="decodeInput"
+            placeholder="Exemplo: 11-1-12-9-4-1-4-5"
+        ></textarea>
+
+        <div class="buttons">
+
+            <button
+                class="btn-main"
+                onclick="decodeTexto()"
+            >
+                🔓 DECODIFICAR
+            </button>
+
+            <button
+                class="btn-clear"
+                onclick="limparDecode()"
+            >
+                ✕ LIMPAR
+            </button>
+
+        </div>
+
+        <div class="result-title">
+            RESULTADO
+        </div>
+
+        <div
+            class="resultado"
+            id="decodeResult"
+        >
+            Aguardando números...
+        </div>
+
+        <button
+            class="btn-copy"
+            onclick="copiar('decodeResult')"
+        >
+            📋 COPIAR RESULTADO
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         TABELA
+    ========================== -->
+
+    <div class="card">
+
+        <h2>🔢 TABELA A1Z26</h2>
+
+        <div
+            class="tabela"
+            id="tabela"
+        ></div>
+
+    </div>
+
+
+    <div class="footer">
+        KALIDADE <span>•</span> A1Z26
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   CRIAR TABELA
+========================================= */
+
+function criarTabela() {
+
+    const tabela =
+        document.getElementById("tabela");
+
+    for (let i = 1; i <= 26; i++) {
+
+        const letra =
+            String.fromCharCode(64 + i);
+
+        const div =
+            document.createElement("div");
+
+        div.className = "letra";
+
+        div.innerHTML = `
+            <strong>${letra}</strong>
+            <small>${i}</small>
+        `;
+
+        tabela.appendChild(div);
+    }
+}
+
+criarTabela();
+
+
+/* =========================================
+   ENCODE
+   A = 1
+   B = 2
+   ...
+   Z = 26
+========================================= */
+
+function encodeTexto() {
+
+    const input =
+        document.getElementById("encodeInput").value;
+
+    let resultado = [];
+
+    for (const caractere of input) {
+
+        const letra =
+            caractere.toUpperCase();
+
+        if (
+            letra >= "A" &&
+            letra <= "Z"
+        ) {
+
+            const numero =
+                letra.charCodeAt(0) - 64;
+
+            resultado.push(numero);
+
+        }
+
+        else if (caractere === " ") {
+
+            resultado.push("0");
+
+        }
+
+        /*
+         * Mantém alguns caracteres especiais.
+         * Eles são ignorados na codificação.
+         */
+    }
+
+    document.getElementById("encodeResult")
+        .textContent =
+        resultado.length
+        ? resultado.join("-")
+        : "Nenhum resultado.";
+}
+
+
+/* =========================================
+   DECODE
+========================================= */
+
+function decodeTexto() {
+
+    const input =
+        document.getElementById("decodeInput").value.trim();
+
+    if (!input) {
+
+        document.getElementById("decodeResult")
+            .textContent =
+            "Nenhum número informado.";
+
+        return;
+    }
+
+    /*
+     * Aceita:
+     *
+     * 1-2-3
+     * 1 2 3
+     * 1,2,3
+     *
+     */
+
+    const numeros =
+        input.split(/[-,\s]+/);
+
+    let resultado = "";
+
+    for (const valor of numeros) {
+
+        const numero =
+            parseInt(valor, 10);
+
+        if (numero === 0) {
+
+            resultado += " ";
+
+        }
+
+        else if (
+            numero >= 1 &&
+            numero <= 26
+        ) {
+
+            resultado +=
+                String.fromCharCode(
+                    numero + 64
+                );
+
+        }
+
+    }
+
+    document.getElementById("decodeResult")
+        .textContent =
+        resultado || "Números inválidos.";
+}
+
+
+/* =========================================
+   COPIAR
+========================================= */
+
+async function copiar(id) {
+
+    const texto =
+        document.getElementById(id).textContent;
+
+    if (
+        !texto ||
+        texto.includes("Aguardando") ||
+        texto.includes("Nenhum")
+    ) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(texto);
+
+        alert("✅ Resultado copiado!");
+
+    } catch (erro) {
+
+        /*
+         * Fallback para navegadores antigos
+         */
+
+        const area =
+            document.createElement("textarea");
+
+        area.value = texto;
+
+        document.body.appendChild(area);
+
+        area.select();
+
+        document.execCommand("copy");
+
+        area.remove();
+
+        alert("✅ Resultado copiado!");
+    }
+}
+
+
+/* =========================================
+   LIMPAR ENCODE
+========================================= */
+
+function limparEncode() {
+
+    document.getElementById("encodeInput")
+        .value = "";
+
+    document.getElementById("encodeResult")
+        .textContent =
+        "Aguardando texto...";
+}
+
+
+/* =========================================
+   LIMPAR DECODE
+========================================= */
+
+function limparDecode() {
+
+    document.getElementById("decodeInput")
+        .value = "";
+
+    document.getElementById("decodeResult")
+        .textContent =
+        "Aguardando números...";
+}
+
+</script>
+
+</body>
+</html>
