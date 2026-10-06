@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KALIDADE MORSE</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --cyan: #00f7ff;
+    --blue: #0066ff;
+    --purple: #b000ff;
+    --pink: #ff00cc;
+    --bg: #03050b;
+    --card: rgba(8, 12, 25, .82);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+
+    background:
+        radial-gradient(circle at 15% 15%, rgba(0,247,255,.13), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(176,0,255,.13), transparent 30%),
+        var(--bg);
+
+    overflow-x: hidden;
+}
+
+/* FUNDO ANIMADO */
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+
+    width: 350px;
+    height: 350px;
+
+    border-radius: 50%;
+
+    filter: blur(100px);
+
+    opacity: .18;
+
+    z-index: -1;
+
+    animation: float 8s ease-in-out infinite alternate;
+}
+
+body::before {
+    background: var(--cyan);
+    top: -150px;
+    left: -150px;
+}
+
+body::after {
+    background: var(--purple);
+    right: -150px;
+    bottom: -150px;
+
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(80px, 50px);
+    }
+}
+
+/* CONTAINER */
+
+.container {
+    width: 100%;
+    max-width: 850px;
+    margin: auto;
+    padding: 15px;
+}
+
+/* HEADER */
+
+.header {
+    text-align: center;
+    padding: 25px 5px 30px;
+
+    animation: fadeDown .7s ease;
+}
+
+.logo {
+    font-size: clamp(34px, 10vw, 65px);
+    font-weight: 900;
+    letter-spacing: 4px;
+
+    color: white;
+
+    text-shadow:
+        0 0 5px var(--cyan),
+        0 0 15px var(--cyan),
+        0 0 30px var(--cyan),
+        0 0 60px var(--blue);
+
+    animation: neonPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes neonPulse {
+    from {
+        filter: brightness(.9);
+    }
+
+    to {
+        filter: brightness(1.25);
+    }
+}
+
+.subtitle {
+    margin-top: 8px;
+
+    color: var(--cyan);
+
+    letter-spacing: 4px;
+    font-size: 12px;
+}
+
+/* CARD */
+
+.card {
+    position: relative;
+
+    background: var(--card);
+
+    border: 1px solid rgba(0,247,255,.45);
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    backdrop-filter: blur(15px);
+
+    box-shadow:
+        0 0 15px rgba(0,247,255,.12),
+        inset 0 0 30px rgba(0,247,255,.025);
+
+    overflow: hidden;
+
+    animation: cardIn .7s ease both;
+}
+
+.card:nth-child(2) {
+    animation-delay: .15s;
+}
+
+.card:nth-child(3) {
+    animation-delay: .3s;
+}
+
+.card:nth-child(4) {
+    animation-delay: .45s;
+}
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* LINHA NEON */
+
+.card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 100%;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--cyan),
+        transparent
+    );
+
+    animation: scan 4s linear infinite;
+}
+
+@keyframes scan {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* TITULO */
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(0,247,255,.08);
+
+    border: 1px solid rgba(0,247,255,.5);
+
+    color: var(--cyan);
+
+    font-size: 20px;
+
+    box-shadow:
+        0 0 10px rgba(0,247,255,.2);
+}
+
+.card-title h2 {
+    margin: 0;
+
+    font-size: 20px;
+
+    color: white;
+}
+
+.card-title span {
+    color: var(--cyan);
+}
+
+/* TEXTAREA */
+
+textarea {
+    width: 100%;
+    min-height: 125px;
+
+    resize: vertical;
+
+    background: rgba(0,0,0,.45);
+
+    color: white;
+
+    border: 1px solid #252b3c;
+
+    border-radius: 13px;
+
+    padding: 15px;
+
+    outline: none;
+
+    font-family: monospace;
+    font-size: 16px;
+
+    transition: .25s;
+}
+
+textarea:focus {
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 10px rgba(0,247,255,.25),
+        inset 0 0 15px rgba(0,247,255,.04);
+}
+
+textarea::placeholder {
+    color: #596070;
+}
+
+/* BUTTONS */
+
+.buttons {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-top: 12px;
+}
+
+button {
+    border: 0;
+
+    border-radius: 11px;
+
+    padding: 13px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s,
+        box-shadow .2s,
+        background .2s;
+}
+
+button:active {
+    transform: scale(.96);
+}
+
+.encode-btn {
+    background: var(--cyan);
+    color: #001014;
+
+    box-shadow:
+        0 0 8px var(--cyan),
+        0 0 20px rgba(0,247,255,.3);
+}
+
+.encode-btn:hover {
+    box-shadow:
+        0 0 12px var(--cyan),
+        0 0 35px rgba(0,247,255,.5);
+
+    transform: translateY(-2px);
+}
+
+.decode-btn {
+    background: var(--purple);
+    color: white;
+
+    box-shadow:
+        0 0 8px var(--purple),
+        0 0 20px rgba(176,0,255,.3);
+}
+
+.decode-btn:hover {
+    box-shadow:
+        0 0 12px var(--purple),
+        0 0 35px rgba(176,0,255,.5);
+
+    transform: translateY(-2px);
+}
+
+.clear-btn {
+    background: transparent;
+
+    border: 1px solid #ff3bba;
+
+    color: #ff65c9;
+}
+
+.clear-btn:hover {
+    background: rgba(255,0,180,.08);
+
+    box-shadow:
+        0 0 15px rgba(255,0,180,.3);
+}
+
+/* RESULTADO */
+
+.result-label {
+    margin-top: 18px;
+    margin-bottom: 7px;
+
+    color: #737b8c;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+}
+
+.result {
+    min-height: 60px;
+
+    background: rgba(0,0,0,.55);
+
+    border: 1px solid #252b3c;
+
+    border-radius: 12px;
+
+    padding: 15px;
+
+    color: var(--cyan);
+
+    font-family: monospace;
+
+    font-size: 17px;
+
+    word-break: break-word;
+
+    transition: .3s;
+}
+
+.result.show {
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 12px rgba(0,247,255,.15);
+
+    animation: resultPop .3s ease;
+}
+
+@keyframes resultPop {
+    from {
+        opacity: .4;
+        transform: scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.copy-btn {
+    width: 100%;
+
+    margin-top: 10px;
+
+    background: transparent;
+
+    border: 1px solid #263344;
+
+    color: #9ba6b9;
+}
+
+.copy-btn:hover {
+    color: white;
+
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 10px rgba(0,247,255,.2);
+}
+
+/* TABELA */
+
+.morse-table {
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, 1fr);
+
+    gap: 7px;
+}
+
+.morse-item {
+    background: rgba(0,0,0,.4);
+
+    border: 1px solid #202638;
+
+    border-radius: 9px;
+
+    padding: 9px 4px;
+
+    text-align: center;
+
+    transition: .2s;
+}
+
+.morse-item:hover {
+    border-color: var(--cyan);
+
+    color: var(--cyan);
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 0 10px rgba(0,247,255,.2);
+}
+
+.morse-item strong {
+    display: block;
+
+    font-size: 17px;
+}
+
+.morse-item small {
+    color: #818a9d;
+
+    font-family: monospace;
+
+    font-size: 12px;
+}
+
+/* INFO */
+
+.info {
+    text-align: center;
+
+    color: #727b8d;
+
+    font-size: 12px;
+
+    margin: 25px 0;
+}
+
+.info span {
+    color: var(--cyan);
+}
+
+/* MOBILE */
+
+@media(max-width: 600px) {
+
+    .container {
+        padding: 8px;
+    }
+
+    .card {
+        padding: 15px;
+        border-radius: 16px;
+    }
+
+    .buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .morse-table {
+        grid-template-columns:
+            repeat(4, 1fr);
+    }
+
+    textarea {
+        min-height: 105px;
+    }
+}
+
+@media(max-width: 380px) {
+
+    .morse-table {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="logo">
+            KALIDADE
+        </div>
+
+        <div class="subtitle">
+            MORSE CODE • ENCODER / DECODER
+        </div>
+
+    </header>
+
+
+    <!-- ENCODER -->
+
+    <section class="card">
+
+        <div class="card-title">
+
+            <div class="icon">
+                🔐
+            </div>
+
+            <div>
+                <h2>Encoder</h2>
+                <span>Texto → Morse</span>
+            </div>
+
+        </div>
+
+        <textarea
+            id="encodeInput"
+            placeholder="Digite seu texto aqui...
+
+Exemplo:
+SOS
+HELLO WORLD"
+        ></textarea>
+
+        <div class="buttons">
+
+            <button
+                class="encode-btn"
+                onclick="encodeMorse()"
+            >
+                ⚡ CODIFICAR
+            </button>
+
+            <button
+                class="clear-btn"
+                onclick="clearEncode()"
+            >
+                ✕ LIMPAR
+            </button>
+
+        </div>
+
+        <div class="result-label">
+            RESULTADO MORSE
+        </div>
+
+        <div
+            class="result"
+            id="encodeResult"
+        >
+            Aguardando texto...
+        </div>
+
+        <button
+            class="copy-btn"
+            onclick="copyResult('encodeResult')"
+        >
+            📋 COPIAR MORSE
+        </button>
+
+    </section>
+
+
+    <!-- DECODER -->
+
+    <section class="card">
+
+        <div class="card-title">
+
+            <div class="icon">
+                🔓
+            </div>
+
+            <div>
+                <h2>Decoder</h2>
+                <span>Morse → Texto</span>
+            </div>
+
+        </div>
+
+        <textarea
+            id="decodeInput"
+            placeholder="Digite o código Morse...
+
+Exemplo:
+... --- ...
+.... . .-.. .-.. --- / .-- --- .-. .-.. -.."
+        ></textarea>
+
+        <div class="buttons">
+
+            <button
+                class="decode-btn"
+                onclick="decodeMorse()"
+            >
+                ⚡ DECODIFICAR
+            </button>
+
+            <button
+                class="clear-btn"
+                onclick="clearDecode()"
+            >
+                ✕ LIMPAR
+            </button>
+
+        </div>
+
+        <div class="result-label">
+            TEXTO DECODIFICADO
+        </div>
+
+        <div
+            class="result"
+            id="decodeResult"
+        >
+            Aguardando código...
+        </div>
+
+        <button
+            class="copy-btn"
+            onclick="copyResult('decodeResult')"
+        >
+            📋 COPIAR TEXTO
+        </button>
+
+    </section>
+
+
+    <!-- TABELA -->
+
+    <section class="card">
+
+        <div class="card-title">
+
+            <div class="icon">
+                📡
+            </div>
+
+            <div>
+                <h2>Tabela Morse</h2>
+                <span>Referência rápida</span>
+            </div>
+
+        </div>
+
+        <div
+            class="morse-table"
+            id="morseTable"
+        ></div>
+
+    </section>
+
+
+    <div class="info">
+        KALIDADE <span>•</span> MORSE
+        <br>
+        Use <span>/</span> para separar palavras
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================
+   TABELA MORSE
+===================================== */
+
+const morse = {
+
+    A: ".-",
+    B: "-...",
+    C: "-.-.",
+    D: "-..",
+    E: ".",
+    F: "..-.",
+    G: "--.",
+    H: "....",
+    I: "..",
+    J: ".---",
+    K: "-.-",
+    L: ".-..",
+    M: "--",
+    N: "-.",
+    O: "---",
+    P: ".--.",
+    Q: "--.-",
+    R: ".-.",
+    S: "...",
+    T: "-",
+    U: "..-",
+    V: "...-",
+    W: ".--",
+    X: "-..-",
+    Y: "-.--",
+    Z: "--..",
+
+    0: "-----",
+    1: ".----",
+    2: "..---",
+    3: "...--",
+    4: "....-",
+    5: ".....",
+    6: "-....",
+    7: "--...",
+    8: "---..",
+    9: "----.",
+
+    ".": ".-.-.-",
+    ",": "--..--",
+    "?": "..--..",
+    "!": "-.-.--",
+    ":": "---...",
+    ";": "-.-.-.",
+    "/": "-..-.",
+    "(": "-.--.",
+    ")": "-.--.-",
+    "'": ".----.",
+    "\"": ".-..-.",
+    "@": ".--.-.",
+    "-": "-....-",
+    "=": "-...-",
+    "+": ".-.-."
+};
+
+
+/* =====================================
+   GERAR TABELA
+===================================== */
+
+function createTable() {
+
+    const table =
+        document.getElementById("morseTable");
+
+    const letras =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    for (const letra of letras) {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "morse-item";
+
+        div.innerHTML = `
+            <strong>${letra}</strong>
+            <small>${morse[letra]}</small>
+        `;
+
+        table.appendChild(div);
+    }
+}
+
+createTable();
+
+
+/* =====================================
+   ENCODE
+===================================== */
+
+function encodeMorse() {
+
+    const input =
+        document.getElementById("encodeInput").value;
+
+    if (!input.trim()) {
+
+        showResult(
+            "encodeResult",
+            "Digite algum texto."
+        );
+
+        return;
+    }
+
+    const resultado = [];
+
+    for (const char of input.toUpperCase()) {
+
+        if (char === " ") {
+
+            /*
+             * "/" separa palavras
+             */
+
+            resultado.push("/");
+
+        }
+
+        else if (morse[char]) {
+
+            resultado.push(
+                morse[char]
+            );
+
+        }
+
+    }
+
+    showResult(
+        "encodeResult",
+        resultado.join(" ")
+    );
+}
+
+
+/* =====================================
+   DECODE
+===================================== */
+
+function decodeMorse() {
+
+    const input =
+        document.getElementById("decodeInput")
+        .value
+        .trim();
+
+    if (!input) {
+
+        showResult(
+            "decodeResult",
+            "Digite algum código Morse."
+        );
+
+        return;
+    }
+
+    /*
+     * "/" = espaço entre palavras
+     */
+
+    const palavras =
+        input.split("/");
+
+    let resultado = "";
+
+    for (let p = 0; p < palavras.length; p++) {
+
+        const codigos =
+            palavras[p]
+            .trim()
+            .split(/\s+/);
+
+        for (const codigo of codigos) {
+
+            if (!codigo) continue;
+
+            const letra =
+                Object.keys(morse)
+                .find(
+                    key => morse[key] === codigo
+                );
+
+            if (letra) {
+
+                resultado += letra;
+
+            } else {
+
+                resultado += "�";
+            }
+        }
+
+        if (p < palavras.length - 1) {
+
+            resultado += " ";
+        }
+    }
+
+    showResult(
+        "decodeResult",
+        resultado
+    );
+}
+
+
+/* =====================================
+   MOSTRAR RESULTADO
+===================================== */
+
+function showResult(id, texto) {
+
+    const element =
+        document.getElementById(id);
+
+    element.textContent =
+        texto;
+
+    element.classList.remove("show");
+
+    void element.offsetWidth;
+
+    element.classList.add("show");
+}
+
+
+/* =====================================
+   COPIAR
+===================================== */
+
+async function copyResult(id) {
+
+    const texto =
+        document.getElementById(id)
+        .textContent;
+
+    if (
+        !texto ||
+        texto.startsWith("Aguardando") ||
+        texto === "Digite algum texto." ||
+        texto === "Digite algum código Morse."
+    ) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(texto);
+
+        alert("✓ Copiado!");
+
+    } catch {
+
+        const temp =
+            document.createElement("textarea");
+
+        temp.value = texto;
+
+        document.body.appendChild(temp);
+
+        temp.select();
+
+        document.execCommand("copy");
+
+        temp.remove();
+
+        alert("✓ Copiado!");
+    }
+}
+
+
+/* =====================================
+   LIMPAR ENCODE
+===================================== */
+
+function clearEncode() {
+
+    document.getElementById("encodeInput")
+        .value = "";
+
+    showResult(
+        "encodeResult",
+        "Aguardando texto..."
+    );
+}
+
+
+/* =====================================
+   LIMPAR DECODE
+===================================== */
+
+function clearDecode() {
+
+    document.getElementById("decodeInput")
+        .value = "";
+
+    showResult(
+        "decodeResult",
+        "Aguardando código..."
+    );
+}
+
+</script>
+
+</body>
+  </html>
