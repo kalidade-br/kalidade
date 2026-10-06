@@ -8,13 +8,13 @@
   {
     "id": 2,
     "nome": "COMMANDO FORCE 2",
-    "capa": "https://html5.gamedistribution.com/rvvASMiM/7d0574417a0d4c158b4d6e381f1c4a3e/index.html"
-    "embed": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFsxQ4L2jzhyvBVc8B0fvdsdI0bxhCD2XxMx2_OZqP-Q&s=10"
+    "capa": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFsxQ4L2jzhyvBVc8B0fvdsdI0bxhCD2XxMx2_OZqP-Q&s=10",
+    "embed": "https://html5.gamedistribution.com/rvvASMiM/7d0574417a0d4c158b4d6e381f1c4a3e/index.html"
   },
   {
     "id": 3,
     "nome": "Jetpack Joyride",
-    "capa": ""
+    "capa": "",
     "embed": ""
   }
 ]
