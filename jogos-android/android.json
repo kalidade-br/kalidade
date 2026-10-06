@@ -16,5 +16,11 @@
     "nome": "Plants vs Zombies 1",
     "capa": "https://ext.minijuegosgratis.com/pvz-modded-v5/game/images/interface/Logo.png",
     "embed": "https://ext.minijuegosgratis.com/pvz-modded-v5/game/index.html?mp_api_as3_url=https%3A%2F%2Fssl.minijuegosgratis.com%2Flechuck%2Fas3%2Flatest.swf&mp_api_as3_url_bck=https%3A%2F%2Fapi.minijuegos.com%2Flechuck%2Fclient-as%2F&mp_api_id=6973&mp_api_js_url=https%3A%2F%2Fssl.minijuegosgratis.com%2Flechuck%2Fjs%2Flatest.js&mp_api_js_url_bck=https%3A%2F%2Fapi.minijuegos.com%2Flechuck%2Fclient-js%2F&mp_game_id=24954&mp_game_uid=plants-vs-zombies&mp_game_url=https%3A%2F%2Fwww.minijogos.com.br%2Fjogo%2Fplants-vs-zombies&mp_int=1&mp_locale=pt_BR&mp_mobile=1&mp_player_type=IFRAME&mp_site_name=minijogos.com.br&mp_site_url=https%3A%2F%2Fwww.minijogos.com.br%2F&mp_timezone=America%2FFortaleza&mini_signature=9129a402dde031edac4c6583036e4bf3&xdm_e=https%3A%2F%2Fwww.minijogos.com.br&xdm_c=default1112&xdm_p=1"
+  },
+  {
+    "id": 4,
+    "nome": "GTA VICE-CITY",
+    "capa": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFsxQ4L2jzhyvBVc8B0fvdsdI0bxhCD2XxMx2_OZqP-Q&s=10",
+    "embed": "https://engine.gtavice.city:8443/?mp_game_id=258520&mp_game_uid=gta-vice-city&mp_game_url=https%3A%2F%2Fwww.minijogos.com.br%2Fjogo%2Fgta-vice-city&mp_int=1&mp_locale=pt_BR&mp_mobile=1&mp_player_type=IFRAME&mp_site_name=minijogos.com.br&mp_site_url=https%3A%2F%2Fwww.minijogos.com.br%2F&mp_timezone=America%2FFortaleza"
   }
 ]
