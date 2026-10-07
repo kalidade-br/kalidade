@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pinterest - Banco de Fotos fotos.json</title>
+  <meta name="description" content="Galeria estilo Pinterest conectada ao fotos.json com milhares de fotos de todos os tipos." />
+  <!-- Tailwind CSS via CDN: Funciona direto no navegador sem precisar de build ou Node.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .pin-grid {
+      column-count: 2;
+      column-gap: 16px;
+    }
+    @media (min-width: 640px) {
+      .pin-grid { column-count: 3; }
+    }
+    @media (min-width: 768px) {
+      .pin-grid { column-count: 4; }
+    }
+    @media (min-width: 1024px) {
+      .pin-grid { column-count: 5; }
+    }
+    @media (min-width: 1280px) {
+      .pin-grid { column-count: 6; }
+    }
+    .pin-card {
+      break-inside: avoid;
+      margin-bottom: 16px;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-white text-neutral-900 font-sans antialiased min-h-screen flex flex-col selection:bg-red-500 selection:text-white">
+
+  <!-- CABEÇALHO PINTEREST -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Logo -->
+      <a href="#" onclick="setCategory('Todos'); return false;" class="flex items-center gap-2.5 shrink-0 group">
+        <div class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xl shadow-sm transition-transform group-hover:scale-105">
+          P
+        </div>
+        <div class="hidden sm:block">
+          <span class="font-bold text-lg text-neutral-900 tracking-tight block leading-tight">Pinterest</span>
+          <span class="text-xs text-neutral-500 font-normal block leading-tight">fotos.json</span>
+        </div>
+      </a>
+
+      <!-- Barra de Busca Instantânea -->
+      <div class="flex-1 max-w-2xl relative">
+        <div class="relative flex items-center">
+          <svg class="w-4 h-4 text-neutral-400 absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Pesquisar entre milhares de fotos (Natureza, Arte, Carros, Espaço, Animais, Moda)..."
+            class="w-full pl-10 pr-9 py-2.5 bg-neutral-100 hover:bg-neutral-200/70 focus:bg-white text-sm text-neutral-900 rounded-full border border-transparent focus:border-neutral-300 focus:outline-none transition-all shadow-inner"
+          />
+          <button id="clearSearchBtn" class="hidden absolute right-3 text-neutral-400 hover:text-neutral-700 text-sm font-bold">✕</button>
+        </div>
+      </div>
+
+      <!-- Ações -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="savedTabBtn" onclick="toggleSavedTab()" class="px-3.5 py-2 text-xs font-semibold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer">
+          <span>Salvos</span>
+          <span id="savedCounter" class="hidden px-1.5 py-0.2 text-[10px] bg-red-600 text-white font-bold rounded-full">0</span>
+        </button>
+        <a href="fotos.json" download="fotos.json" class="px-3.5 py-2 text-xs font-semibold text-neutral-800 bg-amber-100 hover:bg-amber-200 rounded-full transition-colors hidden sm:inline-flex items-center gap-1 cursor-pointer">
+          <span>Baixar fotos.json</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- BARRA DE CATEGORIAS -->
+  <nav class="bg-white/80 border-b border-neutral-100 py-2.5 overflow-x-auto no-scrollbar">
+    <div id="categoryContainer" class="max-w-7xl mx-auto px-4 flex items-center gap-2"></div>
+  </nav>
+
+  <!-- BARRA DE STATUS -->
+  <div class="bg-neutral-50 border-b border-neutral-200/70 py-2.5 text-xs text-neutral-600">
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-neutral-900">fotos.json:</span>
+        <span id="statusTotalText">Carregando fotos...</span>
+        <span class="text-neutral-300">|</span>
+        <span>Tamanho: <strong class="text-neutral-800">15.5 MB</strong> (&lt; 20 MB)</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="visibleCounter">Exibindo 0 fotos</span>
+        <a href="fotos.json" download="fotos.json" class="text-red-600 font-bold hover:underline cursor-pointer">Download JSON</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRADE MASONRY -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
+    <div id="gridContainer" class="pin-grid"></div>
+
+    <div id="loadMoreSection" class="mt-8 text-center hidden">
+      <button onclick="loadMore()" class="px-6 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold text-xs rounded-full transition-colors shadow-sm cursor-pointer">
+        Carregar mais fotos
+      </button>
+    </div>
+
+    <div id="emptyMessage" class="hidden text-center py-20">
+      <div class="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-3 text-neutral-400 font-bold text-2xl">
+        ∅
+      </div>
+      <h3 class="text-lg font-bold text-neutral-900">Nenhuma foto encontrada</h3>
+      <p class="text-xs text-neutral-500 mt-1">Tente buscar por "Natureza", "Carro", "Gato", "Espaço" ou limpe os filtros.</p>
+    </div>
+  </main>
+
+  <!-- MODAL LIGHTBOX -->
+  <div id="pinModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="fixed inset-0" onclick="closeModal()"></div>
+    <div class="relative bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col md:flex-row max-h-[90vh]">
+      <button onclick="closeModal()" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-700 font-bold cursor-pointer">
+        ✕
+      </button>
+      
+      <div class="bg-neutral-950 flex items-center justify-center p-4 md:w-1/2 min-h-[300px]">
+        <img id="modalImg" src="" alt="" class="max-h-[70vh] w-auto max-w-full rounded-xl object-contain shadow-lg" />
+      </div>
+
+      <div class="p-6 md:w-1/2 flex flex-col justify-between overflow-y-auto">
+        <div>
+          <div class="flex items-center justify-between pb-4 border-b border-neutral-100">
+            <span class="text-xs font-semibold text-neutral-500">fotos.json · Estilo Pinterest</span>
+            <button id="modalSaveBtn" onclick="toggleSaveCurrent()" class="px-5 py-2 rounded-full font-bold text-xs bg-red-600 hover:bg-red-700 text-white shadow cursor-pointer">
+              Salvar
+            </button>
+          </div>
+
+          <h2 id="modalTitle" class="text-lg font-bold text-neutral-950 mt-4 leading-snug"></h2>
+
+          <div class="mt-4">
+            <label class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Objeto no JSON:</label>
+            <pre id="modalJson" class="bg-neutral-900 text-emerald-400 p-3 rounded-xl text-xs font-mono overflow-x-auto select-all"></pre>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between">
+          <a id="modalDirectLink" href="#" target="_blank" rel="noreferrer" class="text-xs text-neutral-600 hover:text-neutral-900 underline cursor-pointer">
+            Ver original
+          </a>
+          <button onclick="copyCurrentJson()" class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold rounded-full cursor-pointer">
+            Copiar JSON
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CATEGORIES = [
+      'Todos', 'NATUREZA', 'PAISAGENS', 'ARQUITETURA', 'INTERIORES', 
+      'ANIMAIS', 'ARTE', 'WALLPAPER', 'GASTRONOMIA', 'CAFÉ', 
+      'MODA', 'ESPAÇO', 'ASTRONOMIA', 'CARROS', 'VIAGENS', 'ESPORTES'
+    ];
+
+    let allFotos = [];
+    let filteredList = [];
+    let visibleCount = 50;
+    let selectedCategory = 'Todos';
+    let searchQuery = '';
+    let isSavedTab = false;
+    let savedPins = JSON.parse(localStorage.getItem('saved_pins') || '[]');
+    let currentModalFoto = null;
+
+    const gridContainer = document.getElementById('gridContainer');
+    const categoryContainer = document.getElementById('categoryContainer');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const statusTotalText = document.getElementById('statusTotalText');
+    const visibleCounter = document.getElementById('visibleCounter');
+    const loadMoreSection = document.getElementById('loadMoreSection');
+    const emptyMessage = document.getElementById('emptyMessage');
+    const savedCounter = document.getElementById('savedCounter');
+    const savedTabBtn = document.getElementById('savedTabBtn');
+
+    function renderCategories() {
+      categoryContainer.innerHTML = CATEGORIES.map(cat => `
+        <button 
+          onclick="setCategory('${cat}')" 
+          class="px-3.5 py-1.5 text-xs font-medium whitespace-nowrap rounded-full transition-all shrink-0 cursor-pointer ${selectedCategory === cat ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}"
+        >
+          ${cat}
+        </button>
+      `).join('');
+    }
+
+    function setCategory(cat) {
+      selectedCategory = cat;
+      isSavedTab = false;
+      renderCategories();
+      applyFilters();
+    }
+
+    async function loadData() {
+      try {
+        statusTotalText.textContent = 'Carregando fotos.json (~15.5 MB)...';
+        const res = await fetch('fotos.json');
+        if (!res.ok) throw new Error('Não foi possível ler fotos.json');
+        allFotos = await res.json();
+        statusTotalText.textContent = `${allFotos.length.toLocaleString('pt-BR')} fotos carregadas`;
+        applyFilters();
+      } catch (err) {
+        statusTotalText.textContent = 'Certifique-se de que fotos.json está na mesma pasta!';
+        console.error(err);
+      }
+    }
+
+    function applyFilters() {
+      let base = isSavedTab ? savedPins : allFotos;
+      const q = searchQuery.trim().toLowerCase();
+      const cat = selectedCategory.toUpperCase();
+
+      filteredList = base.filter(item => {
+        if (!item || !item.título) return false;
+        const titleUpper = item.título.toUpperCase();
+
+        if (cat !== 'TODOS' && !titleUpper.includes(cat)) {
+          return false;
+        }
+        if (q && !item.título.toLowerCase().includes(q)) {
+          return false;
+        }
+        return true;
+      });
+
+      visibleCount = 50;
+      renderGrid();
+      updateSavedCounter();
+    }
+
+    function renderGrid() {
+      const slice = filteredList.slice(0, visibleCount);
+      visibleCounter.textContent = `Exibindo ${slice.length.toLocaleString('pt-BR')} de ${filteredList.length.toLocaleString('pt-BR')}`;
+
+      if (slice.length === 0) {
+        gridContainer.innerHTML = '';
+        emptyMessage.classList.remove('hidden');
+        loadMoreSection.classList.add('hidden');
+        return;
+      }
+
+      emptyMessage.classList.add('hidden');
+      gridContainer.innerHTML = slice.map((foto, idx) => {
+        const isSaved = savedPins.some(p => p.título === foto.título);
+        return `
+          <div class="pin-card group relative rounded-2xl overflow-hidden bg-neutral-100 hover:shadow-xl transition-all cursor-pointer" onclick="openModal(${idx})">
+            <div class="relative bg-neutral-200">
+              <img 
+                src="${foto.src}" 
+                alt="${foto.título}" 
+                loading="lazy" 
+                referrerpolicy="no-referrer"
+                class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                onerror="this.parentElement.innerHTML='<div class=\\'p-6 text-center text-xs text-neutral-500\\'>${foto.título}</div>'"
+              />
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
+                <div class="flex justify-end">
+                  <button 
+                    onclick="event.stopPropagation(); toggleSaveByIndex(${idx});" 
+                    class="px-3.5 py-1.5 rounded-full text-xs font-bold text-white cursor-pointer ${isSaved ? 'bg-neutral-900' : 'bg-red-600 hover:bg-red-700'}"
+                  >
+                    ${isSaved ? 'Salvo' : 'Salvar'}
+                  </button>
+                </div>
+                <div class="text-[11px] text-white/90 bg-black/40 px-2 py-0.5 rounded-full self-start">
+                  fotos.json
+                </div>
+              </div>
+            </div>
+            <div class="p-3">
+              <h3 class="text-xs font-semibold text-neutral-900 line-clamp-2 leading-snug">
+                ${foto.título}
+              </h3>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (visibleCount < filteredList.length) {
+        loadMoreSection.classList.remove('hidden');
+      } else {
+        loadMoreSection.classList.add('hidden');
+      }
+    }
+
+    function loadMore() {
+      visibleCount += 40;
+      renderGrid();
+    }
+
+    function openModal(indexInFiltered) {
+      const foto = filteredList[indexInFiltered];
+      if (!foto) return;
+      currentModalFoto = foto;
+
+      document.getElementById('modalImg').src = foto.src;
+      document.getElementById('modalTitle').textContent = foto.título;
+      document.getElementById('modalDirectLink').href = foto.src;
+      document.getElementById('modalJson').textContent = JSON.stringify({
+        "título": foto.título,
+        "src": foto.src
+      }, null, 2);
+
+      updateModalSaveBtn();
+      document.getElementById('pinModal').classList.remove('hidden');
+      document.getElementById('pinModal').classList.add('flex');
+    }
+
+    function closeModal() {
+      document.getElementById('pinModal').classList.add('hidden');
+      document.getElementById('pinModal').classList.remove('flex');
+    }
+
+    function updateModalSaveBtn() {
+      const isSaved = savedPins.some(p => p.título === currentModalFoto?.título);
+      const btn = document.getElementById('modalSaveBtn');
+      btn.textContent = isSaved ? 'Salvo' : 'Salvar';
+      btn.className = `px-5 py-2 rounded-full font-bold text-xs text-white cursor-pointer ${isSaved ? 'bg-neutral-900' : 'bg-red-600 hover:bg-red-700'}`;
+    }
+
+    function toggleSaveCurrent() {
+      if (!currentModalFoto) return;
+      toggleSaveItem(currentModalFoto);
+      updateModalSaveBtn();
+      renderGrid();
+    }
+
+    function toggleSaveByIndex(idx) {
+      const item = filteredList[idx];
+      if (item) toggleSaveItem(item);
+      renderGrid();
+    }
+
+    function toggleSaveItem(foto) {
+      const existsIdx = savedPins.findIndex(p => p.título === foto.título);
+      if (existsIdx >= 0) {
+        savedPins.splice(existsIdx, 1);
+      } else {
+        savedPins.unshift(foto);
+      }
+      localStorage.setItem('saved_pins', JSON.stringify(savedPins));
+      updateSavedCounter();
+    }
+
+    function updateSavedCounter() {
+      if (savedPins.length > 0) {
+        savedCounter.textContent = savedPins.length;
+        savedCounter.classList.remove('hidden');
+      } else {
+        savedCounter.classList.add('hidden');
+      }
+    }
+
+    function toggleSavedTab() {
+      isSavedTab = !isSavedTab;
+      savedTabBtn.className = isSavedTab 
+        ? 'px-3.5 py-2 text-xs font-semibold text-white bg-neutral-900 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer'
+        : 'px-3.5 py-2 text-xs font-semibold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer';
+      applyFilters();
+    }
+
+    function copyCurrentJson() {
+      if (!currentModalFoto) return;
+      navigator.clipboard.writeText(JSON.stringify({
+        "título": currentModalFoto.título,
+        "src": currentModalFoto.src
+      }, null, 2));
+      alert('JSON copiado com sucesso!');
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      if (searchQuery) {
+        clearSearchBtn.classList.remove('hidden');
+      } else {
+        clearSearchBtn.classList.add('hidden');
+      }
+      applyFilters();
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      clearSearchBtn.classList.add('hidden');
+      applyFilters();
+    });
+
+    window.addEventListener('scroll', () => {
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600) {
+        if (visibleCount < filteredList.length) {
+          visibleCount += 30;
+          renderGrid();
+        }
+      }
+    });
+
+    renderCategories();
+    loadData();
+  </script>
+</body>
+</html>
