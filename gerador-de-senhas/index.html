@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090b">
+<title>KALIDADE Gerador de Senhas</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #09090b;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px;
+}
+
+.container {
+  width: 100%;
+  max-width: 650px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 29px;
+  letter-spacing: 1px;
+}
+
+.header h1 span {
+  color: #00ff88;
+}
+
+.header p {
+  color: #888;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.card {
+  background: #111114;
+  border: 1px solid #242428;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 15px 45px rgba(0,0,0,.35);
+}
+
+.password-area {
+  display: flex;
+  gap: 8px;
+}
+
+#senha {
+  flex: 1;
+  min-width: 0;
+  background: #08080a;
+  border: 1px solid #29292e;
+  border-radius: 10px;
+  color: white;
+  padding: 15px;
+  font-size: 16px;
+  outline: none;
+}
+
+.copy {
+  width: 52px;
+  background: #242428;
+  color: white;
+  font-size: 20px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.copy:hover {
+  background: #303036;
+}
+
+.section {
+  margin-top: 20px;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #ddd;
+}
+
+#tamanhoValor {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: #00ff88;
+  cursor: pointer;
+}
+
+.range-info {
+  display: flex;
+  justify-content: space-between;
+  color: #666;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.option {
+  background: #0b0b0e;
+  border: 1px solid #25252a;
+  border-radius: 10px;
+  padding: 12px;
+  color: #ddd;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+
+.option:hover {
+  border-color: #3a3a40;
+}
+
+.option input {
+  width: 17px;
+  height: 17px;
+  accent-color: #00ff88;
+}
+
+.generate {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  background: #00ff88;
+  color: #001b0e;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 15px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.generate:hover {
+  background: #00e77a;
+}
+
+.strength {
+  margin-top: 20px;
+}
+
+.strength-bar {
+  height: 7px;
+  width: 100%;
+  background: #25252a;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+#strengthFill {
+  width: 0%;
+  height: 100%;
+  background: #00ff88;
+  transition: .25s;
+}
+
+#strengthText {
+  color: #888;
+  font-size: 12px;
+  margin-top: 7px;
+}
+
+.info {
+  background: #0b0b0e;
+  border-radius: 10px;
+  padding: 12px;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 17px;
+}
+
+.footer {
+  text-align: center;
+  color: #555;
+  font-size: 11px;
+  margin-top: 15px;
+}
+
+@media (max-width: 500px) {
+  .options {
+    grid-template-columns: 1fr;
+  }
+
+  .header h1 {
+    font-size: 25px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>KALIDADE <span>GERADOR</span></h1>
+    <p>Gerador de senhas seguras</p>
+  </div>
+
+  <div class="card">
+
+    <div class="password-area">
+      <input
+        id="senha"
+        type="text"
+        readonly
+        value="Clique em gerar"
+      >
+
+      <button
+        class="copy"
+        onclick="copiarSenha()"
+        title="Copiar senha"
+      >⧉</button>
+    </div>
+
+    <div class="section">
+
+      <div class="section-title">
+        <span>Tamanho da senha</span>
+        <span id="tamanhoValor">12 caracteres</span>
+      </div>
+
+      <input
+        id="tamanho"
+        type="range"
+        min="6"
+        max="256"
+        value="12"
+        oninput="atualizarTamanho()"
+      >
+
+      <div class="range-info">
+        <span>6 caracteres</span>
+        <span>256 caracteres</span>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-title">
+        <span>Caracteres permitidos</span>
+      </div>
+
+      <div class="options">
+
+        <label class="option">
+          <input type="checkbox" id="minusculas" checked>
+          Letras minúsculas
+        </label>
+
+        <label class="option">
+          <input type="checkbox" id="maiusculas" checked>
+          Letras maiúsculas
+        </label>
+
+        <label class="option">
+          <input type="checkbox" id="numeros" checked>
+          Números
+        </label>
+
+        <label class="option">
+          <input type="checkbox" id="simbolos" checked>
+          Símbolos
+        </label>
+
+      </div>
+
+    </div>
+
+    <div class="strength">
+
+      <div class="section-title">
+        <span>Força estimada</span>
+      </div>
+
+      <div class="strength-bar">
+        <div id="strengthFill"></div>
+      </div>
+
+      <div id="strengthText">
+        Configure sua senha.
+      </div>
+
+    </div>
+
+    <button class="generate" onclick="gerarSenha()">
+      ⚡ GERAR SENHA
+    </button>
+
+    <div class="info">
+      🔐 A senha é criada diretamente no navegador usando
+      <b>crypto.getRandomValues()</b>.
+      Nenhuma senha é enviada para um servidor.
+    </div>
+
+  </div>
+
+  <div class="footer">
+    KALIDADE • Gerador de Senhas
+  </div>
+
+</div>
+
+<script>
+
+const tamanhoInput = document.getElementById("tamanho");
+const tamanhoValor = document.getElementById("tamanhoValor");
+const senhaInput = document.getElementById("senha");
+
+function atualizarTamanho() {
+
+  const tamanho = Number(tamanhoInput.value);
+
+  tamanhoValor.textContent =
+    tamanho + (tamanho === 1 ? " caractere" : " caracteres");
+}
+
+
+/*
+  Número aleatório seguro usando Web Crypto API.
+  Evita o viés que pode acontecer com Math.random().
+*/
+function numeroAleatorio(max) {
+
+  const array = new Uint32Array(1);
+
+  const limite =
+    Math.floor(4294967296 / max) * max;
+
+  do {
+    crypto.getRandomValues(array);
+  } while (array[0] >= limite);
+
+  return array[0] % max;
+}
+
+
+function gerarSenha() {
+
+  let caracteres = "";
+
+  const minusculas =
+    document.getElementById("minusculas").checked;
+
+  const maiusculas =
+    document.getElementById("maiusculas").checked;
+
+  const numeros =
+    document.getElementById("numeros").checked;
+
+  const simbolos =
+    document.getElementById("simbolos").checked;
+
+
+  if (minusculas)
+    caracteres += "abcdefghijklmnopqrstuvwxyz";
+
+  if (maiusculas)
+    caracteres += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  if (numeros)
+    caracteres += "0123456789";
+
+  if (simbolos)
+    caracteres += "!@#$%^&*()-_=+[]{};:,.?/<>|~";
+
+
+  if (!caracteres) {
+
+    alert(
+      "Selecione pelo menos um tipo de caractere."
+    );
+
+    return;
+  }
+
+
+  const tamanho =
+    Number(tamanhoInput.value);
+
+  let resultado = "";
+
+
+  for (let i = 0; i < tamanho; i++) {
+
+    const indice =
+      numeroAleatorio(caracteres.length);
+
+    resultado += caracteres[indice];
+  }
+
+
+  senhaInput.value = resultado;
+
+  atualizarForca(tamanho, caracteres.length);
+}
+
+
+function atualizarForca(tamanho, conjunto) {
+
+  /*
+    Estimativa aproximada de entropia:
+    caracteres × log2(tamanho do conjunto)
+  */
+
+  const entropia =
+    tamanho * Math.log2(conjunto);
+
+  const fill =
+    document.getElementById("strengthFill");
+
+  const text =
+    document.getElementById("strengthText");
+
+
+  /*
+    128 bits é considerado um nível
+    extremamente alto para uma senha.
+  */
+
+  const porcentagem =
+    Math.min((entropia / 128) * 100, 100);
+
+  fill.style.width =
+    porcentagem + "%";
+
+
+  if (entropia < 40) {
+
+    text.textContent =
+      "Fraca • aumente o tamanho ou os tipos de caracteres.";
+
+  } else if (entropia < 60) {
+
+    text.textContent =
+      "Moderada • segurança razoável.";
+
+  } else if (entropia < 80) {
+
+    text.textContent =
+      "Forte • boa segurança.";
+
+  } else if (entropia < 100) {
+
+    text.textContent =
+      "Muito forte • excelente segurança.";
+
+  } else {
+
+    text.textContent =
+      "Extremamente forte • alta entropia.";
+  }
+}
+
+
+async function copiarSenha() {
+
+  if (
+    !senhaInput.value ||
+    senhaInput.value === "Clique em gerar"
+  ) {
+    return;
+  }
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      senhaInput.value
+    );
+
+    const botao =
+      document.querySelector(".copy");
+
+    const original =
+      botao.textContent;
+
+    botao.textContent = "✓";
+
+    setTimeout(() => {
+      botao.textContent = original;
+    }, 1200);
+
+  } catch {
+
+    senhaInput.select();
+
+    document.execCommand("copy");
+  }
+}
+
+
+// Atualização inicial
+atualizarTamanho();
+
+// Gera uma senha inicial
+gerarSenha();
+
+</script>
+
+</body>
+        </html>
