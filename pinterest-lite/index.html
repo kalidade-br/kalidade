@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KALIDADE PINTEREST</title>
-  <meta name="description" content="Galeria estilo Pinterest conectada ao fotos.json com milhares de fotos de todos os tipos." />
+  <title>KALIDADE PINTEREST - Banco de Fotos</title>
+  <meta name="description" content="KALIDADE PINTEREST — galeria estilo Pinterest conectada ao fotos.json." />
   <!-- Tailwind CSS via CDN: Funciona direto no navegador sem precisar de build ou Node.js -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -89,19 +89,6 @@
     <div id="categoryContainer" class="max-w-7xl mx-auto px-4 flex items-center gap-2"></div>
   </nav>
 
-  <!-- BARRA DE STATUS -->
-  <div class="bg-neutral-50 border-b border-neutral-200/70 py-2.5 text-xs text-neutral-600">
-    <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-neutral-900">fotos.json:</span>
-        <span id="statusTotalText">Carregando fotos...</span>
-        <span class="text-neutral-300">|</span>
-        <span>Tamanho: <strong class="text-neutral-800">15.5 MB</strong> (&lt; 20 MB)</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <span id="visibleCounter">Exibindo 0 fotos</span>
-        <a href="fotos.json" download="fotos.json" class="text-red-600 font-bold hover:underline cursor-pointer">Download JSON</a>
-      </div>
     </div>
   </div>
 
@@ -210,16 +197,33 @@
       applyFilters();
     }
 
+    // Remove duplicatas pelo LINK (src). O título pode ser repetido normalmente.
+    function deduplicateBySrc(list) {
+      const seen = new Set();
+      return list.filter(item => {
+        if (!item || !item.src) return false;
+        const src = String(item.src).trim();
+        if (!src || seen.has(src)) return false;
+        seen.add(src);
+        item.src = src;
+        return true;
+      });
+    }
+
+    savedPins = deduplicateBySrc(savedPins);
+    localStorage.setItem('saved_pins', JSON.stringify(savedPins));
+
     async function loadData() {
       try {
         statusTotalText.textContent = 'Carregando fotos.json (~15.5 MB)...';
         const res = await fetch('fotos.json');
         if (!res.ok) throw new Error('Não foi possível ler fotos.json');
-        allFotos = await res.json();
-        statusTotalText.textContent = `${allFotos.length.toLocaleString('pt-BR')} fotos carregadas`;
+        const jsonData = await res.json();
+        allFotos = deduplicateBySrc(Array.isArray(jsonData) ? jsonData : []);
+        statusTotalText.textContent = `${allFotos.length.toLocaleString('pt-BR')} fotos únicas carregadas`;
         applyFilters();
       } catch (err) {
-        statusTotalText.textContent = 'Certifique-se de que fotos.json está na mesma pasta!';
+        statusTotalText.textContent = '';
         console.error(err);
       }
     }
@@ -260,7 +264,7 @@
 
       emptyMessage.classList.add('hidden');
       gridContainer.innerHTML = slice.map((foto, idx) => {
-        const isSaved = savedPins.some(p => p.título === foto.título);
+        const isSaved = savedPins.some(p => p.src === foto.src);
         return `
           <div class="pin-card group relative rounded-2xl overflow-hidden bg-neutral-100 hover:shadow-xl transition-all cursor-pointer" onclick="openModal(${idx})">
             <div class="relative bg-neutral-200">
@@ -331,7 +335,7 @@
     }
 
     function updateModalSaveBtn() {
-      const isSaved = savedPins.some(p => p.título === currentModalFoto?.título);
+      const isSaved = savedPins.some(p => p.src === currentModalFoto?.src);
       const btn = document.getElementById('modalSaveBtn');
       btn.textContent = isSaved ? 'Salvo' : 'Salvar';
       btn.className = `px-5 py-2 rounded-full font-bold text-xs text-white cursor-pointer ${isSaved ? 'bg-neutral-900' : 'bg-red-600 hover:bg-red-700'}`;
@@ -351,7 +355,7 @@
     }
 
     function toggleSaveItem(foto) {
-      const existsIdx = savedPins.findIndex(p => p.título === foto.título);
+      const existsIdx = savedPins.findIndex(p => p.src === foto.src);
       if (existsIdx >= 0) {
         savedPins.splice(existsIdx, 1);
       } else {
@@ -417,4 +421,4 @@
     loadData();
   </script>
 </body>
-</html>
+  </html>
