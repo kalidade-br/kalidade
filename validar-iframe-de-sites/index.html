@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE IFRAME VALIDADOR</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #050505;
+    color: #fff;
+    min-height: 100vh;
+}
+
+header {
+    padding: 25px 20px;
+    text-align: center;
+    border-bottom: 1px solid #222;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 900;
+    color: #00ff88;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    color: #888;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+.form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+input {
+    flex: 1;
+    background: #101010;
+    border: 1px solid #333;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    outline: none;
+    font-size: 15px;
+}
+
+input:focus {
+    border-color: #00ff88;
+}
+
+button {
+    border: 0;
+    border-radius: 10px;
+    padding: 0 20px;
+    background: #00ff88;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+.status {
+    padding: 15px;
+    border-radius: 10px;
+    background: #101010;
+    border: 1px solid #252525;
+    margin-bottom: 15px;
+    display: none;
+}
+
+.status.show {
+    display: block;
+}
+
+.status.success {
+    border-color: #00ff88;
+    color: #00ff88;
+}
+
+.status.error {
+    border-color: #ff4444;
+    color: #ff5555;
+}
+
+.status.loading {
+    border-color: #ffaa00;
+    color: #ffaa00;
+}
+
+.viewer {
+    position: relative;
+    width: 100%;
+    height: 65vh;
+    min-height: 400px;
+    background: #080808;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: white;
+}
+
+.viewer-controls {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.control {
+    background: rgba(0,0,0,.85);
+    color: white;
+    border: 1px solid #444;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.control:hover {
+    border-color: #00ff88;
+    color: #00ff88;
+}
+
+.empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    pointer-events: none;
+}
+
+.info {
+    margin-top: 15px;
+    padding: 15px;
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 10px;
+    color: #888;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@media(max-width: 650px) {
+    .form {
+        flex-direction: column;
+    }
+
+    button {
+        height: 48px;
+    }
+
+    .viewer {
+        height: 60vh;
+        min-height: 350px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">KALIDADE IFRAME VALIDADOR</div>
+    <div class="subtitle">
+        Teste se um site pode ser exibido dentro de um iframe
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="form">
+        <input
+            type="url"
+            id="url"
+            placeholder="https://exemplo.com"
+            autocomplete="off"
+        >
+
+        <button onclick="testarIframe()">
+            TESTAR
+        </button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div class="viewer" id="viewer">
+
+        <div class="empty" id="empty">
+            Digite um endereço acima e clique em TESTAR
+        </div>
+
+        <iframe
+            id="iframe"
+            title="Visualização do site"
+            style="display:none;"
+        ></iframe>
+
+        <div class="viewer-controls">
+            <button class="control" onclick="recarregar()">
+                ↻ Recarregar
+            </button>
+
+            <button class="control" onclick="telaCheia()">
+                ⛶ Tela cheia
+            </button>
+        </div>
+
+    </div>
+
+    <div class="info">
+        <b>Como funciona:</b><br>
+        O KALIDADE IFRAME VALIDADOR tenta abrir o endereço dentro de um
+        iframe. Se o navegador permitir a incorporação, o site será exibido
+        acima. Sites que utilizam mecanismos como
+        <b>X-Frame-Options</b> ou determinadas políticas
+        <b>Content-Security-Policy</b> podem impedir a incorporação.
+        <br><br>
+        ⚠️ A detecção depende das restrições de segurança do navegador.
+    </div>
+
+</div>
+
+<script>
+
+const input = document.getElementById("url");
+const iframe = document.getElementById("iframe");
+const statusBox = document.getElementById("status");
+const empty = document.getElementById("empty");
+const viewer = document.getElementById("viewer");
+
+let ultimoURL = "";
+
+function mostrarStatus(texto, tipo) {
+
+    statusBox.className = "status show " + tipo;
+    statusBox.innerHTML = texto;
+
+}
+
+function normalizarURL(url) {
+
+    url = url.trim();
+
+    if (!url) {
+        return null;
+    }
+
+    if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+    }
+
+    try {
+        return new URL(url).href;
+    } catch {
+        return null;
+    }
+
+}
+
+function testarIframe() {
+
+    const url = normalizarURL(input.value);
+
+    if (!url) {
+
+        mostrarStatus(
+            "❌ Digite uma URL válida.",
+            "error"
+        );
+
+        return;
+    }
+
+    ultimoURL = url;
+
+    mostrarStatus(
+        "⏳ Testando se o site aceita iframe...",
+        "loading"
+    );
+
+    empty.style.display = "none";
+    iframe.style.display = "block";
+
+    iframe.onload = function() {
+
+        /*
+         * IMPORTANTE:
+         * O navegador não fornece diretamente ao JavaScript
+         * o valor de X-Frame-Options/CSP de um iframe cross-origin.
+         *
+         * Portanto, o onload significa apenas que o elemento
+         * terminou o processo de carregamento.
+         */
+
+        setTimeout(function() {
+
+            try {
+
+                /*
+                 * Se for mesmo origem, conseguimos verificar
+                 * o conteúdo do documento.
+                 */
+                const doc = iframe.contentDocument;
+
+                if (doc) {
+
+                    mostrarStatus(
+                        "✅ O site foi carregado no iframe e aparentemente aceita incorporação.",
+                        "success"
+                    );
+
+                } else {
+
+                    mostrarStatus(
+                        "⚠️ O iframe foi carregado, mas não foi possível verificar o conteúdo por causa da política de mesma origem.",
+                        "loading"
+                    );
+
+                }
+
+            } catch (e) {
+
+                /*
+                 * Cross-origin é normal.
+                 * Não significa que o iframe foi bloqueado.
+                 */
+                mostrarStatus(
+                    "✅ O navegador carregou o iframe. O conteúdo é de outro domínio, então a verificação interna é limitada.",
+                    "success"
+                );
+
+            }
+
+        }, 1500);
+
+    };
+
+    iframe.onerror = function() {
+
+        mostrarStatus(
+            "❌ O site não pôde ser carregado dentro do iframe.",
+            "error"
+        );
+
+    };
+
+    /*
+     * Timeout para casos em que o navegador não fornece
+     * informação suficiente.
+     */
+    let verificacao = setTimeout(function() {
+
+        if (statusBox.classList.contains("loading")) {
+
+            mostrarStatus(
+                "⚠️ Não foi possível determinar com certeza. O site pode estar bloqueando iframe ou ainda estar carregando.",
+                "error"
+            );
+
+        }
+
+    }, 10000);
+
+    iframe.src = "about:blank";
+
+    setTimeout(function() {
+        iframe.src = url;
+    }, 100);
+
+}
+
+function recarregar() {
+
+    if (!ultimoURL) {
+        mostrarStatus(
+            "Digite uma URL primeiro.",
+            "error"
+        );
+        return;
+    }
+
+    iframe.src = ultimoURL;
+
+    mostrarStatus(
+        "⟳ Recarregando o site...",
+        "loading"
+    );
+
+}
+
+function telaCheia() {
+
+    /*
+     * Coloca somente o visualizador em tela cheia.
+     */
+
+    if (viewer.requestFullscreen) {
+
+        viewer.requestFullscreen();
+
+    } else if (viewer.webkitRequestFullscreen) {
+
+        viewer.webkitRequestFullscreen();
+
+    } else if (viewer.msRequestFullscreen) {
+
+        viewer.msRequestFullscreen();
+
+    } else {
+
+        mostrarStatus(
+            "❌ Seu navegador não suporta tela cheia.",
+            "error"
+        );
+
+    }
+
+}
+
+input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        testarIframe();
+    }
+
+});
+
+</script>
+
+</body>
+  </html>
