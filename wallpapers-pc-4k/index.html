@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KALIDADE WALLPAPERS PC 4K</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --blue: #168cff;
+    --blue2: #0065c7;
+    --bg: #030811;
+    --card: #081321;
+    --border: #143b60;
+    --text: #fff;
+    --muted: #819ab2;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 50% -10%, #12416e 0%, transparent 38%),
+        linear-gradient(180deg, #030811, #02050a);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* HEADER */
+
+header {
+    padding: 35px 15px 25px;
+    text-align: center;
+}
+
+.logo {
+    color: #3da5ff;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-shadow: 0 0 25px rgba(22,140,255,.4);
+}
+
+.subtitle {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* CONTAINER */
+
+.container {
+    width: min(1250px, calc(100% - 24px));
+    margin: auto;
+    padding-bottom: 40px;
+}
+
+/* TOP BAR */
+
+.topbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search {
+    flex: 1;
+    min-width: 0;
+    background: #07111d;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 15px;
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+.search:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 12px rgba(22,140,255,.12);
+}
+
+.favorites-button {
+    border: 0;
+    background: #0d2944;
+    color: white;
+    border-radius: 10px;
+    padding: 0 18px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.favorites-button:hover {
+    background: #123e64;
+}
+
+/* STATUS */
+
+.status {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+/* GRID */
+
+.wallpapers {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 17px;
+}
+
+/* CARD */
+
+.card {
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    transition: .2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: #24699c;
+    box-shadow: 0 15px 35px rgba(0,0,0,.4);
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #02060a;
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.card:hover img {
+    transform: scale(1.025);
+}
+
+/* FAVORITE */
+
+.favorite {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 50%;
+
+    background: rgba(0,0,0,.65);
+    backdrop-filter: blur(5px);
+
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.favorite.saved {
+    color: #ff4f76;
+}
+
+/* CARD INFO */
+
+.card-info {
+    padding: 13px;
+}
+
+.title {
+    min-height: 18px;
+    margin-bottom: 11px;
+
+    color: #d9edff;
+    font-size: 14px;
+    font-weight: bold;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.no-title {
+    color: #7590a8;
+    font-weight: normal;
+}
+
+/* BUTTONS */
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px;
+}
+
+.action {
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 5px;
+
+    background: #0d3556;
+    color: white;
+
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+
+    transition: .15s;
+}
+
+.action:hover {
+    background: var(--blue2);
+}
+
+.action.download {
+    background: #0879d2;
+}
+
+.action.download:hover {
+    background: #1497f4;
+}
+
+/* EMPTY */
+
+.empty {
+    display: none;
+    padding: 60px 20px;
+    text-align: center;
+    color: #67819a;
+}
+
+.empty-icon {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+/* LOADING */
+
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6f91ad;
+}
+
+.loader {
+    width: 35px;
+    height: 35px;
+
+    margin: 0 auto 15px;
+
+    border: 3px solid #153752;
+    border-top-color: #168cff;
+
+    border-radius: 50%;
+
+    animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* MODAL */
+
+.modal {
+    display: none;
+
+    position: fixed;
+    z-index: 1000;
+
+    inset: 0;
+
+    padding: 20px;
+
+    background: rgba(0,0,0,.88);
+
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    width: min(1200px, 100%);
+    max-height: 95vh;
+
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+}
+
+.modal-image {
+    max-width: 100%;
+    max-height: 80vh;
+
+    object-fit: contain;
+
+    border-radius: 10px;
+}
+
+.modal-title {
+    margin-top: 12px;
+    color: white;
+    font-size: 14px;
+}
+
+.close {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+
+    width: 42px;
+    height: 42px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #132c43;
+    color: white;
+
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* TOAST */
+
+.toast {
+    position: fixed;
+    z-index: 2000;
+
+    left: 50%;
+    bottom: 25px;
+
+    transform: translateX(-50%) translateY(20px);
+
+    padding: 12px 18px;
+
+    background: #0c243a;
+    border: 1px solid #1b5d8f;
+    border-radius: 9px;
+
+    color: white;
+    font-size: 13px;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: .25s;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    header {
+        padding-top: 25px;
+    }
+
+    .logo {
+        font-size: 23px;
+    }
+
+    .container {
+        width: calc(100% - 14px);
+    }
+
+    .topbar {
+        flex-direction: column;
+    }
+
+    .favorites-button {
+        padding: 12px;
+    }
+
+    .wallpapers {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-info {
+        padding: 9px;
+    }
+
+    .title {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+
+    .actions {
+        gap: 4px;
+    }
+
+    .action {
+        padding: 8px 2px;
+        font-size: 9px;
+    }
+
+    .favorite {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">KALIDADE WALLPAPERS PC 4K</div>
+    <div class="subtitle">
+        Wallpapers para PC • 4K • HD • KALIDADE
+    </div>
+</header>
+
+
+<div class="container">
+
+    <div class="topbar">
+
+        <input
+            type="search"
+            id="search"
+            class="search"
+            placeholder="🔎 Pesquisar wallpaper..."
+        >
+
+        <button
+            class="favorites-button"
+            id="favoritesButton"
+        >
+            ❤️ Salvos
+        </button>
+
+    </div>
+
+
+    <div
+        class="status"
+        id="status"
+    >
+        Carregando wallpapers...
+    </div>
+
+
+    <div
+        class="loading"
+        id="loading"
+    >
+        <div class="loader"></div>
+        Carregando list.json...
+    </div>
+
+
+    <div
+        class="wallpapers"
+        id="wallpapers"
+    ></div>
+
+
+    <div
+        class="empty"
+        id="empty"
+    >
+        <div class="empty-icon">🔎</div>
+
+        <div>
+            Nenhum wallpaper encontrado.
+        </div>
+    </div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div
+    class="modal"
+    id="modal"
+>
+
+    <button
+        class="close"
+        id="closeModal"
+    >
+        ✕
+    </button>
+
+    <div class="modal-content">
+
+        <img
+            class="modal-image"
+            id="modalImage"
+            alt="Wallpaper"
+        >
+
+        <div
+            class="modal-title"
+            id="modalTitle"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+
+/* =====================================
+   CONFIGURAÇÃO
+===================================== */
+
+const JSON_URL = "list.json";
+
+
+/* =====================================
+   ELEMENTOS
+===================================== */
+
+const wallpapersContainer =
+    document.getElementById("wallpapers");
+
+const loading =
+    document.getElementById("loading");
+
+const status =
+    document.getElementById("status");
+
+const empty =
+    document.getElementById("empty");
+
+const search =
+    document.getElementById("search");
+
+const favoritesButton =
+    document.getElementById("favoritesButton");
+
+const modal =
+    document.getElementById("modal");
+
+const modalImage =
+    document.getElementById("modalImage");
+
+const modalTitle =
+    document.getElementById("modalTitle");
+
+const closeModal =
+    document.getElementById("closeModal");
+
+const toast =
+    document.getElementById("toast");
+
+
+/* =====================================
+   DADOS
+===================================== */
+
+let wallpapers = [];
+
+let showFavorites = false;
+
+let savedWallpapers =
+    JSON.parse(
+        localStorage.getItem("kalidade_wallpapers") || "[]"
+    );
+
+
+/* =====================================
+   CARREGAR JSON
+===================================== */
+
+async function loadWallpapers() {
+
+    try {
+
+        const response =
+            await fetch(
+                JSON_URL + "?t=" + Date.now()
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Erro HTTP " + response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+
+        if (!Array.isArray(data)) {
+
+            throw new Error(
+                "O list.json precisa ser um array."
+            );
+
+        }
+
+
+        wallpapers =
+            normalizeData(data);
+
+
+        loading.style.display =
+            "none";
+
+
+        render();
+
+
+    } catch (error) {
+
+        loading.style.display =
+            "none";
+
+        status.textContent =
+            "❌ Não foi possível carregar o list.json";
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =====================================
+   NORMALIZAR JSON
+===================================== */
+
+function normalizeData(data) {
+
+    return data
+        .map((item, index) => {
+
+            /*
+             * URL simples
+             */
+
+            if (typeof item === "string") {
+
+                return {
+
+                    id: index,
+
+                    url: item,
+
+                    titulo: ""
+
+                };
+
+            }
+
+
+            /*
+             * OBJETO
+             */
+
+            if (
+                typeof item === "object" &&
+                item !== null
+            ) {
+
+                const url =
+                    item.url ||
+                    item.link ||
+                    item.imagem ||
+                    item.image ||
+                    item.src;
+
+
+                const titulo =
+                    item.titulo ||
+                    item.title ||
+                    item.nome ||
+                    "";
+
+
+                if (url) {
+
+                    return {
+
+                        id: index,
+
+                        url: url,
+
+                        titulo: titulo
+
+                    };
+
+                }
+
+            }
+
+
+            return null;
+
+        })
+        .filter(Boolean);
+
+}
+
+
+/* =====================================
+   RENDERIZAR
+===================================== */
+
+function render() {
+
+    const query =
+        search.value
+            .trim()
+            .toLowerCase();
+
+
+    let list =
+        wallpapers.filter(item => {
+
+            const matchesSearch =
+                !query ||
+                item.titulo
+                    .toLowerCase()
+                    .includes(query) ||
+                item.url
+                    .toLowerCase()
+                    .includes(query);
+
+
+            const matchesFavorite =
+                !showFavorites ||
+                savedWallpapers.includes(item.url);
+
+
+            return (
+                matchesSearch &&
+                matchesFavorite
+            );
+
+        });
+
+
+    wallpapersContainer.innerHTML = "";
+
+
+    if (!list.length) {
+
+        empty.style.display =
+            "block";
+
+    } else {
+
+        empty.style.display =
+            "none";
+
+    }
+
+
+    list.forEach((item, index) => {
+
+        createCard(item, index);
+
+    });
+
+
+    status.textContent =
+        `${list.length} wallpaper${list.length === 1 ? "" : "s"} encontrado${list.length === 1 ? "" : "s"}`;
+
+}
+
+
+/* =====================================
+   CRIAR CARD
+===================================== */
+
+function createCard(item, index) {
+
+    const card =
+        document.createElement("article");
+
+    card.className =
+        "card";
+
+
+    const imageContainer =
+        document.createElement("div");
+
+    imageContainer.className =
+        "image-container";
+
+
+    const img =
+        document.createElement("img");
+
+    img.src =
+        item.url;
+
+    img.alt =
+        item.titulo ||
+        "Wallpaper KALIDADE";
+
+    img.loading =
+        "lazy";
+
+
+    img.onerror = function() {
+
+        this.style.display =
+            "none";
+
+        imageContainer.style.background =
+            "#09131f";
+
+        const error =
+            document.createElement("div");
+
+        error.style.cssText = `
+            height:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#66819b;
+            font-size:12px;
+        `;
+
+        error.textContent =
+            "Imagem indisponível";
+
+        imageContainer.appendChild(error);
+
+    };
+
+
+    img.addEventListener("click", () => {
+
+        openModal(item);
+
+    });
+
+
+    /* FAVORITO */
+
+    const favorite =
+        document.createElement("button");
+
+    favorite.className =
+        "favorite";
+
+
+    const isSaved =
+        savedWallpapers.includes(item.url);
+
+
+    if (isSaved) {
+
+        favorite.classList.add("saved");
+
+        favorite.textContent =
+            "♥";
+
+    } else {
+
+        favorite.textContent =
+            "♡";
+
+    }
+
+
+    favorite.title =
+        "Salvar wallpaper";
+
+
+    favorite.addEventListener("click", event => {
+
+        event.stopPropagation();
+
+        toggleFavorite(item.url);
+
+        render();
+
+    });
+
+
+    imageContainer.appendChild(img);
+
+    imageContainer.appendChild(favorite);
+
+
+    /* INFO */
+
+    const info =
+        document.createElement("div");
+
+    info.className =
+        "card-info";
+
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "title";
+
+
+    if (item.titulo) {
+
+        title.textContent =
+            item.titulo;
+
+    } else {
+
+        title.textContent =
+            "Wallpaper 4K";
+
+        title.classList.add(
+            "no-title"
+        );
+
+    }
+
+
+    /* ACTIONS */
+
+    const actions =
+        document.createElement("div");
+
+    actions.className =
+        "actions";
+
+
+    /* DOWNLOAD */
+
+    const download =
+        document.createElement("button");
+
+    download.className =
+        "action download";
+
+    download.textContent =
+        "⬇ Baixar";
+
+    download.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            downloadImage(
+                item.url,
+                item.titulo
+            );
+
+        }
+    );
+
+
+    /* SHARE */
+
+    const share =
+        document.createElement("button");
+
+    share.className =
+        "action";
+
+    share.textContent =
+        "↗ Compartilhar";
+
+    share.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            shareImage(item);
+
+        }
+    );
+
+
+    /* SAVE */
+
+    const save =
+        document.createElement("button");
+
+    save.className =
+        "action";
+
+    save.textContent =
+        isSaved
+            ? "♥ Salvo"
+            : "♡ Salvar";
+
+
+    save.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            toggleFavorite(item.url);
+
+            render();
+
+        }
+    );
+
+
+    actions.appendChild(download);
+
+    actions.appendChild(share);
+
+    actions.appendChild(save);
+
+
+    info.appendChild(title);
+
+    info.appendChild(actions);
+
+
+    card.appendChild(imageContainer);
+
+    card.appendChild(info);
+
+
+    wallpapersContainer.appendChild(card);
+
+}
+
+
+/* =====================================
+   FAVORITOS
+===================================== */
+
+function toggleFavorite(url) {
+
+    const index =
+        savedWallpapers.indexOf(url);
+
+
+    if (index >= 0) {
+
+        savedWallpapers.splice(
+            index,
+            1
+        );
+
+        showToast(
+            "🗑️ Wallpaper removido dos salvos"
+        );
+
+    } else {
+
+        savedWallpapers.push(url);
+
+        showToast(
+            "❤️ Wallpaper salvo!"
+        );
+
+    }
+
+
+    localStorage.setItem(
+        "kalidade_wallpapers",
+        JSON.stringify(savedWallpapers)
+    );
+
+}
+
+
+/* =====================================
+   DOWNLOAD
+===================================== */
+
+async function downloadImage(
+    url,
+    title
+) {
+
+    try {
+
+        showToast(
+            "⏳ Preparando download..."
+        );
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+            throw new Error();
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        const extension =
+            getExtensionFromBlob(
+                blob,
+                url
+            );
+
+
+        const filename =
+            sanitizeFilename(
+                title ||
+                "kalidade-wallpaper-4k"
+            )
+            + "."
+            + extension;
+
+
+        const blobUrl =
+            URL.createObjectURL(blob);
+
+
+        const link =
+            document.createElement("a");
+
+        link.href =
+            blobUrl;
+
+        link.download =
+            filename;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+
+        setTimeout(() => {
+
+            URL.revokeObjectURL(
+                blobUrl
+            );
+
+        }, 1000);
+
+
+        showToast(
+            "✅ Download iniciado!"
+        );
+
+
+    } catch {
+
+        /*
+         * Se o servidor da imagem bloquear
+         * CORS, abre a imagem em nova aba.
+         */
+
+        window.open(
+            url,
+            "_blank"
+        );
+
+        showToast(
+            "ℹ️ A imagem foi aberta em uma nova aba."
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   SHARE
+===================================== */
+
+async function shareImage(item) {
+
+    const shareData = {
+
+        title:
+            item.titulo ||
+            "KALIDADE WALLPAPERS PC 4K",
+
+        text:
+            item.titulo ||
+            "Wallpaper 4K",
+
+        url:
+            item.url
+
+    };
+
+
+    if (
+        navigator.share
+    ) {
+
+        try {
+
+            await navigator.share(
+                shareData
+            );
+
+        } catch {
+
+            /*
+             * Usuário cancelou.
+             */
+
+        }
+
+    } else {
+
+        try {
+
+            await navigator.clipboard.writeText(
+                item.url
+            );
+
+            showToast(
+                "🔗 Link copiado!"
+            );
+
+        } catch {
+
+            showToast(
+                "❌ Não foi possível copiar o link."
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================
+   MODAL
+===================================== */
+
+function openModal(item) {
+
+    modalImage.src =
+        item.url;
+
+    modalTitle.textContent =
+        item.titulo ||
+        "Wallpaper 4K";
+
+    modal.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeModalFunction() {
+
+    modal.classList.remove(
+        "show"
+    );
+
+    modalImage.src =
+        "";
+
+}
+
+
+closeModal.addEventListener(
+    "click",
+    closeModalFunction
+);
+
+
+modal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target === modal
+        ) {
+
+            closeModalFunction();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeModalFunction();
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   BUSCA
+===================================== */
+
+search.addEventListener(
+    "input",
+    render
+);
+
+
+/* =====================================
+   SALVOS
+===================================== */
+
+favoritesButton.addEventListener(
+    "click",
+    () => {
+
+        showFavorites =
+            !showFavorites;
+
+
+        if (showFavorites) {
+
+            favoritesButton.textContent =
+                "← Todos";
+
+        } else {
+
+            favoritesButton.textContent =
+                "❤️ Salvos";
+
+        }
+
+
+        render();
+
+    }
+);
+
+
+/* =====================================
+   EXTENSÃO
+===================================== */
+
+function getExtensionFromBlob(
+    blob,
+    url
+) {
+
+    const mime =
+        blob.type;
+
+
+    const map = {
+
+        "image/jpeg": "jpg",
+
+        "image/jpg": "jpg",
+
+        "image/png": "png",
+
+        "image/webp": "webp",
+
+        "image/gif": "gif",
+
+        "image/bmp": "bmp",
+
+        "image/avif": "avif"
+
+    };
+
+
+    if (map[mime]) {
+
+        return map[mime];
+
+    }
+
+
+    const clean =
+        url.split("?")[0];
+
+
+    const match =
+        clean.match(
+            /\.([a-zA-Z0-9]+)$/
+        );
+
+
+    return match
+        ? match[1].toLowerCase()
+        : "jpg";
+
+}
+
+
+/* =====================================
+   NOME DO ARQUIVO
+===================================== */
+
+function sanitizeFilename(name) {
+
+    return name
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /[^a-zA-Z0-9-_ ]/g,
+            ""
+        )
+        .trim()
+        .replace(
+            /\s+/g,
+            "-"
+        )
+        .substring(0, 80)
+        || "wallpaper-4k";
+
+}
+
+
+/* =====================================
+   TOAST
+===================================== */
+
+let toastTimer;
+
+function showToast(message) {
+
+    toast.textContent =
+        message;
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(() => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        }, 2500);
+
+}
+
+
+/* =====================================
+   INICIAR
+===================================== */
+
+loadWallpapers();
+
+</script>
+
+</body>
+</html>
