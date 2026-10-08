@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b12">
+<title>KALIDADE ICONS PNG OR SVG</title>
+
+<style>
+:root {
+  --bg: #080b12;
+  --panel: #101722;
+  --border: #263244;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --green: #00ff99;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 35px 18px 25px;
+  text-align: center;
+  background: radial-gradient(ellipse at top, #12372e, transparent 70%);
+}
+
+.logo {
+  font-size: clamp(25px, 5vw, 38px);
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: var(--green);
+}
+
+header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+main {
+  width: min(1200px, 100%);
+  margin: auto;
+  padding: 15px;
+}
+
+.search-box {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+#search {
+  width: 100%;
+  padding: 17px 48px 17px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: white;
+  outline: none;
+  font-size: 16px;
+}
+
+#search:focus {
+  border-color: var(--green);
+}
+
+.search-icon {
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  font-size: 22px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+button, select {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: white;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+button:hover {
+  border-color: var(--green);
+}
+
+#count {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+#status {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 15px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px;
+  transition: border-color .2s, transform .2s;
+}
+
+.card:hover {
+  border-color: var(--green);
+  transform: translateY(-2px);
+}
+
+.preview {
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #080d15;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.preview img {
+  max-width: 76px;
+  max-height: 76px;
+  object-fit: contain;
+}
+
+.name {
+  font-size: 13px;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+  min-height: 32px;
+}
+
+.format {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 7px 0 10px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.actions button {
+  padding: 9px 4px;
+  font-size: 11px;
+}
+
+.download {
+  background: var(--green);
+  color: #00140b;
+  border-color: var(--green);
+  font-weight: bold;
+}
+
+.empty {
+  text-align: center;
+  padding: 45px 10px;
+  color: var(--muted);
+  grid-column: 1 / -1;
+}
+
+footer {
+  padding: 35px 15px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 400px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .card {
+    padding: 9px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">KALIDADE <span>ICONS</span></div>
+  <p>PNG OR SVG — Biblioteca de ícones com busca inteligente</p>
+</header>
+
+<main>
+  <div class="search-box">
+    <input
+      id="search"
+      type="search"
+      placeholder="Pesquise: casa, telefone, coração, home..."
+      autocomplete="off"
+      aria-label="Pesquisar ícones"
+    >
+    <span class="search-icon">⌕</span>
+  </div>
+
+  <div class="toolbar">
+    <select id="format">
+      <option value="all">Todos os formatos</option>
+      <option value="png">Somente PNG</option>
+      <option value="svg">Somente SVG</option>
+    </select>
+
+    <button id="reload">↻ Atualizar JSON</button>
+    <span id="count">Carregando...</span>
+  </div>
+
+  <div id="status">Carregando icons.json...</div>
+  <section id="grid" class="grid"></section>
+</main>
+
+<footer>
+  KALIDADE ICONS PNG OR SVG<br>
+  Biblioteca carregada dinamicamente via icons.json
+</footer>
+
+<script>
+"use strict";
+
+const grid = document.getElementById("grid");
+const search = document.getElementById("search");
+const format = document.getElementById("format");
+const count = document.getElementById("count");
+const status = document.getElementById("status");
+const reload = document.getElementById("reload");
+
+let icons = [];
+
+/*
+ * Sinônimos para buscas em vários idiomas.
+ * Adicione mais termos conforme sua biblioteca crescer.
+ */
+const synonyms = {
+  "casa": ["home", "house", "inicio", "lar"],
+  "home": ["casa", "house", "lar", "inicio"],
+  "telefone": ["phone", "telephone", "call", "celular"],
+  "celular": ["phone", "mobile", "smartphone", "telefone"],
+  "ligacao": ["call", "phone", "telephone"],
+  "email": ["mail", "correio", "mensagem", "e-mail"],
+  "correio": ["mail", "email", "envelope"],
+  "mensagem": ["message", "chat", "mail", "email"],
+  "usuario": ["user", "person", "profile", "account"],
+  "pessoa": ["person", "user", "people"],
+  "perfil": ["profile", "user", "account"],
+  "coracao": ["heart", "love", "like"],
+  "amor": ["love", "heart"],
+  "curtir": ["like", "heart", "favorite"],
+  "favorito": ["favorite", "star", "heart"],
+  "localizacao": ["location", "pin", "map", "place"],
+  "mapa": ["map", "maps", "location", "navigation"],
+  "endereco": ["address", "location", "map"],
+  "mundo": ["world", "earth", "globe"],
+  "internet": ["web", "world", "globe", "network"],
+  "site": ["website", "web", "world wide web"],
+  "facebook": ["social", "meta"],
+  "instagram": ["social", "photo"],
+  "whatsapp": ["chat", "message", "phone"],
+  "seta": ["arrow", "direction"],
+  "direita": ["right", "arrow"],
+  "esquerda": ["left", "arrow"],
+  "pesquisa": ["search", "find", "magnifier"],
+  "buscar": ["search", "find"],
+  "lupa": ["search", "magnifier"],
+  "configuracao": ["settings", "gear", "configuration"],
+  "engrenagem": ["gear", "settings", "cog"],
+  "cadeado": ["lock", "security", "password"],
+  "seguranca": ["security", "shield", "lock"],
+  "olho": ["eye", "view", "visibility"],
+  "imagem": ["image", "picture", "photo"],
+  "foto": ["photo", "picture", "image"],
+  "camera": ["camera", "photo"],
+  "arquivo": ["file", "document"],
+  "documento": ["document", "file", "paper"],
+  "download": ["download", "save"],
+  "baixar": ["download", "save"],
+  "lixo": ["trash", "delete", "bin"],
+  "apagar": ["delete", "remove", "trash"],
+  "editar": ["edit", "pencil", "write"],
+  "lapis": ["pencil", "edit", "write"],
+  "dinheiro": ["money", "cash", "wallet"],
+  "carteira": ["wallet", "money"],
+  "compras": ["shopping", "cart", "store"],
+  "carrinho": ["cart", "shopping cart"],
+  "loja": ["shop", "store", "shopping"],
+  "estrela": ["star", "favorite", "rating"],
+  "tempo": ["time", "clock", "watch"],
+  "relogio": ["clock", "time", "watch"],
+  "calendario": ["calendar", "date", "schedule"],
+  "luz": ["light", "bulb", "lamp"],
+  "lampada": ["bulb", "light", "idea"],
+  "ideia": ["idea", "bulb", "light"],
+  "computador": ["computer", "desktop", "pc"],
+  "notebook": ["laptop", "computer"],
+  "musica": ["music", "audio", "sound"],
+  "som": ["sound", "volume", "audio"],
+  "video": ["video", "play", "movie"],
+  "jogo": ["game", "gaming", "controller"],
+  "controle": ["controller", "gamepad"],
+  "wifi": ["wifi", "wireless", "network"],
+  "nuvem": ["cloud", "upload", "download"],
+  "fogo": ["fire", "flame"],
+  "agua": ["water", "drop"],
+  "comida": ["food", "restaurant", "meal"],
+  "carro": ["car", "vehicle", "transport"],
+  "aviao": ["airplane", "plane", "flight"],
+  "saude": ["health", "medical", "hospital"],
+  "medico": ["doctor", "medical", "health"],
+  "cachorro": ["dog", "pet"],
+  "gato": ["cat", "pet"],
+  "folha": ["leaf", "plant", "nature"],
+  "arvore": ["tree", "nature", "plant"],
+  "sol": ["sun", "weather"],
+  "lua": ["moon", "night"],
+  "chuva": ["rain", "weather"],
+  "natal": ["christmas", "holiday"],
+  "pessoa": ["person", "user", "human"],
+  "grupo": ["group", "users", "team"],
+  "equipe": ["team", "group", "users"],
+  "grafico": ["chart", "analytics", "statistics"],
+  "estatistica": ["statistics", "chart", "analytics"],
+  "planeta": ["planet", "world", "space"],
+  "estrela": ["star", "space", "rating"],
+  "traducao": ["translation", "language"],
+  "idioma": ["language", "translation", "globe"],
+  "bandeira": ["flag", "country"],
+  "brasil": ["brazil", "flag", "country"],
+  "mais": ["plus", "add", "addition"],
+  "adicionar": ["add", "plus", "create"],
+  "menos": ["minus", "remove"],
+  "fechar": ["close", "x", "exit"],
+  "abrir": ["open", "launch"],
+  "menu": ["menu", "navigation", "bars"],
+  "hamburguer": ["menu", "bars", "navigation"]
+};
+
+function normalizar(texto) {
+  return String(texto || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function termosBusca(consulta) {
+  const termos = normalizar(consulta).split(/\s+/).filter(Boolean);
+  const resultado = new Set(termos);
+
+  for (const termo of termos) {
+    for (const sinonimo of synonyms[termo] || []) {
+      resultado.add(normalizar(sinonimo));
+    }
+  }
+
+  return [...resultado];
+}
+
+function extensao(url) {
+  try {
+    const pathname = new URL(url).pathname.toLowerCase();
+    if (pathname.endsWith(".svg")) return "svg";
+    if (pathname.endsWith(".png")) return "png";
+    if (pathname.endsWith(".webp")) return "webp";
+    if (pathname.endsWith(".jpg") || pathname.endsWith(".jpeg")) return "jpg";
+  } catch {}
+
+  return "unknown";
+}
+
+function filtrar() {
+  const consulta = normalizar(search.value);
+  const termos = termosBusca(consulta);
+  const tipo = format.value;
+
+  return icons.filter(icon => {
+    const texto = normalizar(icon.titulo);
+    const ext = extensao(icon.src);
+
+    if (tipo !== "all" && ext !== tipo) return false;
+    if (!consulta) return true;
+
+    // Todos os termos precisam corresponder ao título ou a um sinônimo.
+    return termos.some(termo => texto.includes(termo));
+  });
+}
+
+function renderizar() {
+  const lista = filtrar();
+  grid.replaceChildren();
+
+  count.textContent = `${lista.length} ícone(s)`;
+
+  if (!lista.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = icons.length
+      ? "Nenhum ícone encontrado. Tente outro termo."
+      : "Nenhum ícone carregado.";
+    grid.appendChild(empty);
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  lista.forEach(icon => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const preview = document.createElement("div");
+    preview.className = "preview";
+
+    const img = document.createElement("img");
+    img.src = icon.src;
+    img.alt = icon.titulo;
+    img.loading = "lazy";
+    img.decoding = "async";
+
+    img.onerror = () => {
+      img.style.display = "none";
+      preview.textContent = "Imagem indisponível";
+      preview.style.color = "#94a3b8";
+      preview.style.fontSize = "11px";
+    };
+
+    preview.appendChild(img);
+
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = icon.titulo || "Ícone sem título";
+
+    const fmt = document.createElement("div");
+    fmt.className = "format";
+    fmt.textContent = extensao(icon.src).toUpperCase();
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const baixar = document.createElement("button");
+    baixar.className = "download";
+    baixar.textContent = "↓ Baixar";
+    baixar.onclick = () => baixarIcone(icon);
+
+    const copiar = document.createElement("button");
+    copiar.textContent = "Copiar URL";
+    copiar.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(icon.src);
+        copiar.textContent = "Copiado!";
+      } catch {
+        prompt("Copie a URL:", icon.src);
+      }
+      setTimeout(() => copiar.textContent = "Copiar URL", 1200);
+    };
+
+    actions.append(baixar, copiar);
+    card.append(preview, name, fmt, actions);
+    fragment.appendChild(card);
+  });
+
+  grid.appendChild(fragment);
+}
+
+async function baixarIcone(icon) {
+  const nome = normalizar(icon.titulo).replace(/\s+/g, "-") || "icone";
+  const ext = extensao(icon.src);
+
+  try {
+    const resposta = await fetch(icon.src);
+    if (!resposta.ok) throw Error("Download indisponível");
+
+    const blob = await resposta.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `${nome}.${ext === "unknown" ? "png" : ext}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  } catch {
+    // Alguns servidores bloqueiam fetch por CORS.
+    // Abre a imagem original como alternativa.
+    window.open(icon.src, "_blank", "noopener");
+    status.textContent =
+      "O servidor bloqueou o download direto. A imagem foi aberta em outra aba.";
+  }
+}
+
+async function carregar() {
+  status.textContent = "Carregando icons.json...";
+  reload.disabled = true;
+
+  try {
+    const resposta = await fetch("./icons.json", {
+      cache: "no-store"
+    });
+
+    if (!resposta.ok) {
+      throw Error(`HTTP ${resposta.status}`);
+    }
+
+    const json = await resposta.json();
+
+    if (!Array.isArray(json)) {
+      throw Error("O JSON precisa ser uma lista de ícones.");
+    }
+
+    icons = json.filter(item =>
+      item &&
+      typeof item.titulo === "string" &&
+      typeof item.src === "string" &&
+      /^https?:\/\//i.test(item.src)
+    );
+
+    status.textContent = `${icons.length} ícone(s) carregados com sucesso.`;
+    renderizar();
+  } catch (erro) {
+    status.textContent =
+      "Erro ao carregar icons.json. Use um servidor HTTP e confira o arquivo.";
+    grid.innerHTML = "";
+
+    const msg = document.createElement("div");
+    msg.className = "empty";
+    msg.textContent = erro.message;
+    grid.appendChild(msg);
+  } finally {
+    reload.disabled = false;
+  }
+}
+
+search.addEventListener("input", renderizar);
+format.addEventListener("change", renderizar);
+reload.addEventListener("click", carregar);
+
+carregar();
+</script>
+
+</body>
+</html>
