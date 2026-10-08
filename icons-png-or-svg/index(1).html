@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="KALIDADE ICONS PNG OR SVG — biblioteca de ícones com pesquisa e carregamento progressivo.">
+  <title>KALIDADE ICONS PNG OR SVG</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b12;
+      --panel: #101722;
+      --panel-alt: #0b111b;
+      --border: #263244;
+      --text: #f1f5f9;
+      --muted: #9aa8ba;
+      --green: #00ff99;
+      --danger: #ff7373;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 35px 16px 27px;
+      text-align: center;
+      border-bottom: 1px solid #17212e;
+      background: radial-gradient(ellipse at top, #12372e 0%, transparent 72%);
+    }
+
+    .logo {
+      font-size: clamp(25px, 5vw, 39px);
+      font-weight: 900;
+      letter-spacing: -1.2px;
+    }
+
+    .logo span { color: var(--green); }
+
+    header p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    main {
+      width: min(1250px, 100%);
+      margin: 0 auto;
+      padding: 18px 15px 30px;
+    }
+
+    .search-area { margin-bottom: 13px; }
+
+    .search-box { position: relative; }
+
+    #search {
+      display: block;
+      width: 100%;
+      padding: 16px 48px 16px 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    #search:focus { border-color: var(--green); }
+
+    #search::placeholder { color: #728096; }
+
+    .search-symbol {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      color: var(--green);
+      font-size: 22px;
+      pointer-events: none;
+    }
+
+    .search-hint {
+      margin: 8px 3px 0;
+      color: #ffcf70;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      margin: 14px 0;
+    }
+
+    .toolbar-left {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button, select {
+      min-height: 38px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    button { cursor: pointer; }
+    button:hover, select:hover { border-color: var(--green); }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    #reload { color: var(--green); }
+
+    #count {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    #status {
+      min-height: 20px;
+      margin: 12px 1px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #status.error { color: var(--danger); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      transition: border-color .15s ease, transform .15s ease;
+    }
+
+    .card:hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+
+    .preview {
+      display: flex;
+      height: 105px;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 11px;
+      border-radius: 8px;
+      background: var(--panel-alt);
+    }
+
+    .preview img {
+      display: block;
+      max-width: 78px;
+      max-height: 78px;
+      object-fit: contain;
+    }
+
+    .preview-fallback {
+      padding: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .name {
+      min-height: 32px;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .format {
+      margin: 7px 0 10px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .actions button {
+      min-width: 0;
+      padding: 8px 4px;
+      font-size: 11px;
+    }
+
+    .download {
+      border-color: var(--green);
+      background: var(--green);
+      color: #00140b;
+      font-weight: 800;
+    }
+
+    .download:hover { background: #82ffc9; }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 42px 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    #sentinel {
+      grid-column: 1 / -1;
+      height: 2px;
+      width: 100%;
+    }
+
+    #loadMoreWrap {
+      padding: 16px 0 3px;
+      text-align: center;
+    }
+
+    #loadMore {
+      min-width: 190px;
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    footer {
+      padding: 30px 15px;
+      border-top: 1px solid #17212e;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    @media (max-width: 420px) {
+      main { padding-right: 10px; padding-left: 10px; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .card { padding: 9px; }
+      .toolbar { align-items: stretch; }
+      #count { width: 100%; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">KALIDADE <span>ICONS</span></div>
+    <p>PNG OR SVG — sua biblioteca de ícones</p>
+  </header>
+
+  <main>
+    <section class="search-area" aria-label="Pesquisar ícones">
+      <div class="search-box">
+        <input
+          id="search"
+          type="search"
+          placeholder="Search icons in English..."
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Search icons in English"
+        >
+        <span class="search-symbol" aria-hidden="true">⌕</span>
+      </div>
+      <p class="search-hint">Dica: pesquise em inglês para encontrar mais resultados. Ex.: home, phone, heart, user, email, location.</p>
+    </section>
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <select id="format" aria-label="Filtrar formato">
+          <option value="all">Todos os formatos</option>
+          <option value="png">Somente PNG</option>
+          <option value="svg">Somente SVG</option>
+        </select>
+        <button id="reload" type="button">↻ Atualizar biblioteca</button>
+      </div>
+      <span id="count" aria-live="polite">Carregando...</span>
+    </div>
+
+    <div id="status" role="status" aria-live="polite">Carregando icons.json...</div>
+    <section id="grid" class="grid" aria-label="Resultados dos ícones"></section>
+    <div id="loadMoreWrap" hidden>
+      <button id="loadMore" type="button">Carregar mais ícones</button>
+    </div>
+  </main>
+
+  <footer>
+    KALIDADE ICONS PNG OR SVG<br>
+    Os ícones e seus arquivos são carregados de icons.json.
+  </footer>
+
+  <script>
+    "use strict";
+
+    const BATCH_SIZE = 100;
+    const JSON_URL = "./icons.json";
+
+    const grid = document.getElementById("grid");
+    const search = document.getElementById("search");
+    const format = document.getElementById("format");
+    const count = document.getElementById("count");
+    const status = document.getElementById("status");
+    const reload = document.getElementById("reload");
+    const loadMore = document.getElementById("loadMore");
+    const loadMoreWrap = document.getElementById("loadMoreWrap");
+
+    let icons = [];
+    let filteredIcons = [];
+    let renderedCount = 0;
+    let loadingBatch = false;
+    let searchTimer = null;
+
+    const sentinel = document.createElement("div");
+    sentinel.id = "sentinel";
+    sentinel.setAttribute("aria-hidden", "true");
+
+    // Busca simples: título contém o texto digitado. Sem tradução ou sinônimos.
+    function normalize(text) {
+      return String(text || "").trim().toLocaleLowerCase();
+    }
+
+    function getExtension(url) {
+      try {
+        const pathname = new URL(url, location.href).pathname.toLowerCase();
+        if (pathname.endsWith(".svg")) return "svg";
+        if (pathname.endsWith(".png")) return "png";
+        if (pathname.endsWith(".webp")) return "webp";
+        if (pathname.endsWith(".jpg") || pathname.endsWith(".jpeg")) return "jpg";
+      } catch (_) {}
+      return "unknown";
+    }
+
+    function getFilteredIcons() {
+      const query = normalize(search.value);
+      const selectedFormat = format.value;
+
+      return icons.filter(icon => {
+        const matchesTitle = !query || normalize(icon.titulo).includes(query);
+        const ext = getExtension(icon.src);
+        const matchesFormat = selectedFormat === "all" || ext === selectedFormat;
+        return matchesTitle && matchesFormat;
+      });
+    }
+
+    function updateCount() {
+      count.textContent = `Exibindo ${renderedCount} de ${filteredIcons.length} ícones`;
+    }
+
+    function makeCard(icon) {
+      const card = document.createElement("article");
+      card.className = "card";
+
+      const preview = document.createElement("div");
+      preview.className = "preview";
+
+      const img = document.createElement("img");
+      img.src = icon.src;
+      img.alt = icon.titulo || "Icon";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.onerror = () => {
+        img.remove();
+        const fallback = document.createElement("span");
+        fallback.className = "preview-fallback";
+        fallback.textContent = "Preview unavailable";
+        preview.appendChild(fallback);
+      };
+      preview.appendChild(img);
+
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = icon.titulo || "Untitled icon";
+
+      const formatLabel = document.createElement("div");
+      formatLabel.className = "format";
+      formatLabel.textContent = getExtension(icon.src).toUpperCase();
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const downloadButton = document.createElement("button");
+      downloadButton.type = "button";
+      downloadButton.className = "download";
+      downloadButton.textContent = "↓ Download";
+      downloadButton.addEventListener("click", () => downloadIcon(icon, downloadButton));
+
+      const copyButton = document.createElement("button");
+      copyButton.type = "button";
+      copyButton.textContent = "Copy URL";
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(icon.src);
+          copyButton.textContent = "Copied!";
+        } catch (_) {
+          window.prompt("Copy this icon URL:", icon.src);
+        }
+        window.setTimeout(() => { copyButton.textContent = "Copy URL"; }, 1200);
+      });
+
+      actions.append(downloadButton, copyButton);
+      card.append(preview, name, formatLabel, actions);
+      return card;
+    }
+
+    function renderNextBatch() {
+      if (loadingBatch || renderedCount >= filteredIcons.length) {
+        updateLoadMoreControls();
+        return;
+      }
+
+      loadingBatch = true;
+      const start = renderedCount;
+      const end = Math.min(start + BATCH_SIZE, filteredIcons.length);
+      const fragment = document.createDocumentFragment();
+
+      for (let i = start; i < end; i++) {
+        fragment.appendChild(makeCard(filteredIcons[i]));
+      }
+
+      // Mantém a sentinela no fim do grid para detectar a rolagem.
+      grid.insertBefore(fragment, sentinel);
+      renderedCount = end;
+      loadingBatch = false;
+      updateCount();
+      updateLoadMoreControls();
+    }
+
+    function updateLoadMoreControls() {
+      const hasMore = renderedCount < filteredIcons.length;
+      loadMoreWrap.hidden = !hasMore;
+      loadMore.disabled = loadingBatch || !hasMore;
+
+      if (!hasMore) {
+        observer.unobserve(sentinel);
+      } else {
+        observer.observe(sentinel);
+      }
+    }
+
+    function renderResults() {
+      observer.unobserve(sentinel);
+      grid.replaceChildren();
+      filteredIcons = getFilteredIcons();
+      renderedCount = 0;
+      loadingBatch = false;
+
+      if (filteredIcons.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = icons.length
+          ? "Nenhum ícone encontrado. Try searching in English."
+          : "No icons loaded yet.";
+        grid.appendChild(empty);
+        count.textContent = "0 ícones";
+        loadMoreWrap.hidden = true;
+        return;
+      }
+
+      grid.appendChild(sentinel);
+      renderNextBatch();
+    }
+
+    async function downloadIcon(icon, button) {
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = "Preparing...";
+
+      try {
+        const response = await fetch(icon.src, { mode: "cors" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const ext = getExtension(icon.src);
+        const safeName = normalize(icon.titulo)
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "") || "kalidade-icon";
+
+        const anchor = document.createElement("a");
+        anchor.href = objectUrl;
+        anchor.download = `${safeName}.${ext === "unknown" ? "png" : ext}`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+        button.textContent = "Downloaded!";
+      } catch (_) {
+        // Alternativa para hosts que bloqueiam downloads por CORS.
+        window.open(icon.src, "_blank", "noopener,noreferrer");
+        button.textContent = "Open image";
+        status.textContent = "Este servidor bloqueou o download direto; a URL do ícone foi aberta em outra aba.";
+      } finally {
+        window.setTimeout(() => {
+          button.disabled = false;
+          button.textContent = originalText;
+        }, 1400);
+      }
+    }
+
+    async function loadLibrary() {
+      reload.disabled = true;
+      status.classList.remove("error");
+      status.textContent = "Loading icons.json...";
+
+      try {
+        const response = await fetch(JSON_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Não foi possível carregar icons.json (HTTP ${response.status}).`);
+
+        const json = await response.json();
+        if (!Array.isArray(json)) throw new Error("icons.json deve conter uma lista JSON (array).");
+
+        icons = json.filter(item =>
+          item &&
+          typeof item.titulo === "string" &&
+          typeof item.src === "string" &&
+          /^https?:\/\//i.test(item.src)
+        );
+
+        status.textContent = `Biblioteca carregada: ${icons.length} ícones. Search in English for best results.`;
+        renderResults();
+      } catch (error) {
+        icons = [];
+        filteredIcons = [];
+        grid.replaceChildren();
+        const message = document.createElement("div");
+        message.className = "empty";
+        message.textContent = `${error.message} Abra o site por um servidor HTTP e confira se icons.json está na mesma pasta.`;
+        grid.appendChild(message);
+        count.textContent = "Erro ao carregar";
+        status.classList.add("error");
+        status.textContent = "Falha ao carregar a biblioteca.";
+      } finally {
+        reload.disabled = false;
+      }
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) renderNextBatch();
+    }, { root: null, rootMargin: "450px 0px", threshold: 0 });
+
+    search.addEventListener("input", () => {
+      window.clearTimeout(searchTimer);
+      searchTimer = window.setTimeout(renderResults, 100);
+    });
+
+    format.addEventListener("change", renderResults);
+    reload.addEventListener("click", loadLibrary);
+    loadMore.addEventListener("click", renderNextBatch);
+
+    loadLibrary();
+  </script>
+</body>
+</html>
