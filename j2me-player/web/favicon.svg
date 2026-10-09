@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Cartridge body -->
+  <rect x="8" y="4" width="48" height="56" fill="#252535" stroke="#00ffff" stroke-width="2"/>
+
+  <!-- Top notch -->
+  <rect x="20" y="4" width="24" height="8" fill="#1a1a24"/>
+
+  <!-- Cartridge label area -->
+  <rect x="12" y="16" width="40" height="32" fill="#1a1a24" stroke="#ff00ff" stroke-width="1"/>
+
+  <!-- J2ME text -->
+  <text x="32" y="28" font-family="monospace" font-size="10" font-weight="bold" fill="#00ffff" text-anchor="middle">J2ME</text>
+
+  <!-- Bottom connector -->
+  <rect x="20" y="52" width="24" height="8" fill="#0a0a0f" stroke="#ffff00" stroke-width="1"/>
+
+  <!-- Decorative dots -->
+  <circle cx="16" cy="12" r="1.5" fill="#ffff00"/>
+  <circle cx="48" cy="12" r="1.5" fill="#ffff00"/>
+
+  <!-- Shine effect -->
+  <path d="M 14 8 L 18 8 L 18 12 L 14 12 Z" fill="#00ffff" opacity="0.3"/>
+</svg>

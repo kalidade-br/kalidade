@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyMapper Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #000;
+            color: #0f0;
+        }
+        .log {
+            border: 1px solid #0f0;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        #mapping-list {
+            border: 2px solid #00f;
+            min-height: 100px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>KeyMapper Test Page</h1>
+    <div class="log" id="log">Loading...</div>
+    <button id="reset-mappings-btn">Reset to Defaults</button>
+    <div id="mapping-list"></div>
+
+    <script type="module">
+        import { KeyMapper } from './src/keyMapper.js';
+        import { initKeyMapperUI } from './src/keyMapperUI.js';
+
+        const log = document.getElementById('log');
+
+        try {
+            log.innerHTML = 'Testing KeyMapper import...<br>';
+
+            // Test KeyMapper
+            const mapper = new KeyMapper();
+            log.innerHTML += `KeyMapper created: ${mapper ? 'OK' : 'FAIL'}<br>`;
+
+            const actions = mapper.getAllActions();
+            log.innerHTML += `Actions loaded: ${actions.length}<br>`;
+
+            // Test UI init
+            log.innerHTML += 'Calling initKeyMapperUI()...<br>';
+            initKeyMapperUI();
+
+            log.innerHTML += '<strong style="color: #0f0;">All tests passed!</strong><br>';
+            log.innerHTML += 'Check #mapping-list below for rendered actions.';
+
+        } catch (error) {
+            log.innerHTML += `<strong style="color: #f00;">ERROR: ${error.message}</strong><br>`;
+            log.innerHTML += `<pre>${error.stack}</pre>`;
+            console.error('Test error:', error);
+        }
+    </script>
+</body>
+</html>

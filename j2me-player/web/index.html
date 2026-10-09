@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+    <!-- SEO Meta Tags -->
+    <title>J2ME Player - Java ME Emulator in Browser</title>
+    <meta name="description" content="Play classic J2ME mobile games directly in your browser. J2ME Player supports JAR and JAD files with configurable phone settings." />
+    <meta name="keywords" content="J2ME, Java ME, mobile games, emulator, online emulator, retro games, Nokia games, JAR games" />
+    <meta name="author" content="J2ME Player" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="J2ME Player - Java ME Emulator" />
+    <meta property="og:description" content="Play classic J2ME mobile games directly in your browser" />
+    <meta property="og:image" content="/favicon.svg" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="J2ME Player - Java ME Emulator" />
+    <meta name="twitter:description" content="Play classic J2ME mobile games directly in your browser" />
+    <meta name="twitter:image" content="/favicon.svg" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0a0a0f" />
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json" />
+  </head>
+
+  <body>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
+
+      html,
+      body {
+        height: 95svh;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: radial-gradient(2px 2px at 20% 30%, white, transparent),
+          radial-gradient(2px 2px at 60% 70%, white, transparent),
+          radial-gradient(1px 1px at 50% 50%, white, transparent),
+          radial-gradient(1px 1px at 80% 10%, white, transparent),
+          radial-gradient(2px 2px at 90% 60%, white, transparent),
+          radial-gradient(1px 1px at 33% 90%, white, transparent),
+          radial-gradient(2px 2px at 15% 80%, white, transparent),
+          radial-gradient(1px 1px at 70% 40%, white, transparent), #0a0a0f;
+        background-size: 200% 200%;
+        /* animation: stars-twinkle 10s ease-in-out infinite; */
+        font-family: "VT323", monospace;
+        font-size: 1.2em;
+      }
+
+      @keyframes stars-twinkle {
+        0%,
+        100% {
+          background-position: 0% 0%;
+        }
+        50% {
+          background-position: 100% 100%;
+        }
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.15) 0px,
+          rgba(0, 0, 0, 0.15) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      #loading {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        inset: 0;
+        gap: 30px;
+        font-size: 2em;
+      }
+
+      .cartridge-loader {
+        width: 120px;
+        height: 120px;
+      }
+
+      .cartridge-loader img {
+        width: 100%;
+        height: 100%;
+        animation: glow-pulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(180deg);
+        }
+      }
+
+      @keyframes glow-pulse {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 10px var(--neon-cyan)) drop-shadow(0 0 20px var(--neon-cyan));
+        }
+        50% {
+          filter: drop-shadow(0 0 20px var(--neon-cyan)) drop-shadow(0 0 40px var(--neon-cyan)) drop-shadow(0 0 60px var(--neon-cyan));
+        }
+      }
+
+      .loading-text {
+        font-family: "Press Start 2P", cursive;
+        font-size: 0.8em;
+        color: var(--neon-yellow);
+        text-shadow: 0 0 10px var(--neon-yellow);
+        animation: blink 1s step-start infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      main {
+        margin: auto;
+        width: 95%;
+        max-width: 1200px;
+        padding: 0px;
+        height: 90vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 450px 1fr;
+        gap: 30px;
+        margin-top: 20px;
+        border: 3px solid var(--neon-cyan);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5),
+          0 0 30px rgba(0, 255, 255, 0.3);
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        overflow: hidden;
+      }
+
+      .right-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .right-panel::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      .right-panel::-webkit-scrollbar-track {
+        background: var(--arcade-black);
+        border: 2px solid var(--neon-purple);
+        border-radius: 0;
+      }
+
+      .right-panel::-webkit-scrollbar-thumb {
+        background: var(--neon-purple);
+        border-radius: 0;
+        box-shadow: 0 0 10px var(--neon-purple);
+      }
+
+      .right-panel::-webkit-scrollbar-thumb:hover {
+        background: #cc40ff;
+        box-shadow: 0 0 15px var(--neon-purple);
+      }
+
+      @media (max-width: 1024px) {
+        main {
+          height: auto;
+          overflow-y: auto;
+        }
+
+        .main-content {
+          grid-template-columns: 1fr;
+          overflow: visible;
+        }
+
+        .left-panel {
+          overflow: visible;
+        }
+
+        .game-list-container {
+          flex: none;
+        }
+
+        .game-list {
+          max-height: 400px;
+          flex: none;
+        }
+
+        .keyboard-controls {
+          margin-top: 0;
+        }
+
+        .keyboard-controls-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        main {
+          margin: 10px;
+          padding: 0px 0px 20px 0px;
+          width: calc(100% - 20px);
+          height: auto;
+        }
+
+        .header {
+          flex-direction: column;
+          gap: 10px;
+          align-items: center;
+          justify-content: center;
+          padding: 0 20px;
+          margin-bottom: 10px;
+          margin-top: 20px;
+        }
+
+        .data-controls {
+          display: flex;
+          gap: 8px;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .data-controls .btn {
+          flex: 0 0 auto;
+          padding: 8px 10px;
+          font-size: 0.45em;
+          min-width: 0;
+          width: auto;
+          white-space: nowrap;
+        }
+
+        .game-list {
+          max-height: 300px;
+          padding-right: 0px !important;
+        }
+
+        .right-panel {
+          padding-right: 0px !important;
+        }
+
+        .main-content {
+          gap: 20px;
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 0.9em;
+          margin: 0;
+          text-align: center;
+        }
+
+        h2 {
+          font-size: 0.7em;
+        }
+
+        .loading-text {
+          font-size: 0.5em;
+        }
+
+        /* Fix game item layout for mobile */
+        .game-item {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .game-item a {
+          flex-direction: row;
+          padding: 12px 8px 8px 8px;
+        }
+
+        .game-item .icon {
+          flex-shrink: 0;
+        }
+
+        .game-item .game-info {
+          flex-grow: 1;
+          min-width: 0;
+          word-break: break-word;
+        }
+
+        .game-item button {
+          width: 100%;
+          margin-top: 0;
+          border-top: 2px solid var(--arcade-black);
+        }
+
+        /* Fix preview container layout for mobile */
+        .preview-container {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .preview-container .preview-icon {
+          align-self: center;
+        }
+
+        .preview-container .preview-name {
+          width: 100%;
+          text-align: center;
+          margin: 0;
+          word-break: break-word;
+        }
+
+        .manage-controls {
+          margin-left: 0;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .control-button {
+          flex: 1;
+          max-width: 150px;
+        }
+      }
+
+      :root {
+        /* Neon colors */
+        --neon-pink: #ff00ff;
+        --neon-cyan: #00ffff;
+        --neon-yellow: #ffff00;
+        --neon-green: #00ff00;
+        --neon-orange: #ff8800;
+        --neon-purple: #aa00ff;
+
+        /* Dark base */
+        --deep-space: #0a0a0f;
+        --arcade-black: #1a1a24;
+        --panel-dark: #252535;
+
+        /* Glow effects */
+        --glow-pink: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+        --glow-cyan: 0 0 10px #00ffff, 0 0 20px #00ffff;
+        --glow-yellow: 0 0 10px #ffff00, 0 0 20px #ffff00;
+        --glow-green: 0 0 10px #00ff00, 0 0 20px #00ff00;
+
+        /* Arcade accents */
+        --arcade-red: #ff0040;
+        --arcade-blue: #0080ff;
+
+        /* Legacy compatibility */
+        --primary: var(--neon-cyan);
+        --secondary: var(--neon-green);
+        --danger: var(--arcade-red);
+        --border-radius: 0px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Press Start 2P", cursive;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      h1 {
+        color: var(--neon-pink);
+        text-shadow: 0 0 15px var(--neon-pink), 0 0 25px var(--neon-pink);
+        font-size: 1.2em;
+        margin: 0;
+      }
+
+      h2 {
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px var(--neon-cyan);
+        font-size: 0.8em;
+        margin-bottom: 1em;
+      }
+
+      h3 {
+        color: var(--neon-green);
+        text-shadow: 0 0 8px var(--neon-green);
+        font-size: 0.7em;
+      }
+
+      input,
+      button,
+      select {
+        box-sizing: border-box;
+      }
+
+      input,
+      select,
+      textarea {
+        background: var(--arcade-black);
+        border: 2px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        font-family: "VT323", monospace;
+        font-size: 1.1em;
+        padding: 10px;
+        border-radius: 0;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--neon-pink);
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5),
+          0 0 15px rgba(255, 0, 255, 0.5);
+      }
+
+      input[type="checkbox"] {
+        accent-color: var(--neon-pink);
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-top: 20px;
+      }
+
+      .data-controls {
+        display: flex;
+        gap: 10px;
+      }
+
+      .data-controls .btn {
+        padding: 8px 16px;
+      }
+
+      .game-list-container {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+      }
+
+      .game-list-container h2 {
+        margin-bottom: 15px;
+        flex-shrink: 0;
+      }
+
+      .game-list {
+        background: transparent;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border-radius: 0;
+        flex: 1;
+        padding-right: 10px;
+      }
+
+      .game-list::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      .game-list::-webkit-scrollbar-track {
+        background: var(--arcade-black);
+        border: 2px solid var(--neon-cyan);
+        border-radius: 0;
+      }
+
+      .game-list::-webkit-scrollbar-thumb {
+        background: var(--neon-pink);
+        border-radius: 0;
+        box-shadow: 0 0 10px var(--neon-pink);
+      }
+
+      .game-list::-webkit-scrollbar-thumb:hover {
+        background: #ff40ff;
+        box-shadow: 0 0 15px var(--neon-pink);
+      }
+
+      .game-item {
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        background: linear-gradient(
+          180deg,
+          var(--panel-dark),
+          var(--arcade-black)
+        );
+        border: 3px solid var(--neon-pink);
+        border-radius: 0;
+        box-shadow: 0 0 15px rgba(255, 0, 255, 0.5),
+          inset 0 2px 10px rgba(255, 0, 255, 0.2);
+        margin-bottom: 15px;
+        position: relative;
+      }
+
+      .game-item::before,
+      .game-item::after {
+        content: "●";
+        position: absolute;
+        color: var(--neon-yellow);
+        font-size: 10px;
+        text-shadow: 0 0 5px var(--neon-yellow);
+        top: 5px;
+      }
+
+      .game-item::before {
+        left: 5px;
+      }
+      .game-item::after {
+        right: 5px;
+      }
+
+      .game-item a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 8px var(--neon-cyan);
+        flex-grow: 1;
+        padding: 8px;
+        font-family: "VT323", monospace;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+      }
+
+      .game-item a:hover {
+        background: rgba(0, 255, 255, 0.1);
+        text-shadow: 0 0 15px var(--neon-cyan), 0 0 25px var(--neon-cyan);
+        transform: translateX(5px);
+      }
+
+      .game-item .icon,
+      .preview-icon {
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+        border: 2px solid var(--neon-cyan);
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        image-rendering: pixelated;
+      }
+
+      .game-item .game-info {
+        flex-grow: 1;
+      }
+
+      .game-item button {
+        padding: 8px 12px;
+        background: var(--neon-pink);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-family: "Press Start 2P", cursive;
+        font-size: 0.5em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 0 #cc00cc, 0 6px 10px rgba(0, 0, 0, 0.5);
+        transition: transform 0.1s ease;
+      }
+
+      .game-item button:hover {
+        background: #ff40ff;
+      }
+
+      .game-item button:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #cc00cc, 0 4px 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: "Press Start 2P", cursive;
+        font-size: 0.6em;
+        text-transform: uppercase;
+        transition: transform 0.1s ease;
+        position: relative;
+      }
+
+      .btn-primary {
+        background: var(--neon-pink);
+        color: white;
+        text-shadow: 0 2px 3px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 6px 0 #cc00cc, 0 8px 15px rgba(0, 0, 0, 0.5),
+          0 0 20px rgba(255, 0, 255, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: #ff40ff;
+      }
+
+      .btn-primary:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #cc00cc, 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-secondary {
+        background: var(--neon-cyan);
+        color: var(--arcade-black);
+        font-weight: bold;
+        box-shadow: 0 6px 0 #00cccc, 0 8px 15px rgba(0, 0, 0, 0.5),
+          0 0 20px rgba(0, 255, 255, 0.3);
+      }
+
+      .btn-secondary:hover {
+        background: #40ffff;
+      }
+
+      .btn-secondary:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #00cccc, 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-danger {
+        background: var(--arcade-red);
+        color: white;
+        text-shadow: 0 2px 3px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 6px 0 #cc0030, 0 8px 15px rgba(0, 0, 0, 0.5),
+          0 0 20px rgba(255, 0, 64, 0.3);
+      }
+
+      .btn-danger:hover {
+        background: #ff4070;
+      }
+
+      .btn-danger:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #cc0030, 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 3px solid var(--neon-green);
+        color: var(--neon-green);
+        text-shadow: 0 0 8px var(--neon-green);
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+      }
+
+      .btn-outline:hover {
+        background: rgba(0, 255, 0, 0.1);
+        box-shadow: 0 0 25px rgba(0, 255, 0, 0.5);
+      }
+
+      .btn-outline:active {
+        transform: translateY(2px);
+      }
+
+      .github-button {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      .github-button svg {
+        flex-shrink: 0;
+      }
+
+      .save-button {
+        display: block;
+        width: 100%;
+        font-size: 0.9em;
+        padding: 15px;
+        background: var(--neon-green);
+        color: var(--arcade-black);
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        font-family: "Press Start 2P", cursive;
+        text-transform: uppercase;
+        font-weight: bold;
+        box-shadow: 0 6px 0 #00cc00, 0 0 30px rgba(0, 255, 0, 0.5);
+        transition: transform 0.1s ease;
+        margin-bottom: 20px;
+      }
+
+      .save-button:hover {
+        background: #40ff40;
+        box-shadow: 0 6px 0 #00cc00, 0 0 40px rgba(0, 255, 0, 0.7);
+      }
+
+      .save-button:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 #00cc00, 0 0 20px rgba(0, 255, 0, 0.5);
+      }
+
+      .btn-full {
+        display: block;
+        padding: 8px 16px;
+      }
+
+      .add-edit-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2em;
+        margin-bottom: 0.5em;
+      }
+
+      .add-edit-header h2 {
+        margin: 0;
+      }
+
+      .warning-message {
+        background: var(--arcade-black);
+        border: 3px solid var(--neon-yellow);
+        color: var(--neon-yellow);
+        font-family: "VT323", monospace;
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
+        padding: 15px;
+        border-radius: 0;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .warning-message span:first-child {
+        font-size: 1.5em;
+        text-shadow: 0 0 10px var(--neon-yellow);
+      }
+
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .spinner {
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top: 3px solid var(--primary);
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 0.9em;
+        color: var(--neon-cyan);
+        font-family: "VT323", monospace;
+        text-shadow: 0 0 5px var(--neon-cyan);
+      }
+
+      .form-group label.toggle-label {
+        margin-bottom: 8px;
+      }
+
+      input[type="file"] {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.95em;
+        box-sizing: border-box;
+        cursor: pointer;
+      }
+
+      input[type="file"]::file-selector-button {
+        background: var(--neon-purple);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-family: "Press Start 2P", cursive;
+        font-size: 0.6em;
+        cursor: pointer;
+        margin-right: 10px;
+        box-shadow: 0 4px 0 #7700cc;
+      }
+
+      input[type="file"]::file-selector-button:hover {
+        background: #cc40ff;
+      }
+
+      .settings-container select,
+      .settings-container input[type="number"],
+      .settings-container textarea {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+
+      .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 10px;
+        /* Row gap, Column gap */
+      }
+
+      .settings-grid *:nth-child(2n + 1):last-child {
+        /* If this is the only item left on the last row, span both columns */
+        grid-column: 1 / -1;
+        /* Starts at the first grid line and ends at the last */
+      }
+
+      .settings-grid label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .settings-grid label.checkbox {
+        font-weight: normal;
+        display: flex;
+        align-items: center;
+        color: var(--neon-yellow);
+        text-shadow: 0 0 5px var(--neon-yellow);
+      }
+
+      .settings-grid .checkbox input[type="checkbox"] {
+        margin-right: 8px;
+      }
+
+      .custom-size-inputs {
+        margin-top: 5px;
+      }
+
+      .custom-size-inputs input {
+        width: 80px !important;
+        /* Override default width */
+        margin-right: 10px;
+      }
+
+      textarea {
+        height: 80px;
+        resize: vertical;
+      }
+
+      /* Preview/Manage Containers */
+      .preview-container {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 3px solid var(--neon-purple);
+        border-radius: 0;
+        margin-bottom: 15px;
+        background: linear-gradient(
+          135deg,
+          var(--panel-dark),
+          var(--arcade-black)
+        );
+        box-shadow: 0 0 15px rgba(170, 0, 255, 0.3);
+      }
+
+      .preview-container .preview-name {
+        font-size: 1.1em;
+        margin: 0 10px;
+        color: var(--neon-cyan);
+        font-family: "VT323", monospace;
+        text-shadow: 0 0 8px var(--neon-cyan);
+      }
+
+      .manage-controls {
+        margin-left: auto;
+        /* Push buttons to the right */
+        display: flex;
+        gap: 8px;
+      }
+
+      .control-button {
+        padding: 8px 12px;
+        font-size: 10px;
+        line-height: 1;
+        min-width: 30px;
+        border-radius: 0;
+        cursor: pointer;
+        border: none;
+        font-family: "Press Start 2P", cursive;
+        text-transform: uppercase;
+        transition: transform 0.1s ease;
+      }
+
+      .danger-button {
+        background: var(--arcade-red);
+        color: white;
+        text-shadow: 0 2px 3px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 4px 0 #cc0030, 0 0 15px rgba(255, 0, 64, 0.3);
+      }
+
+      .danger-button:hover {
+        background: #ff4070;
+      }
+
+      .danger-button:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #cc0030, 0 0 10px rgba(255, 0, 64, 0.3);
+      }
+
+      .warning-button {
+        background: var(--neon-yellow);
+        color: var(--arcade-black);
+        font-weight: bold;
+        box-shadow: 0 4px 0 #cccc00, 0 0 15px rgba(255, 255, 0, 0.3);
+      }
+
+      .warning-button:hover {
+        background: #ffff40;
+      }
+
+      .warning-button:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #cccc00, 0 0 10px rgba(255, 255, 0, 0.3);
+      }
+
+      .advanced-settings summary {
+        margin-top: 1.5em;
+        margin-bottom: 1em;
+        cursor: pointer;
+        color: var(--neon-purple);
+        text-shadow: 0 0 8px var(--neon-purple);
+      }
+
+      .advanced-settings summary:hover {
+        color: var(--neon-pink);
+        text-shadow: 0 0 15px var(--neon-pink);
+      }
+
+      summary h3 {
+        display: inline;
+      }
+
+      .aux-file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 15px;
+      }
+
+      .aux-file-upload-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        background: var(--panel-dark);
+        border: 2px dashed var(--neon-purple);
+        border-radius: 0;
+        color: var(--neon-purple);
+        font-family: "VT323", monospace;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-sizing: border-box;
+        box-shadow: 0 0 10px rgba(170, 0, 255, 0.2);
+      }
+
+      .aux-file-upload:hover .aux-file-upload-btn {
+        background: rgba(170, 0, 255, 0.1);
+        border-color: var(--neon-pink);
+        color: var(--neon-pink);
+        box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+      }
+
+      .aux-file-upload input[type="file"] {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .keyboard-controls {
+        background: var(--arcade-black);
+        border: 3px solid var(--neon-green);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        padding: 12px;
+        border-radius: 0;
+        flex-shrink: 0;
+      }
+
+      .keyboard-controls h3 {
+        margin: 0 0 8px 0;
+        font-size: 0.6em;
+        color: var(--neon-green);
+        text-shadow: 0 0 10px var(--neon-green);
+      }
+
+      .keyboard-controls-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px 15px;
+        font-size: 0.75em;
+      }
+
+      .keyboard-control-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--neon-cyan);
+        font-family: "VT323", monospace;
+        padding: 2px 0;
+      }
+
+      .keyboard-control-item .keys {
+        min-width: 80px;
+        text-align: left;
+      }
+
+      .keyboard-controls .key {
+        background: var(--panel-dark);
+        border: 2px solid var(--neon-yellow);
+        color: var(--neon-yellow);
+        border-radius: 0;
+        padding: 2px 6px;
+        font-family: "Press Start 2P", cursive;
+        font-size: 7px;
+        box-shadow: 0 2px 0 rgba(255, 255, 0, 0.3);
+        display: inline-block;
+        white-space: nowrap;
+      }
+
+      .footer-credit {
+        text-align: center;
+        padding: 15px 20px;
+        margin-top: 20px;
+        font-size: 0.75em;
+        color: var(--neon-cyan);
+        font-family: "VT323", monospace;
+        opacity: 0.7;
+      }
+
+      .footer-credit a {
+        color: var(--neon-pink);
+        text-decoration: none;
+        text-shadow: 0 0 5px var(--neon-pink);
+      }
+
+      .footer-credit a:hover {
+        color: var(--neon-yellow);
+        text-shadow: 0 0 10px var(--neon-yellow);
+      }
+
+      /* Mobile footer controls - hidden by default */
+      .mobile-footer-controls {
+        display: none;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+
+      .footer-text {
+        margin-top: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .footer-credit {
+          font-size: 0.65em;
+          padding: 10px;
+        }
+
+        /* Hide header controls on mobile */
+        .header .data-controls {
+          display: none !important;
+        }
+
+        /* Show mobile footer controls */
+        .mobile-footer-controls {
+          display: flex;
+        }
+
+        /* Make buttons smaller in footer */
+        .mobile-footer-controls .btn {
+          flex: 0 0 auto;
+          padding: 8px 12px;
+          font-size: 0.45em;
+          min-width: 0;
+          width: auto;
+          white-space: nowrap;
+        }
+
+        /* Adjust header for mobile */
+        .header {
+          margin-bottom: 15px;
+        }
+
+        .header h1 {
+          text-align: center;
+        }
+      }
+
+      /* Keyboard Mapping Section */
+      .keyboard-mapping-section {
+        background: var(--arcade-black);
+        border: 3px solid var(--neon-purple);
+        box-shadow: 0 0 20px rgba(170, 0, 255, 0.3);
+        padding: 12px;
+        margin-bottom: 20px;
+        border-radius: 0;
+        flex-shrink: 0;
+      }
+
+      .keyboard-mapping-section summary {
+        cursor: pointer;
+        color: var(--neon-purple);
+        text-shadow: 0 0 8px var(--neon-purple);
+        user-select: none;
+      }
+
+      .keyboard-mapping-section summary:hover {
+        color: var(--neon-pink);
+        text-shadow: 0 0 15px var(--neon-pink);
+      }
+
+      .keyboard-mapping-section summary h3 {
+        display: inline;
+        font-size: 0.6em;
+      }
+
+      .keyboard-mapping-content {
+        margin-top: 15px;
+      }
+
+      .mapping-description {
+        font-size: 0.85em;
+        color: var(--neon-cyan);
+        margin-bottom: 10px;
+        line-height: 1.4;
+      }
+
+      .mapping-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-top: 10px;
+        padding-right: 5px;
+      }
+
+      .mapping-list::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .mapping-list::-webkit-scrollbar-track {
+        background: var(--arcade-black);
+        border: 2px solid var(--neon-purple);
+        border-radius: 0;
+      }
+
+      .mapping-list::-webkit-scrollbar-thumb {
+        background: var(--neon-purple);
+        border-radius: 0;
+        box-shadow: 0 0 10px var(--neon-purple);
+      }
+
+      .mapping-list::-webkit-scrollbar-thumb:hover {
+        background: #cc40ff;
+        box-shadow: 0 0 15px var(--neon-purple);
+      }
+
+      .mapping-item {
+        background: var(--panel-dark);
+        border: 2px solid var(--neon-cyan);
+        padding: 8px;
+        margin-bottom: 8px;
+        border-radius: 0;
+      }
+
+      .mapping-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .action-name {
+        color: var(--neon-green);
+        font-weight: bold;
+        font-size: 0.9em;
+        text-shadow: 0 0 5px var(--neon-green);
+      }
+
+      .btn-add-key {
+        padding: 4px 8px;
+        font-size: 0.5em;
+        background: var(--neon-purple);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-family: "Press Start 2P", cursive;
+        text-transform: uppercase;
+        box-shadow: 0 3px 0 #7700cc;
+        transition: transform 0.1s ease;
+        border-radius: 0;
+      }
+
+      .btn-add-key:hover {
+        background: #cc40ff;
+      }
+
+      .btn-add-key:active {
+        transform: translateY(2px);
+        box-shadow: 0 1px 0 #7700cc;
+      }
+
+      .mapped-keys {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        min-height: 24px;
+      }
+
+      .mapped-key-chip {
+        background: var(--neon-yellow);
+        color: var(--arcade-black);
+        padding: 4px 8px;
+        font-size: 0.8em;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-family: "VT323", monospace;
+        border-radius: 0;
+        box-shadow: 0 2px 0 rgba(204, 204, 0, 0.5);
+      }
+
+      .remove-key-btn {
+        background: var(--arcade-red);
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 0 4px;
+        font-weight: bold;
+        font-size: 1.1em;
+        line-height: 1;
+        border-radius: 0;
+      }
+
+      .remove-key-btn:hover {
+        background: #ff4070;
+      }
+
+      /* Key Capture Modal */
+      .key-capture-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        backdrop-filter: blur(5px);
+      }
+
+      .key-capture-content {
+        background: var(--arcade-black);
+        border: 5px solid var(--neon-pink);
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 0 50px rgba(255, 0, 255, 0.5), inset 0 0 30px rgba(255, 0, 255, 0.1);
+        max-width: 90%;
+        border-radius: 0;
+      }
+
+      .key-capture-content h2 {
+        color: var(--neon-pink);
+        margin-bottom: 20px;
+        font-size: 0.8em;
+      }
+
+      .key-capture-content p {
+        color: var(--neon-cyan);
+        font-size: 1.1em;
+        margin-bottom: 15px;
+      }
+
+      .captured-key-display {
+        background: var(--panel-dark);
+        border: 3px solid var(--neon-yellow);
+        color: var(--neon-yellow);
+        padding: 20px;
+        font-size: 1.5em;
+        margin: 15px 0;
+        font-family: "Press Start 2P", cursive;
+        text-shadow: 0 0 10px var(--neon-yellow);
+        box-shadow: inset 0 0 20px rgba(255, 255, 0, 0.2);
+        border-radius: 0;
+      }
+
+      @media (max-width: 768px) {
+        .keyboard-mapping-section {
+          margin-bottom: 15px;
+        }
+
+        .mapping-list {
+          max-height: 200px;
+        }
+
+        .key-capture-content {
+          padding: 20px;
+        }
+
+        .key-capture-content h2 {
+          font-size: 0.6em;
+        }
+
+        .captured-key-display {
+          font-size: 1.2em;
+          padding: 15px;
+        }
+      }
+    </style>
+    <div id="loading">
+      <div class="cartridge-loader">
+        <img src="favicon.svg" alt="J2ME Player" />
+      </div>
+      <div class="loading-text">LOADING...</div>
+    </div>
+    <main id="main" style="display: none">
+      <div class="header">
+        <h1>J2ME Player</h1>
+        <div class="data-controls">
+          <a
+            href="https://github.com/iqbaladinur/j2me-player"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline github-button"
+            title="View on GitHub"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle; margin-right: 5px;">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            GitHub
+          </a>
+          <button class="btn btn-outline" id="import-data-btn" title="Import Data">
+            Import
+          </button>
+          <input
+            type="file"
+            id="import-data-file"
+            style="display: none"
+            accept=".zip"
+          />
+          <button class="btn btn-outline" id="export-data-btn" title="Export Data">
+            Export
+          </button>
+          <button class="btn btn-outline" id="toggle-cache-btn" title="Toggle service worker cache">
+            Cache: <span id="cache-status">ON</span>
+          </button>
+          <a
+            id="export-data-link"
+            style="display: none"
+            download="freej2me-data.zip"
+            >x</a
+          >
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div class="left-panel">
+          <div class="game-list-container">
+            <h2>Installed Games</h2>
+            <div id="game-list" class="game-list">
+              <div class="game-item">
+                <a href="run">
+                  <div class="icon"></div>
+                  <div class="game-info">Game Title 1</div>
+                </a>
+                <button>Manage</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="keyboard-mapping-section">
+            <details>
+              <summary>
+                <h3>Customize Keyboard Mappings</h3>
+              </summary>
+              <div class="keyboard-mapping-content">
+                <p class="mapping-description">
+                  Click "Add Key" next to any action, then press the key you want to map.
+                </p>
+                <button id="reset-mappings-btn" class="btn btn-outline btn-full">
+                  Reset to Defaults
+                </button>
+                <div id="mapping-list" class="mapping-list">
+                  <!-- Dynamically generated -->
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="keyboard-controls">
+            <h3>Keyboard controls</h3>
+            <div class="keyboard-controls-grid">
+              <div class="keyboard-control-item">
+                <span class="keys"><span class="key">Esc</span></span>
+                <span>Menu</span>
+              </div>
+              <div class="keyboard-control-item">
+                <span class="keys"
+                  ><span class="key">F1</span>/<span class="key">Q</span></span
+                >
+                <span>Left soft</span>
+              </div>
+              <div class="keyboard-control-item">
+                <span class="keys"
+                  ><span class="key">F2</span>/<span class="key">W</span></span
+                >
+                <span>Right soft</span>
+              </div>
+              <div class="keyboard-control-item">
+                <span class="keys"><span class="key">0-9</span></span>
+                <span>Keypad</span>
+              </div>
+              <div class="keyboard-control-item">
+                <span class="keys"><span class="key">↑↓←→</span></span>
+                <span>D-Pad</span>
+              </div>
+              <div class="keyboard-control-item">
+                <span class="keys"><span class="key">Enter</span></span>
+                <span>OK/Action</span>
+              </div>
+              <div class="keyboard-control-item">
+                <span class="keys"><span class="key">E</span></span>
+                <span>Star (*)</span>
+              </div>
+              <div class="keyboard-control-item">
+                <span class="keys"><span class="key">R</span></span>
+                <span>Hash (#)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-panel">
+          <div class="add-edit-header">
+            <h2 id="add-edit-text">Add new game</h2>
+            <button id="clear-current" class="btn btn-outline">Clear</button>
+          </div>
+          <div id="file-input-step">
+            <div class="form-group">
+              <label for="game-file-input">Select JAR file</label>
+              <input type="file" id="game-file-input" accept=".jar" />
+            </div>
+          </div>
+          <div id="file-input-jad-step" style="display: none">
+            <div id="warning-message" class="warning-message">
+              <span>⚠️</span>
+              <span
+                >This game requires a JAD file to function properly. Please
+                upload one.</span
+              >
+            </div>
+            <div class="form-group">
+              <label for="upload-descriptor-file-input">Select JAD file</label>
+              <input
+                type="file"
+                id="upload-descriptor-file-input"
+                accept=".jad"
+              />
+            </div>
+            <div class="form-group">
+              <button
+                id="continue-without-jad"
+                class="btn btn-outline btn-full"
+              >
+                Continue without JAD file (might not work)
+              </button>
+            </div>
+          </div>
+          <div class="loading" id="file-input-loading" style="display: none">
+            <div class="spinner"></div>
+            <span>Analyzing file...</span>
+          </div>
+          <div id="add-manage-step" style="display: none">
+            <div id="preview" class="preview-container">
+              <img class="preview-icon" />
+              <span class="preview-name">Game name</span>
+              <div id="preview-controls" class="manage-controls">
+                <button
+                  id="wipe-data-btn"
+                  class="control-button warning-button"
+                  title="Wipe Game Data"
+                >
+                  Wipe Data
+                </button>
+                <button
+                  id="uninstall-btn"
+                  class="control-button danger-button"
+                  title="Uninstall Game"
+                >
+                  Uninstall
+                </button>
+              </div>
+            </div>
+            <div id="edit-settings-container" class="settings-container">
+              <div class="aux-file-upload">
+                <div class="aux-file-upload-btn">
+                  Upload optional JAD descriptor file
+                </div>
+                <input type="file" id="aux-jad-file-input" accept=".jad" />
+              </div>
+              <div class="settings-grid">
+                <div class="form-group">
+                  <label for="phoneType">Phone type:</label>
+                  <select id="phoneType">
+                    <option value="Standard">Standard</option>
+                    <option value="Nokia">Nokia</option>
+                    <option value="Motorola">Motorola</option>
+                    <option value="Siemens">Siemens</option>
+                    <option value="SonyEricsson">SonyEricsson</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="screenSize">Screen Size:</label>
+                  <select id="screenSize">
+                    <option value="96x65">96x65</option>
+                    <option value="96x96">96x96</option>
+                    <option value="104x80">104x80</option>
+                    <option value="128x128">128x128</option>
+                    <option value="132x176">132x176</option>
+                    <option value="128x160">128x160</option>
+                    <option value="176x208">176x208</option>
+                    <option value="176x220">176x220</option>
+                    <option value="208x208">208x208</option>
+                    <option value="240x320">240x320</option>
+                    <option value="320x240">320x240</option>
+                    <option value="240x400">240x400</option>
+                    <option value="352x416">352x416</option>
+                    <option value="360x640">360x640</option>
+                    <option value="640x360">640x360</option>
+                    <option value="480x800">480x800</option>
+                    <option value="800x480">800x480</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                  <div class="custom-size-inputs" id="edit-custom-size-inputs">
+                    <input
+                      type="number"
+                      placeholder="Width"
+                      id="customWidth"
+                      min="1"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Height"
+                      id="customHeight"
+                      min="1"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="fontSize">Font size:</label>
+                  <select id="fontSize">
+                    <option value="0">Dynamic</option>
+                    <option value="1">Small</option>
+                    <option value="2">Medium</option>
+                    <option value="3">Large</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="dgFormat">DirectGraphics:</label>
+                  <select id="dgFormat">
+                    <option value="444">444 RGB</option>
+                    <option value="4444">4444 ARGB</option>
+                    <option value="565">565 ARGB</option>
+                    <option value="888">888 ARGB</option>
+                    <option value="8888">8888 ARGB</option>
+                  </select>
+                </div>
+                <label class="checkbox"
+                  ><input type="checkbox" name="enableSound" /> Enable
+                  sound</label
+                >
+                <label class="checkbox"
+                  ><input type="checkbox" name="rotate" /> Rotate screen</label
+                >
+                <label class="checkbox"
+                  ><input type="checkbox" name="forceFullscreen" /> Force
+                  fullscreen</label
+                >
+                <label class="checkbox"
+                  ><input type="checkbox" name="textureDisableFilter" /> Disable
+                  texture filtering</label
+                >
+                <label class="checkbox"
+                  ><input type="checkbox" name="queuedPaint" /> Queue paint
+                  events (useful if game hangs)</label
+                >
+              </div>
+              <details class="advanced-settings">
+                <summary>
+                  <h3>Advanced settings</h3>
+                </summary>
+                <div class="form-group">
+                  <label for="editAppProps">Additional App Properties:</label>
+                  <textarea
+                    id="editAppProps"
+                    placeholder="e.g., key: value, one per line"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="editSysProps"
+                    >Additional System Properties:</label
+                  >
+                  <textarea
+                    id="editSysProps"
+                    placeholder="e.g., key: value, one per line"
+                  ></textarea>
+                </div>
+              </details>
+            </div>
+            <button class="save-button" id="add-save-button">Add game</button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-credit">
+        <!-- Mobile controls (visible only on mobile) -->
+        <div class="mobile-footer-controls">
+          <a
+            href="https://github.com/iqbaladinur/j2me-player"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline github-button"
+            title="View on GitHub"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle; margin-right: 5px;">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            GitHub
+          </a>
+          <button class="btn btn-outline" id="import-data-btn-mobile" title="Import Data">
+            Import
+          </button>
+          <button class="btn btn-outline" id="export-data-btn-mobile" title="Export Data">
+            Export
+          </button>
+          <button class="btn btn-outline" id="toggle-cache-btn-mobile" title="Toggle service worker cache">
+            Cache: <span id="cache-status-mobile">ON</span>
+          </button>
+        </div>
+
+        <div class="footer-text">
+          Some included games are from <a href="https://www.schwandtner.info/midlets/" target="_blank" rel="noopener noreferrer">schwandtner.info/midlets</a>
+        </div>
+      </div>
+    </main>
+    <script src="https://cjrtnc.leaningtech.com/4.1/loader.js"></script>
+    <script type="module" src="src/launcher.js"></script>
+    <script>
+      // Cache management
+      const CACHE_ENABLED_KEY = 'freej2me-cache-enabled';
+
+      function getCacheEnabled() {
+        const stored = localStorage.getItem(CACHE_ENABLED_KEY);
+        return stored === null ? true : stored === 'true';
+      }
+
+      function setCacheEnabled(enabled) {
+        localStorage.setItem(CACHE_ENABLED_KEY, enabled.toString());
+      }
+
+      function updateCacheStatus() {
+        const enabled = getCacheEnabled();
+        const statusEl = document.getElementById('cache-status');
+        const statusElMobile = document.getElementById('cache-status-mobile');
+
+        if (statusEl) {
+          statusEl.textContent = enabled ? 'ON' : 'OFF';
+          statusEl.style.color = enabled ? 'var(--neon-green)' : 'var(--arcade-red)';
+        }
+
+        if (statusElMobile) {
+          statusElMobile.textContent = enabled ? 'ON' : 'OFF';
+          statusElMobile.style.color = enabled ? 'var(--neon-green)' : 'var(--arcade-red)';
+        }
+      }
+
+      async function registerServiceWorker() {
+        if (!("serviceWorker" in navigator)) {
+          console.warn("[App] Service Worker not supported in this browser");
+          return;
+        }
+
+        if (!getCacheEnabled()) {
+          console.log("[App] Cache disabled, skipping service worker registration");
+          return;
+        }
+
+        try {
+          const registration = await navigator.serviceWorker.register("sw.js");
+          console.log("[App] Service Worker registered:", registration.scope);
+        } catch (error) {
+          console.error("[App] Service Worker registration failed:", error);
+        }
+      }
+
+      async function unregisterServiceWorker() {
+        if (!("serviceWorker" in navigator)) return;
+
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+            console.log("[App] Service Worker unregistered");
+          }
+
+          // Clear all caches
+          if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log("[App] All caches cleared");
+          }
+        } catch (error) {
+          console.error("[App] Error unregistering service worker:", error);
+        }
+      }
+
+      // Register Service Worker for caching
+      window.addEventListener("load", () => {
+        updateCacheStatus();
+        registerServiceWorker();
+
+        // Setup cache toggle button (desktop)
+        const toggleBtn = document.getElementById('toggle-cache-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', handleCacheToggle);
+        }
+
+        // Setup cache toggle button (mobile)
+        const toggleBtnMobile = document.getElementById('toggle-cache-btn-mobile');
+        if (toggleBtnMobile) {
+          toggleBtnMobile.addEventListener('click', handleCacheToggle);
+        }
+
+        // Setup mobile import/export buttons
+        const importBtnMobile = document.getElementById('import-data-btn-mobile');
+        if (importBtnMobile) {
+          importBtnMobile.addEventListener('click', () => {
+            document.getElementById('import-data-file').click();
+          });
+        }
+
+        const exportBtnMobile = document.getElementById('export-data-btn-mobile');
+        if (exportBtnMobile) {
+          exportBtnMobile.addEventListener('click', () => {
+            document.getElementById('export-data-btn').click();
+          });
+        }
+      });
+
+      // Cache toggle handler (shared between desktop and mobile)
+      async function handleCacheToggle() {
+        const currentlyEnabled = getCacheEnabled();
+        const newEnabled = !currentlyEnabled;
+
+        setCacheEnabled(newEnabled);
+        updateCacheStatus();
+
+        if (newEnabled) {
+          await registerServiceWorker();
+          alert('Cache enabled. Page will reload.');
+          window.location.reload();
+        } else {
+          await unregisterServiceWorker();
+          alert('Cache disabled and cleared. Page will reload.');
+          window.location.reload();
+        }
+      }
+    </script>
+  </body>
+</html>

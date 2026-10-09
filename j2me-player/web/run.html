@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+    <!-- SEO Meta Tags -->
+    <title>Playing Game - J2ME Player</title>
+    <meta name="description" content="Playing J2ME game on J2ME Player. Experience classic mobile games with touch controls and keyboard support." />
+    <meta name="keywords" content="J2ME, Java ME, mobile games, emulator, play online, retro gaming" />
+    <meta name="author" content="J2ME Player" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Playing Game - J2ME Player" />
+    <meta property="og:description" content="Playing J2ME game on J2ME Player" />
+    <meta property="og:image" content="/favicon.svg" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Playing Game - J2ME Player" />
+    <meta name="twitter:description" content="Playing J2ME game on J2ME Player" />
+    <meta name="twitter:image" content="/favicon.svg" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0a0a0f" />
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json" />
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+    :root {
+        /* Neon colors */
+        --neon-pink: #ff00ff;
+        --neon-cyan: #00ffff;
+        --neon-yellow: #ffff00;
+        --neon-green: #00ff00;
+        --neon-orange: #ff8800;
+        --neon-purple: #aa00ff;
+
+        /* Dark base */
+        --deep-space: #0a0a0f;
+        --arcade-black: #1a1a24;
+        --panel-dark: #252535;
+
+        /* Glow effects */
+        --glow-pink: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+        --glow-cyan: 0 0 10px #00ffff, 0 0 20px #00ffff;
+        --glow-yellow: 0 0 10px #ffff00, 0 0 20px #ffff00;
+        --glow-green: 0 0 10px #00ff00, 0 0 20px #00ff00;
+
+        /* Arcade accents */
+        --arcade-red: #ff0040;
+        --arcade-blue: #0080ff;
+
+        /* Legacy compatibility */
+        --primary: var(--neon-cyan);
+    }
+
+    html, body {
+        height: 100%;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background:
+          radial-gradient(2px 2px at 20% 30%, white, transparent),
+          radial-gradient(2px 2px at 60% 70%, white, transparent),
+          radial-gradient(1px 1px at 50% 50%, white, transparent),
+          radial-gradient(1px 1px at 80% 10%, white, transparent),
+          radial-gradient(2px 2px at 90% 60%, white, transparent),
+          radial-gradient(1px 1px at 33% 90%, white, transparent),
+          radial-gradient(2px 2px at 15% 80%, white, transparent),
+          radial-gradient(1px 1px at 70% 40%, white, transparent),
+          #0a0a0f;
+        background-size: 200% 200%;
+        /* animation: stars-twinkle 10s ease-in-out infinite; */
+        font-family: 'VT323', monospace;
+        font-size: 1.2em;
+    }
+
+    @keyframes stars-twinkle {
+        0%, 100% { background-position: 0% 0%; }
+        50% { background-position: 100% 100%; }
+    }
+
+    #screen-area {
+        background: rgba(26,26,36,0.5);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    #display {
+        background-color: black;
+        zoom: 1;
+        image-rendering: pixelated;
+        outline-width: 2px;
+        outline-style: solid;
+        outline-color: var(--neon-cyan);
+        border-radius: 0px;
+        box-shadow:
+          inset 0 0 50px rgba(0,0,0,0.8),
+          0 0 30px rgba(0,255,255,0.5),
+          0 0 60px rgba(0,255,255,0.3);
+    }
+
+    #display:focus {
+        outline-color: var(--neon-pink);
+        box-shadow:
+          inset 0 0 50px rgba(0,0,0,0.8),
+          0 0 30px rgba(255,0,255,0.5),
+          0 0 60px rgba(255,0,255,0.3);
+    }
+
+    #loading {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        font-size: 1.5em;
+        color: white;
+    }
+
+    #loading[hidden] {
+        display: none !important;
+    }
+
+    .cartridge-loader {
+        width: 120px;
+        height: 120px;
+    }
+
+    .cartridge-loader img {
+        width: 100%;
+        height: 100%;
+        animation: glow-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        0%, 100% { transform: rotateY(0deg); }
+        50% { transform: rotateY(180deg); }
+    }
+
+    @keyframes glow-pulse {
+        0%, 100% {
+            filter: drop-shadow(0 0 10px var(--neon-cyan)) drop-shadow(0 0 20px var(--neon-cyan));
+        }
+        50% {
+            filter: drop-shadow(0 0 20px var(--neon-cyan)) drop-shadow(0 0 40px var(--neon-cyan)) drop-shadow(0 0 60px var(--neon-cyan));
+        }
+    }
+
+    .loading-text {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 0.8em;
+        color: var(--neon-yellow);
+        text-shadow: 0 0 10px var(--neon-yellow);
+        animation: blink 1s step-start infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0.3; }
+    }
+
+    .keypad-part {
+        background: linear-gradient(180deg, var(--panel-dark), var(--arcade-black));
+        border: 3px solid var(--neon-purple);
+        padding: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        box-shadow: 0 0 20px rgba(170,0,255,0.3);
+    }
+
+    @media (max-width: 768px) {
+        .keypad-part {
+            padding: 0px !important;
+        }
+    }
+
+    .key-grid {
+        display: grid;
+        gap: 6px; /* Space between keys */
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Grid definitions */
+    .left-grid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+    }
+
+    .right-grid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+    }
+
+    /* Individual Key Styles - Arcade Buttons */
+    .key {
+        background: var(--neon-cyan);
+        color: var(--arcade-black);
+        border: none;
+        border-radius: 0;
+        font-size: 1.3em;
+        font-weight: bold;
+        font-family: 'Press Start 2P', cursive;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        user-select: none;
+        transition: all 0.1s ease;
+        line-height: 1.1;
+        box-shadow:
+          0 4px 0 #00cccc,
+          0 6px 10px rgba(0,0,0,0.5),
+          0 0 15px rgba(0,255,255,0.3);
+        position: relative;
+    }
+
+    .key span {
+        font-size: 0.35em;
+        font-weight: normal;
+        margin-top: 3px;
+        color: var(--arcade-black);
+        opacity: 0.7;
+        font-family: 'VT323', monospace;
+    }
+
+    .key:hover {
+        background: #40ffff;
+        box-shadow:
+          0 4px 0 #00cccc,
+          0 6px 10px rgba(0,0,0,0.5),
+          0 0 25px rgba(0,255,255,0.5);
+    }
+
+    .key.active {
+        background: #00cccc;
+        transform: translateY(3px);
+        box-shadow:
+          0 1px 0 #00aaaa,
+          0 3px 5px rgba(0,0,0,0.5),
+          0 0 15px rgba(0,255,255,0.3);
+    }
+
+    .arrow-key {
+        font-size: 1.8em;
+        background: var(--neon-pink);
+        box-shadow:
+          0 4px 0 #cc00cc,
+          0 6px 10px rgba(0,0,0,0.5),
+          0 0 15px rgba(255,0,255,0.3);
+    }
+
+    .arrow-key:hover {
+        background: #ff40ff;
+        box-shadow:
+          0 4px 0 #cc00cc,
+          0 6px 10px rgba(0,0,0,0.5),
+          0 0 25px rgba(255,0,255,0.5);
+    }
+
+    .arrow-key.active {
+        background: #cc00cc;
+        box-shadow:
+          0 1px 0 #aa00aa,
+          0 3px 5px rgba(0,0,0,0.5);
+    }
+
+    .ok-key {
+        font-size: 1em;
+        background: var(--neon-green);
+        box-shadow:
+          0 4px 0 #00cc00,
+          0 6px 10px rgba(0,0,0,0.5),
+          0 0 15px rgba(0,255,0,0.3);
+    }
+
+    .esc-key {
+        font-size: 0.5em;
+        background: var(--neon-orange);
+        box-shadow:
+          0 4px 0 #cc8800,
+          0 6px 10px rgba(0,0,0,0.5),
+          0 0 15px rgba(255,136,0,0.3);
+    }
+
+    .ok-key:hover {
+        background: #40ff40;
+        box-shadow:
+          0 4px 0 #00cc00,
+          0 6px 10px rgba(0,0,0,0.5),
+          0 0 25px rgba(0,255,0,0.5);
+    }
+
+    .ok-key.active {
+        background: #00cc00;
+        box-shadow:
+          0 1px 0 #00aa00,
+          0 3px 5px rgba(0,0,0,0.5);
+    }
+
+    /* Styles for specifically smaller keys */
+    .small-key {
+        width: 70%;
+        height: 70%;
+        font-size: 0.6em;
+        align-self: end;
+        padding: 4px;
+        line-height: 1;
+        background: var(--neon-yellow);
+        color: var(--arcade-black);
+        box-shadow:
+          0 3px 0 #cccc00,
+          0 5px 8px rgba(0,0,0,0.5),
+          0 0 10px rgba(255,255,0,0.3);
+    }
+
+    .small-key:hover {
+        background: #ffff40;
+        box-shadow:
+          0 3px 0 #cccc00,
+          0 5px 8px rgba(0,0,0,0.5),
+          0 0 20px rgba(255,255,0,0.5);
+    }
+
+    .small-key.active {
+        background: #cccc00;
+        transform: translateY(2px);
+        box-shadow:
+          0 1px 0 #aaaa00,
+          0 3px 5px rgba(0,0,0,0.5);
+    }
+
+    .small-key-left {
+        justify-self: left;
+    }
+
+    .small-key-right {
+        justify-self: right;
+    }
+
+
+    #left-keys,
+    #right-keys {
+        display: none;
+        position: absolute;
+        bottom: 0;
+    }
+
+    #left-keys {
+        left: 0;
+    }
+
+    #right-keys {
+        right: 0;
+    }
+
+    #screen-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    body.kbd-portrait #left-keys,
+    body.kbd-portrait #right-keys,
+    body.kbd-landscape #left-keys,
+    body.kbd-landscape #right-keys {
+        display: flex;
+    }
+
+    body.kbd-portrait #left-keys,
+    body.kbd-portrait #right-keys {
+        width: 50%;
+        height: 220px;
+    }
+
+    body.kbd-landscape #left-keys,
+    body.kbd-landscape #right-keys {
+        width: 220px;
+        height: 100%;
+    }
+
+    /* max height in landscape mode */
+    body.kbd-landscape #left-keys .key-grid,
+    body.kbd-landscape #right-keys .key-grid {
+        max-height: 400px;
+    }
+
+    body.kbd-portrait #screen-area {
+        bottom: 220px;
+    }
+
+    body.kbd-landscape #screen-area {
+        left: 220px;
+        right: 220px;
+    }
+
+</style>
+<body>
+    <div id="screen-area">
+        <canvas tabindex="0" id="display" style="display: none;"></canvas>
+        <div id="loading">
+            <div class="cartridge-loader">
+                <img src="favicon.svg" alt="J2ME Player" />
+            </div>
+            <div class="loading-text">LOADING...</div>
+        </div>
+    </div>
+    <div id="left-keys" class="keypad-part">
+        <div class="key-grid left-grid">
+            <button data-key="Digit1" class="key">1 <span>&nbsp;</span></button>
+            <button data-key="Digit2" class="key">2 <span>ABC</span></button>
+            <button data-key="Digit3" class="key">3 <span>DEF</span></button>
+            <button data-key="Digit4" class="key">4 <span>GHI</span></button>
+            <button data-key="Digit5" class="key">5 <span>JKL</span></button>
+            <button data-key="Digit6" class="key">6 <span>MNO</span></button>
+            <button data-key="Digit7" class="key">7 <span>PQRS</span></button>
+            <button data-key="Digit8" class="key">8 <span>TUV</span></button>
+            <button data-key="Digit9" class="key">9 <span>WXYZ</span></button>
+            <button data-key="NumpadMultiply" class="key">* <span>&nbsp;</span></button>
+            <button data-key="Digit0" class="key">0 <span>+</span></button>
+            <button data-key="NumpadDivide" class="key"># <span>&nbsp;</span></button>
+        </div>
+    </div>
+    <div id="right-keys" class="keypad-part">
+         <div class="key-grid right-grid">
+            <button data-key="F1" class="key">L</button>
+            <button data-key="ArrowUp" class="key arrow-key" aria-label="Up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Pixelarticons by Gerrit Halfmann - https://github.com/halfmage/pixelarticons/blob/master/LICENSE --><path fill="currentColor" d="M11 20h2V8h2V6h-2V4h-2v2H9v2h2zM7 10V8h2v2zm0 0v2H5v-2zm10 0V8h-2v2zm0 0v2h2v-2z"/></svg>
+            </button>
+            <button data-key="F2" class="key">R</button>
+            <button data-key="ArrowLeft" class="key arrow-key" aria-label="Left">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Pixelarticons by Gerrit Halfmann - https://github.com/halfmage/pixelarticons/blob/master/LICENSE --><path fill="currentColor" d="M20 11v2H8v2H6v-2H4v-2h2V9h2v2zM10 7H8v2h2zm0 0h2V5h-2zm0 10H8v-2h2zm0 0h2v2h-2z"/></svg>
+            </button>
+            <button data-key="Enter" class="key ok-key">OK</button>
+            <button data-key="ArrowRight" class="key arrow-key" aria-label="Right">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Pixelarticons by Gerrit Halfmann - https://github.com/halfmage/pixelarticons/blob/master/LICENSE --><path fill="currentColor" d="M4 11v2h12v2h2v-2h2v-2h-2V9h-2v2zm10-4h2v2h-2zm0 0h-2V5h2zm0 10h2v-2h-2zm0 0h-2v2h2z"/></svg>
+            </button>
+            <button data-key="Escape" class="key esc-key">Esc</button>
+            <button data-key="ArrowDown" class="key arrow-key" aria-label="Down">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Pixelarticons by Gerrit Halfmann - https://github.com/halfmage/pixelarticons/blob/master/LICENSE --><path fill="currentColor" d="M11 4h2v12h2v2h-2v2h-2v-2H9v-2h2zM7 14v2h2v-2zm0 0v-2H5v2zm10 0v2h-2v-2zm0 0v-2h2v2z"/></svg>
+            </button>
+            <button data-key="Maximize" class="key ok-key" aria-label="Maximize">⛶</button>
+        </div>
+    </div>
+    <script src="https://cjrtnc.leaningtech.com/4.1/loader.js"></script>
+    <script type="module" src="src/main.js"></script>
+    <script>
+      // Cache management
+      const CACHE_ENABLED_KEY = 'freej2me-cache-enabled';
+
+      function getCacheEnabled() {
+        const stored = localStorage.getItem(CACHE_ENABLED_KEY);
+        return stored === null ? true : stored === 'true';
+      }
+
+      async function registerServiceWorker() {
+        if (!("serviceWorker" in navigator)) {
+          console.warn("[App] Service Worker not supported in this browser");
+          return;
+        }
+
+        if (!getCacheEnabled()) {
+          console.log("[App] Cache disabled, skipping service worker registration");
+          return;
+        }
+
+        try {
+          const registration = await navigator.serviceWorker.register("sw.js");
+          console.log("[App] Service Worker registered:", registration.scope);
+        } catch (error) {
+          console.error("[App] Service Worker registration failed:", error);
+        }
+      }
+
+      // Register Service Worker for caching
+      window.addEventListener("load", () => {
+        registerServiceWorker();
+      });
+    </script>
+</body>
+</html>

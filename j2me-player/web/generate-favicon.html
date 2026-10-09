@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Favicon PNG - J2ME Player</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #0a0a0f;
+            color: #00ffff;
+        }
+        button {
+            background: #00ffff;
+            color: #0a0a0f;
+            border: none;
+            padding: 10px 20px;
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #40ffff;
+        }
+        canvas {
+            border: 2px solid #00ffff;
+            margin: 10px 0;
+            image-rendering: pixelated;
+        }
+        .info {
+            background: #1a1a24;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 J2ME Player - Favicon PNG Generator</h1>
+    <div class="info">
+        <p>This tool converts favicon.svg to PNG files needed for browser compatibility.</p>
+        <p>Click the buttons below to generate and download PNG favicons:</p>
+    </div>
+
+    <h2>32x32 Favicon</h2>
+    <canvas id="canvas32" width="32" height="32"></canvas>
+    <br>
+    <button onclick="generateFavicon(32)">Generate 32x32</button>
+    <button id="download32" style="display:none" onclick="downloadImage('favicon.png', 32)">Download favicon.png</button>
+
+    <h2>180x180 Apple Touch Icon</h2>
+    <canvas id="canvas180" width="180" height="180"></canvas>
+    <br>
+    <button onclick="generateFavicon(180)">Generate 180x180</button>
+    <button id="download180" style="display:none" onclick="downloadImage('apple-touch-icon.png', 180)">Download apple-touch-icon.png</button>
+
+    <script>
+        function generateFavicon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const ctx = canvas.getContext('2d');
+
+            // Load SVG
+            fetch('favicon.svg')
+                .then(response => response.text())
+                .then(svgText => {
+                    const img = new Image();
+                    const blob = new Blob([svgText], { type: 'image/svg+xml' });
+                    const url = URL.createObjectURL(blob);
+
+                    img.onload = function() {
+                        ctx.clearRect(0, 0, size, size);
+                        ctx.drawImage(img, 0, 0, size, size);
+                        URL.revokeObjectURL(url);
+                        document.getElementById(`download${size}`).style.display = 'inline-block';
+                    };
+
+                    img.src = url;
+                })
+                .catch(error => {
+                    alert('Error loading SVG: ' + error);
+                });
+        }
+
+        function downloadImage(filename, size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Auto-generate on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                generateFavicon(32);
+                generateFavicon(180);
+            }, 500);
+        });
+    </script>
+</body>
+</html>
