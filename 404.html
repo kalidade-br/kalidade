@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Página não encontrada</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      color: #202124;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      transform: translateY(-20px);
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 28px;
+      color: #5f6368;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #5f6368;
+      margin-bottom: 8px;
+    }
+
+    .url {
+      color: #1a73e8;
+      overflow-wrap: anywhere;
+    }
+
+    .code {
+      font-size: 12px;
+      color: #80868b;
+      margin-top: 16px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .primary {
+      background: #1a73e8;
+      color: white;
+    }
+
+    .primary:hover {
+      background: #1765cc;
+    }
+
+    .secondary {
+      background: #f1f3f4;
+      color: #202124;
+    }
+
+    .secondary:hover {
+      background: #e8eaed;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 22px;
+      }
+
+      .container {
+        transform: translateY(-10px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <svg class="icon" viewBox="0 0 48 48"
+         fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 3H29L40 14V42C40 43.7 38.7 45 37 45H10C8.3 45 7 43.7 7 42V6C7 4.3 8.3 3 10 3Z"
+            stroke="currentColor" stroke-width="2"/>
+      <path d="M28 4V15H39"
+            stroke="currentColor" stroke-width="2"/>
+      <circle cx="17" cy="25" r="1.5" fill="currentColor"/>
+      <circle cx="30" cy="25" r="1.5" fill="currentColor"/>
+      <path d="M17 35C20 30 27 30 30 35"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round"/>
+    </svg>
+
+    <h1>Não é possível acessar esta página</h1>
+
+    <p>
+      A página que você está tentando acessar pode ter sido
+      removida, renomeada ou estar temporariamente indisponível.
+    </p>
+
+    <p class="url" id="currentUrl"></p>
+
+    <p class="code">ERROR 404</p>
+
+    <div class="actions">
+      <button class="primary" onclick="history.back()">
+        Voltar
+      </button>
+
+      <button class="secondary" onclick="location.href='/'">
+        Ir para a página inicial
+      </button>
+    </div>
+
+  </main>
+
+  <script>
+    document.getElementById("currentUrl").textContent =
+      window.location.origin + window.location.pathname;
+  </script>
+</body>
+</html>
