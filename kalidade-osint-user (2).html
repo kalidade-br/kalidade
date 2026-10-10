@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KALIDADE OSINT USER</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12141f; --surface:#1b1f31; --line:#2c3250; --text:#e8eaf6; --muted:#8089ab;
+  --found:#5ce1e6; --warn:#ffb547; --bad:#ff7a8a;
+  --font:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;min-height:100vh}
+main{max-width:860px;margin:0 auto;padding:clamp(24px,6vw,64px) 20px 80px}
+h1{font-size:clamp(28px,6vw,52px);line-height:1.05;margin:0 0 10px;font-weight:700;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 32px;max-width:52ch}
+
+/* barra de busca: elemento principal */
+.bar{position:relative;display:flex;gap:8px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:8px;overflow:hidden;transition:border-color .2s}
+.bar:focus-within{border-color:var(--found)}
+.bar input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--text);font:inherit;font-size:18px;padding:12px 14px}
+.bar input::placeholder{color:var(--muted)}
+.bar button{background:var(--found);color:#0b1b1d;border:0;border-radius:9px;font:inherit;font-weight:700;padding:0 22px;cursor:pointer}
+.bar button:disabled{opacity:.55;cursor:progress}
+.bar.loading::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:35%;background:linear-gradient(90deg,transparent,var(--found),transparent);animation:sweep 1.1s linear infinite}
+@keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+:focus-visible{outline:2px solid var(--found);outline-offset:2px}
+.status{color:var(--muted);margin:14px 2px 0;min-height:1.5em}
+.error{color:var(--bad)}
+
+/* resultados */
+#out{margin-top:28px}
+.summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin-bottom:16px}
+.summary strong{font-size:22px}
+.summary span{color:var(--muted)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.tab,.chip,select{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;font:inherit;font-size:14px;padding:6px 14px;cursor:pointer}
+.tab[aria-selected=true]{background:var(--text);color:var(--bg);border-color:var(--text)}
+select{background:var(--surface);color:var(--text)}
+.spacer{flex:1}
+ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+li{display:grid;grid-template-columns:12px 1fr auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.found .dot{background:var(--found);box-shadow:0 0 0 4px rgba(92,225,230,.15)}
+.warn .dot{background:var(--warn)}
+.nf{opacity:.55}
+.name{font-weight:500}
+.meta{color:var(--muted);font-size:13px;word-break:break-all}
+a.go{color:#0b1b1d;background:var(--found);text-decoration:none;font-weight:700;font-size:14px;padding:8px 14px;border-radius:8px;white-space:nowrap}
+a.go.alt{background:transparent;color:var(--warn);border:1px solid var(--warn)}
+.tag{font-size:13px;color:var(--muted)}
+.empty{padding:28px 4px;color:var(--muted)}
+.note{margin-top:28px;font-size:13px;color:var(--muted);max-width:70ch}
+@media (max-width:520px){li{grid-template-columns:12px 1fr}li>:last-child{grid-column:2}.bar button{padding:0 16px}}
+@media (prefers-reduced-motion:reduce){.bar.loading::after{animation:none;width:100%;opacity:.5}}
+</style>
+</head>
+<body>
+<main>
+  <h1>KALIDADE OSINT USER</h1>
+  <p class="sub">Digite um nome de usuário e veja em quais plataformas ele existe, com link direto para cada perfil.</p>
+
+  <form class="bar" id="form" autocomplete="off">
+    <input id="user" name="user" placeholder="Ex.: kalidade" aria-label="Nome de usuário" maxlength="41" spellcheck="false" autocapitalize="off" autofocus>
+    <button id="go" type="submit">Buscar</button>
+  </form>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <section id="out" hidden>
+    <div class="summary" id="summary"></div>
+    <div class="tools" id="tools"></div>
+    <ul id="list"></ul>
+    <p class="note">Um username igual em outra plataforma não prova que é a mesma pessoa. Confirme manualmente. “Inconclusivo” significa que o site bloqueou ou não respondeu a tempo.</p>
+  </section>
+</main>
+
+<script>
+const API = "https://api-kalidade.vercel.app/api/osint-user.js";
+const $ = (id) => document.getElementById(id);
+const form = $("form"), input = $("user"), btn = $("go"), statusEl = $("status");
+let data = null, tab = "found", cat = "all";
+
+const LABEL = { found:"Encontrado", not_found:"Não encontrado", unknown:"Inconclusivo", error:"Falha na consulta", invalid:"Formato inválido" };
+const GROUPS = {
+  found: (r) => r.status === "found",
+  unsure: (r) => ["unknown","error","invalid"].includes(r.status),
+  not_found: (r) => r.status === "not_found",
+  all: () => true,
+};
+const TABS = [["found","Encontrados"],["unsure","Inconclusivos"],["not_found","Não encontrados"],["all","Todos"]];
+
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") n.className = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  for (const c of kids) n.append(c);
+  return n;
+}
+
+function setStatus(msg, isErr) {
+  statusEl.textContent = msg || "";
+  statusEl.className = "status" + (isErr ? " error" : "");
+}
+
+async function search(raw) {
+  const user = raw.trim().replace(/^@/, "");
+  if (!/^[\w.\-]{1,40}$/.test(user)) {
+    setStatus("Use só letras, números, ponto, _ ou -, até 40 caracteres.", true);
+    return;
+  }
+  input.value = user;
+  btn.disabled = true; form.classList.add("loading");
+  $("out").hidden = true;
+  setStatus("Consultando as plataformas… pode levar alguns segundos.");
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 45000);
+  try {
+    const res = await fetch(`${API}?user=${encodeURIComponent(user)}`, { signal: ctrl.signal });
+    let json = null;
+    try { json = await res.json(); } catch (_) {}
+    if (!res.ok) {
+      const msg = res.status === 429 ? "Muitas buscas seguidas. Aguarde um minuto e tente de novo."
+        : res.status === 401 ? "A API exige uma chave (x-api-key)."
+        : (json && (json.error || json.detail)) || `A API respondeu com erro ${res.status}.`;
+      throw new Error(msg);
+    }
+    data = json; tab = data.found ? "found" : "all"; cat = "all";
+    setStatus("");
+    render();
+    try { history.replaceState(null, "", `?user=${encodeURIComponent(user)}`); } catch (_) {}
+  } catch (e) {
+    console.error("[KALIDADE]", e);
+    if (e.name === "AbortError") setStatus("A busca demorou demais. Tente de novo.", true);
+    else if (e instanceof TypeError) {
+      setStatus("", true);
+      statusEl.append("Não consegui conectar à API. Se você abriu esta página pelo preview do Claude, baixe o arquivo e abra no navegador ou hospede na Vercel. Para testar a API direto: ",
+        el("a", { href: `${API}?user=${encodeURIComponent(user)}`, target: "_blank", rel: "noopener noreferrer", style: "color:inherit" }, "abrir resposta da API"));
+    } else setStatus(e.message || "Não foi possível falar com a API.", true);
+  } finally {
+    clearTimeout(timer); btn.disabled = false; form.classList.remove("loading");
+  }
+}
+
+function render() {
+  $("out").hidden = false;
+  const s = $("summary"); s.replaceChildren(
+    el("strong", {}, `${data.found} ${data.found === 1 ? "perfil encontrado" : "perfis encontrados"}`),
+    el("span", {}, `${data.checked} sites verificados`),
+    el("span", {}, `${(data.elapsed_ms / 1000).toFixed(1)}s`),
+    el("span", {}, `usuário: ${data.username}`)
+  );
+
+  const tools = $("tools"); tools.replaceChildren();
+  for (const [key, label] of TABS) {
+    const n = data.results.filter(GROUPS[key]).length;
+    tools.append(el("button", { class: "tab", type: "button", role: "tab", "aria-selected": String(tab === key),
+      onclick: () => { tab = key; render(); } }, `${label} (${n})`));
+  }
+  const cats = [...new Set(data.results.map((r) => r.category))].sort();
+  const sel = el("select", { "aria-label": "Filtrar por categoria", onchange: (e) => { cat = e.target.value; render(); } },
+    el("option", { value: "all" }, "Todas as categorias"));
+  for (const c of cats) { const o = el("option", { value: c }, c); if (c === cat) o.selected = true; sel.append(o); }
+  tools.append(sel, el("span", { class: "spacer" }),
+    el("button", { class: "chip", type: "button", onclick: () => exportFile("json") }, "Baixar JSON"),
+    el("button", { class: "chip", type: "button", onclick: () => exportFile("csv") }, "Baixar CSV"));
+
+  const rows = data.results.filter(GROUPS[tab]).filter((r) => cat === "all" || r.category === cat);
+  const list = $("list"); list.replaceChildren();
+  if (!rows.length) { list.append(el("li", { class: "empty" }, "Nada nesta lista.")); return; }
+  for (const r of rows) {
+    const cls = r.status === "found" ? "found" : ["unknown","error","invalid"].includes(r.status) ? "warn" : "nf";
+    const right = r.status === "found" ? el("a", { class: "go", href: r.url, target: "_blank", rel: "noopener noreferrer" }, "Abrir perfil")
+      : cls === "warn" && r.status !== "invalid" ? el("a", { class: "go alt", href: r.url, target: "_blank", rel: "noopener noreferrer" }, "Verificar à mão")
+      : el("span", { class: "tag" }, LABEL[r.status] || r.status);
+    list.append(el("li", { class: cls },
+      el("span", { class: "dot" }),
+      el("div", {}, el("div", { class: "name" }, r.site), el("div", { class: "meta" }, r.status === "found" ? r.url : `${r.category} · ${LABEL[r.status] || r.status}${r.note ? " · " + r.note : ""}`)),
+      right));
+  }
+}
+
+function exportFile(kind) {
+  const rows = data.results;
+  const body = kind === "json" ? JSON.stringify(data, null, 2)
+    : "site,categoria,status,url\n" + rows.map((r) => [r.site, r.category, r.status, r.url].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const a = el("a", { href: URL.createObjectURL(new Blob([body], { type: kind === "json" ? "application/json" : "text/csv" })), download: `osint-${data.username}.${kind}` });
+  document.body.append(a); a.click(); a.remove();
+}
+
+window.addEventListener("error", (ev) => setStatus("Erro no script: " + ev.message, true));
+form.addEventListener("submit", (e) => { e.preventDefault(); search(input.value); });
+const initial = new URLSearchParams(location.search).get("user");
+if (initial) search(initial);
+</script>
+</body>
+</html>
