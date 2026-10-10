@@ -1,480 +1,824 @@
-
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#09090d">
-<title>KALIDADE-BR | Chatango Explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE-BR | Chatango Profile API</title>
+
 <style>
 :root {
   color-scheme: dark;
-  --bg:#09090d; --card:#12121a; --border:#292938;
-  --text:#f5f5fb; --muted:#9999ad; --accent:#a56bff;
+  --bg: #08090c;
+  --card: #111319;
+  --border: #252833;
+  --text: #f3f4f6;
+  --muted: #969baa;
+  --accent: #7c5cff;
+  --green: #35d49a;
+  --red: #ff626e;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial, sans-serif}
-header{padding:20px;border-bottom:1px solid var(--border);background:#0e0e15}
-.header{max-width:950px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.logo{font-size:22px;font-weight:900;letter-spacing:1px}
-.logo span,h1 span{color:var(--accent)}
-.tag{font-size:11px;color:var(--muted);border:1px solid var(--border);padding:8px 10px;border-radius:20px}
-main{width:min(950px,calc(100% - 28px));margin:35px auto}
-.hero{text-align:center;margin-bottom:25px}
-h1{font-size:clamp(28px,5vw,42px);margin:0 0 10px}
-.hero p{color:var(--muted);line-height:1.6;margin:0}
-.search{display:flex;gap:9px;padding:9px;background:var(--card);border:1px solid var(--border);border-radius:14px}
-input{flex:1;min-width:0;background:transparent;color:white;border:0;outline:none;padding:12px;font-size:16px}
-button{cursor:pointer;border:0;border-radius:10px;padding:12px 15px;font-weight:bold}
-.primary{background:var(--accent);color:#160b25}
-.secondary{background:#222230;color:white;border:1px solid var(--border)}
-button:disabled{opacity:.5;cursor:wait}
-#status{display:none;margin:17px 0;padding:15px;border:1px solid var(--border);border-radius:12px;line-height:1.6;overflow-wrap:anywhere}
-#status.show{display:block}
-#status.error{color:#ff9292;border-color:#673535;background:#211214}
-#status.success{color:#8ee6b0}
-.hidden{display:none!important}
-.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:18px}
-.profile-top{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:24px;background:linear-gradient(130deg,#211532,#12121a)}
-.avatar{width:120px;height:120px;object-fit:cover;background:#222230;border-radius:15px;border:1px solid var(--border)}
-.profile-info{flex:1;min-width:0}
-.profile-info h2{font-size:clamp(23px,4vw,32px);margin:0 0 8px;overflow-wrap:anywhere}
-.muted{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.section{padding:21px}
-.section+.section{border-top:1px solid var(--border)}
-h3{font-size:15px;margin:0 0 15px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.info{padding:13px;background:#1a1a25;border:1px solid var(--border);border-radius:10px;min-width:0}
-.info small{display:block;color:var(--muted);margin-bottom:8px}
-.info strong{overflow-wrap:anywhere}
-.description{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;color:#dedee9}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:12px}
-.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:#222230}
-.gallery button{width:100%;margin-top:7px}
-.link{display:flex;justify-content:space-between;gap:10px;padding:13px;background:#1a1a25;border:1px solid var(--border);border-radius:10px;color:white;text-decoration:none;overflow-wrap:anywhere;margin-bottom:9px}
-.link small{color:var(--muted);white-space:nowrap}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#cdb2ff;font-size:12px}
-footer{text-align:center;padding:28px 12px;color:var(--muted);font-size:12px}
-footer b{color:var(--accent)}
-@media(max-width:550px){
- main{margin-top:24px}
- .tag{display:none}
- .profile-top{padding:17px;gap:14px}
- .avatar{width:90px;height:90px}
- .section{padding:16px}
- .grid{grid-template-columns:1fr 1fr}
- .search{gap:4px}
- .primary{padding:11px}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+  padding: 25px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  background: #0b0c11;
+}
+
+.logo {
+  font-size: clamp(24px, 5vw, 36px);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+header p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+main {
+  width: min(950px, 100%);
+  margin: auto;
+  padding: 22px 14px 45px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 17px;
+}
+
+.search {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+  padding: 14px;
+  color: var(--text);
+  background: #08090c;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  font-size: 15px;
+}
+
+input:focus {
+  border-color: var(--accent);
+}
+
+button {
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--accent);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .2s;
+}
+
+button:hover {
+  filter: brightness(1.15);
+}
+
+button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.secondary {
+  background: #242733;
+}
+
+.status {
+  margin-top: 13px;
+  font-size: 13px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.profile {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: #08090c;
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 180px;
+}
+
+.profile-info h1 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 5vw, 30px);
+  overflow-wrap: anywhere;
+}
+
+.username {
+  color: var(--muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: bold;
+  background: #20232e;
+  margin-top: 10px;
+}
+
+.pill.ok {
+  color: var(--green);
+}
+
+.pill.unknown {
+  color: var(--red);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 13px;
+}
+
+.actions button {
+  font-size: 12px;
+  padding: 10px 12px;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.detail {
+  padding: 13px;
+  border-radius: 10px;
+  background: #0b0c11;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.detail small {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+}
+
+.detail div {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 12px;
+}
+
+.image-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b0c11;
+  min-width: 0;
+}
+
+.image-card img {
+  width: 100%;
+  height: 150px;
+  display: block;
+  object-fit: contain;
+  background: #08090c;
+}
+
+.image-card .image-info {
+  padding: 9px;
+}
+
+.image-card small {
+  display: block;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.image-card button {
+  width: 100%;
+  padding: 9px;
+  font-size: 12px;
+}
+
+.links {
+  display: grid;
+  gap: 8px;
+}
+
+.link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #0b0c11;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 0;
+}
+
+.link-item a {
+  color: #b5a6ff;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.link-item a:hover {
+  text-decoration: underline;
+}
+
+.link-item small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+pre {
+  padding: 14px;
+  background: #08090c;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: auto;
+  max-height: 400px;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.error {
+  color: var(--red);
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 18px 5px;
+  font-size: 13px;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 15px;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 15px;
+  }
+
+  .search {
+    flex-direction: column;
+  }
+
+  .search button {
+    width: 100%;
+  }
+
+  .profile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .avatar {
+    width: 105px;
+    height: 105px;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>
 </head>
+
 <body>
+
 <header>
-  <div class="header">
-    <div class="logo">KALIDADE<span>-BR</span></div>
-    <div class="tag">CHATANGO PROFILE VIEWER</div>
-  </div>
+  <div class="logo">KALIDADE<span>-BR</span></div>
+  <p>Chatango Profile API Explorer</p>
 </header>
 
 <main>
-  <div class="hero">
-    <h1>Chatango <span>Explorer</span></h1>
-    <p>Consulte perfis, visualize imagens e baixe fotos disponíveis.</p>
-  </div>
 
-  <form id="searchForm" class="search">
-    <input id="username" placeholder="Digite um usuário, ex: kalidade" maxlength="50" required>
-    <button id="searchButton" class="primary">Pesquisar</button>
-  </form>
+  <section class="card">
+    <h2>Pesquisar perfil</h2>
 
-  <div id="status" role="status" aria-live="polite"></div>
+    <form class="search" id="searchForm">
+      <input
+        id="username"
+        type="text"
+        placeholder="Digite o usuário do Chatango..."
+        autocomplete="off"
+        required
+      >
+      <button id="searchButton" type="submit">Pesquisar</button>
+    </form>
+
+    <div class="status" id="status">
+      Digite um nome de usuário para consultar o perfil.
+    </div>
+  </section>
 
   <div id="results" class="hidden">
-    <section class="panel">
-      <div class="profile-top">
-        <img id="avatar" class="avatar" alt="Foto do perfil">
+
+    <section class="card">
+      <div class="profile">
+        <img id="avatar" class="avatar" alt="Foto de perfil">
+
         <div class="profile-info">
-          <h2 id="name">Perfil</h2>
-          <div class="muted" id="handle"></div>
+          <h1 id="profileName">-</h1>
+          <div class="username" id="profileUsername"></div>
+          <div id="profileState" class="pill"></div>
+
           <div class="actions">
-            <button id="downloadPhoto" class="secondary">⬇ Baixar foto</button>
-            <button id="openProfile" class="secondary">↗ Abrir perfil</button>
+            <button type="button" id="openProfile">Abrir perfil</button>
+            <button type="button" id="downloadAvatar" class="secondary">
+              Baixar foto
+            </button>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="section">
-        <h3>Informações do perfil</h3>
-        <div class="grid">
-          <div class="info"><small>Idade</small><strong id="age">Não informado</strong></div>
-          <div class="info"><small>Gênero</small><strong id="gender">Não informado</strong></div>
-          <div class="info"><small>Localização</small><strong id="location">Não informado</strong></div>
+    <section class="card">
+      <h2>Informações do perfil</h2>
+
+      <div class="details">
+        <div class="detail">
+          <small>Idade</small>
+          <div id="age">Não informado</div>
+        </div>
+
+        <div class="detail">
+          <small>Gênero</small>
+          <div id="gender">Não informado</div>
+        </div>
+
+        <div class="detail">
+          <small>Localização</small>
+          <div id="location">Não informado</div>
+        </div>
+
+        <div class="detail">
+          <small>Última consulta</small>
+          <div id="fetchedAt">Não informado</div>
+        </div>
+
+        <div class="detail" style="grid-column: 1 / -1">
+          <small>Descrição</small>
+          <div id="description">Não informado</div>
         </div>
       </div>
-
-      <div class="section">
-        <h3>Sobre</h3>
-        <div class="description" id="description">Nenhuma descrição disponível.</div>
-      </div>
     </section>
 
-    <section class="panel">
-      <div class="section">
-        <h3>Imagens encontradas</h3>
-        <div id="gallery" class="gallery"></div>
-        <p id="noImages" class="muted hidden">Nenhuma imagem disponível.</p>
-      </div>
+    <section class="card">
+      <h2>Imagens encontradas</h2>
+      <div id="gallery" class="gallery"></div>
     </section>
 
-    <section class="panel">
-      <div class="section">
-        <h3>Links do perfil</h3>
-        <div id="links"></div>
-      </div>
+    <section class="card">
+      <h2>Links encontrados</h2>
+      <div id="links" class="links"></div>
     </section>
 
-    <section class="panel">
-      <div class="section">
-        <h3>JSON recebido da API</h3>
-        <div class="actions">
-          <button id="copyJson" class="secondary">Copiar JSON</button>
-          <button id="downloadJson" class="secondary">Baixar JSON</button>
-        </div>
-        <pre id="rawJson"></pre>
+    <section class="card">
+      <h2>Resposta JSON</h2>
+
+      <div class="actions" style="margin-bottom: 12px">
+        <button type="button" id="copyJson">Copiar JSON</button>
+        <button type="button" id="downloadJson" class="secondary">
+          Baixar JSON
+        </button>
       </div>
+
+      <pre id="jsonOutput"></pre>
     </section>
+
   </div>
+
+  <footer>
+    KALIDADE-BR · Chatango Profile API
+  </footer>
 </main>
 
-<footer>Desenvolvido por <b>KALIDADE-BR</b></footer>
-
 <script>
-(() => {
-  "use strict";
+const API_URL = "https://api-kalidade.vercel.app/api/chatango.js?user=";
 
-  const API = "https://api-kalidade.vercel.app/api/chatango.js?user=";
-  const $ = id => document.getElementById(id);
-  let dataAtual = null;
-  let fotoAtual = "";
+const $ = id => document.getElementById(id);
 
-  function setStatus(message, type = "") {
-    $("status").textContent = message;
-    $("status").className = "show " + type;
+let dadosAtuais = null;
+let fotoAtual = "";
+let usuarioAtual = "";
+
+function imageUrl(value) {
+  if (typeof value !== "string" || !value.trim()) return "";
+
+  let url = value.trim();
+
+  if (url.startsWith("//")) {
+    url = "https:" + url;
   }
 
-  function hideStatus() {
-    $("status").className = "";
-  }
+  try {
+    const parsed = new URL(url, location.href);
 
-  function setText(id, value, fallback = "Não informado") {
-    const valueText = value == null ? "" : String(value).trim();
-    $(id).textContent = valueText || fallback;
-  }
-
-  function validUrl(value) {
-    try {
-      const url = new URL(value);
-      return url.protocol === "https:" || url.protocol === "http:";
-    } catch {
-      return false;
-    }
-  }
-
-  function imageUrl(value) {
-    if (typeof value !== "string") return "";
-    if (value.startsWith("//")) value = "https:" + value;
-    return validUrl(value) ? value : "";
-  }
-
-  // Reconhece tanto o JSON da API quanto o HTML de usuário inexistente.
-  function isUnknownProfile(data) {
-    if (!data) return false;
-
-    if (data.exists === false) return true;
-
-    const name = String(data.name || "").trim();
-    if (/^unknown user!?$/i.test(name)) return true;
-
-    const html = [
-      data.description,
-      data.message,
-      data.error,
-      data.title
-    ].filter(Boolean).join(" ");
-
-    if (/is not \(yet\) a registered Chatango name!/i.test(html)) {
-      return true;
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return "";
     }
 
-    // Se a API devolver o HTML bruto dentro de algum campo.
-    if (/<title[^>]*>\s*Unknown User!\s*<\/title>/i.test(html)) {
-      return true;
-    }
+    return parsed.href;
+  } catch {
+    return "";
+  }
+}
 
-    return false;
+function isUnknownProfile(data) {
+  const name = String(data.name || "").trim().toLowerCase();
+
+  return data.exists === false ||
+         name === "unknown user!" ||
+         name === "unknown user";
+}
+
+function safeText(value) {
+  if (value === null || value === undefined || value === "") {
+    return "Não informado";
   }
 
-  function clearResults() {
-    $("results").classList.add("hidden");
-    $("gallery").replaceChildren();
-    $("links").replaceChildren();
-    $("avatar").removeAttribute("src");
-    dataAtual = null;
-    fotoAtual = "";
-  }
+  return String(value);
+}
 
-  function renderLinks(data) {
-    const container = $("links");
-    container.replaceChildren();
+function setStatus(message, isError = false) {
+  $("status").textContent = message;
+  $("status").className = "status" + (isError ? " error" : "");
+}
 
-    let links = Array.isArray(data.links) ? data.links : [];
+function isGenericImage(url) {
+  const path = url.toLowerCase();
 
-    links = links.filter(item =>
-      item && typeof item.url === "string" && validUrl(item.url)
-    );
+  return path.includes("/images/html5/homepage/logo.png") ||
+         path.includes("/images/fp_friends.gif") ||
+         path.includes("/images/pixel.gif") ||
+         path.endsWith("/pixel.gif");
+}
 
-    if (!links.length) {
-      links = [{url:"http://chatango.com",label:"Sign up"}];
-    }
+function renderProfile(data) {
+  dadosAtuais = data;
+  usuarioAtual = data.user || $("username").value.trim();
 
-    links.forEach(item => {
-      const a = document.createElement("a");
-      a.className = "link";
-      a.href = item.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
+  const images = Array.isArray(data.images) ? data.images : [];
 
-      const label = document.createElement("span");
-      label.textContent = item.label || item.url;
+  /*
+   * CORREÇÃO:
+   * A primeira imagem de "images" sempre tem prioridade
+   * como foto de perfil. O campo "photo" é usado apenas
+   * como alternativa caso images[0] esteja ausente ou inválida.
+   */
+  fotoAtual = imageUrl(images[0]) || imageUrl(data.photo) || "";
 
-      const open = document.createElement("small");
-      open.textContent = "↗ Abrir";
+  const unknown = isUnknownProfile(data);
 
-      a.append(label, open);
-      container.appendChild(a);
-    });
-  }
+  $("results").classList.remove("hidden");
 
-  function renderGallery(data) {
-    const gallery = $("gallery");
-    gallery.replaceChildren();
+  $("profileName").textContent =
+    safeText(data.name || (unknown ? "Unknown User!" : data.user));
 
-    // Usa photo ou images como alternativa.
-    const candidates = [];
-    if (data.photo) candidates.push(data.photo);
-    if (Array.isArray(data.images)) candidates.push(...data.images);
+  $("profileUsername").textContent = "@" + usuarioAtual;
 
-    // Não mostra logos e imagens genéricas de cadastro.
-    const images = [...new Set(candidates.map(imageUrl).filter(Boolean))]
-      .filter(url => !/\/images\/(html5\/homepage\/logo\.png|fp_friends\.gif|pixel\.gif)$/i.test(url));
+  $("profileState").textContent =
+    unknown ? "PERFIL NÃO REGISTRADO" : "CONSULTA CONCLUÍDA";
 
-    $("noImages").classList.toggle("hidden", images.length > 0);
+  $("profileState").className =
+    "pill " + (unknown ? "unknown" : "ok");
 
-    images.forEach((url, index) => {
-      const item = document.createElement("div");
-      const img = document.createElement("img");
-      img.src = url;
-      img.alt = "Imagem " + (index + 1);
-      img.loading = "lazy";
-      img.referrerPolicy = "no-referrer";
+  const avatar = $("avatar");
 
-      img.onerror = () => {
-        item.remove();
-        if (!gallery.children.length) {
-          $("noImages").classList.remove("hidden");
-        }
-      };
-
-      const button = document.createElement("button");
-      button.className = "secondary";
-      button.textContent = "⬇ Baixar";
-      button.addEventListener("click", () => downloadImage(url, data.user));
-
-      item.append(img, button);
-      gallery.appendChild(item);
-    });
-  }
-
-  function renderProfile(data) {
-    dataAtual = data;
-    $("results").classList.remove("hidden");
-
-    setText("name", data.name || data.user, "Perfil");
-    setText("handle", data.user ? "@" + data.user : "");
-    setText("age", data.age);
-    setText("gender", data.gender);
-    setText("location", data.location);
-    setText("description", data.description, "Nenhuma descrição disponível.");
-
-    const images = Array.isArray(data.images) ? data.images : [];
-    fotoAtual = imageUrl(data.photo) ||
-      images.map(imageUrl).find(Boolean) || "";
-
-    $("avatar").onerror = () => {
-      $("avatar").removeAttribute("src");
-      $("avatar").alt = "Foto indisponível";
+  if (!unknown && fotoAtual) {
+    avatar.src = fotoAtual;
+    avatar.classList.remove("hidden");
+    avatar.onerror = () => {
+      avatar.removeAttribute("src");
+      avatar.alt = "Não foi possível carregar a foto";
     };
+  } else {
+    avatar.removeAttribute("src");
+    avatar.alt = "Foto de perfil indisponível";
+  }
 
-    if (fotoAtual) {
-      $("avatar").src = fotoAtual;
-      $("avatar").alt = "Foto de " + (data.user || "perfil");
+  $("age").textContent = safeText(data.age);
+  $("gender").textContent = safeText(data.gender);
+  $("location").textContent = safeText(data.location);
+  $("description").textContent = safeText(data.description);
+  $("fetchedAt").textContent = safeText(data.fetchedAt);
+
+  $("openProfile").onclick = () => {
+    const profileUrl = imageUrl(data.profile);
+
+    if (profileUrl) {
+      window.open(profileUrl, "_blank", "noopener,noreferrer");
     } else {
-      $("avatar").removeAttribute("src");
-      $("avatar").alt = "Foto não disponível";
+      window.open(
+        "https://" + encodeURIComponent(usuarioAtual) + ".chatango.com/",
+        "_blank",
+        "noopener,noreferrer"
+      );
     }
+  };
 
-    $("downloadPhoto").disabled = !fotoAtual;
+  $("downloadAvatar").disabled = unknown || !fotoAtual;
 
-    renderGallery(data);
-    renderLinks(data);
-    $("rawJson").textContent = JSON.stringify(data, null, 2);
+  $("downloadAvatar").onclick = () => {
+    if (fotoAtual) downloadImage(fotoAtual, usuarioAtual);
+  };
+
+  renderGallery(data, unknown);
+  renderLinks(data.links, unknown);
+
+  $("jsonOutput").textContent = JSON.stringify(data, null, 2);
+}
+
+function renderGallery(data, unknown) {
+  const gallery = $("gallery");
+  gallery.innerHTML = "";
+
+  if (unknown) {
+    gallery.innerHTML =
+      '<div class="empty">Nenhuma imagem de perfil disponível.</div>';
+    return;
   }
 
-  async function downloadImage(url, username) {
-    if (!url) {
-      setStatus("Este perfil não tem uma foto disponível.", "error");
-      return;
-    }
+  const images = Array.isArray(data.images) ? data.images : [];
+  const candidates = [];
 
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Download indisponível");
-
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = objectUrl;
-      a.download = (username || "chatango") + "-profile.jpg";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
-      setStatus("Download iniciado.", "success");
-    } catch {
-      window.open(url, "_blank", "noopener,noreferrer");
-      setStatus("O servidor bloqueou o download direto. A foto foi aberta em outra aba para salvar manualmente.", "error");
-    }
+  // Primeira imagem da API: prioridade máxima.
+  if (images.length) {
+    candidates.push(images[0]);
   }
 
-  $("searchForm").addEventListener("submit", async event => {
-    event.preventDefault();
+  // Inclui as demais imagens sem duplicar a primeira.
+  candidates.push(...images.slice(1));
 
-    const user = $("username").value.trim().replace(/^@/, "");
+  // Usa photo apenas se ainda não estiver na lista.
+  if (data.photo) {
+    candidates.push(data.photo);
+  }
 
-    if (!/^[a-z0-9_-]{1,50}$/i.test(user)) {
-      setStatus("Digite um nome de usuário válido.", "error");
-      return;
-    }
+  const seen = new Set();
 
-    const button = $("searchButton");
-    button.disabled = true;
-    button.textContent = "Pesquisando...";
-    clearResults();
-    setStatus("Consultando o perfil @" + user + "...");
+  const validImages = candidates
+    .map(imageUrl)
+    .filter(url => {
+      if (!url || isGenericImage(url) || seen.has(url)) return false;
+      seen.add(url);
+      return true;
+    });
 
-    try {
-      const response = await fetch(API + encodeURIComponent(user), {
-        headers: {Accept:"application/json"}
-      });
+  if (!validImages.length) {
+    gallery.innerHTML =
+      '<div class="empty">Nenhuma imagem encontrada.</div>';
+    return;
+  }
 
-      const contentType = response.headers.get("content-type") || "";
-      const raw = await response.text();
-      let data;
+  validImages.forEach((url, index) => {
+    const card = document.createElement("div");
+    card.className = "image-card";
 
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        // Caso a API retorne HTML em vez de JSON, verifica a página.
-        if (
-          /<title[^>]*>\s*Unknown User!\s*<\/title>/i.test(raw) ||
-          /is not \(yet\) a registered Chatango name!/i.test(raw)
-        ) {
-          setStatus("❌ @" + user + " não está registrado no Chatango.", "error");
-          return;
-        }
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = "Imagem " + (index + 1);
+    img.loading = "lazy";
 
-        throw new Error("A API não retornou JSON válido.");
-      }
+    const info = document.createElement("div");
+    info.className = "image-info";
 
-      if (!response.ok || data.success === false) {
-        throw new Error(data.error || "Erro HTTP " + response.status);
-      }
+    const label = document.createElement("small");
+    label.textContent = index === 0
+      ? "Imagem principal"
+      : "Imagem " + (index + 1);
 
-      // Detecta contas inexistentes sem exigir mudança na API.
-      if (isUnknownProfile(data)) {
-        setStatus("❌ @" + user + " não está registrado no Chatango. Nenhum perfil foi exibido.", "error");
-        return;
-      }
+    const button = document.createElement("button");
+    button.textContent = "Baixar imagem";
+    button.onclick = () => downloadImage(url, usuarioAtual + "-" + (index + 1));
 
-      // Detecta resposta com HTML bruto dentro do JSON.
-      const allText = JSON.stringify(data);
-      if (
-        /is not \(yet\) a registered Chatango name!/i.test(allText) ||
-        /<title[^>]*>\s*Unknown User!\s*<\/title>/i.test(allText)
-      ) {
-        setStatus("❌ @" + user + " não está registrado no Chatango.", "error");
-        return;
-      }
+    info.append(label, button);
+    card.append(img, info);
+    gallery.appendChild(card);
+  });
+}
 
-      renderProfile(data);
-      setStatus("Perfil carregado: @" + (data.user || user), "success");
+function renderLinks(links, unknown) {
+  const container = $("links");
+  container.innerHTML = "";
 
-    } catch (error) {
-      setStatus("Não foi possível consultar o perfil. " + error.message, "error");
-    } finally {
-      button.disabled = false;
-      button.textContent = "Pesquisar";
-    }
+  if (unknown || !Array.isArray(links) || !links.length) {
+    container.innerHTML =
+      '<div class="empty">Nenhum link encontrado.</div>';
+    return;
+  }
+
+  links.forEach(item => {
+    const url = imageUrl(item.url);
+
+    if (!url) return;
+
+    const row = document.createElement("div");
+    row.className = "link-item";
+
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.textContent = item.label || url;
+
+    const small = document.createElement("small");
+    small.textContent = "Abrir ↗";
+
+    row.append(anchor, small);
+    container.appendChild(row);
   });
 
-  $("downloadPhoto").addEventListener("click", () => {
-    downloadImage(fotoAtual, dataAtual?.user);
-  });
+  if (!container.children.length) {
+    container.innerHTML =
+      '<div class="empty">Nenhum link válido encontrado.</div>';
+  }
+}
 
-  $("openProfile").addEventListener("click", () => {
-    if (!dataAtual) return;
+async function downloadImage(url, filename) {
+  try {
+    const response = await fetch(url);
 
-    const url = dataAtual.profile ||
-      "https://" + dataAtual.user + ".chatango.com/";
-
-    if (validUrl(url)) {
-      window.open(url, "_blank", "noopener,noreferrer");
+    if (!response.ok) {
+      throw new Error("Não foi possível baixar a imagem.");
     }
-  });
 
-  $("copyJson").addEventListener("click", async () => {
-    if (!dataAtual) return;
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
 
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(dataAtual, null, 2));
-      setStatus("JSON copiado.", "success");
-    } catch {
-      setStatus("Não foi possível copiar automaticamente.", "error");
-    }
-  });
+    anchor.href = objectUrl;
+    anchor.download = filename.replace(/[^a-z0-9_-]/gi, "_") + ".jpg";
 
-  $("downloadJson").addEventListener("click", () => {
-    if (!dataAtual) return;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
 
-    const blob = new Blob(
-      [JSON.stringify(dataAtual, null, 2)],
-      {type:"application/json"}
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+  } catch {
+    // Se o servidor bloquear CORS, abre a imagem em outra aba.
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+$("searchForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const username = $("username").value.trim();
+
+  if (!username) {
+    setStatus("Digite um nome de usuário.", true);
+    return;
+  }
+
+  $("searchButton").disabled = true;
+  $("searchButton").textContent = "Consultando...";
+  $("results").classList.add("hidden");
+
+  setStatus("Consultando a API do Chatango...");
+
+  try {
+    const response = await fetch(
+      API_URL + encodeURIComponent(username)
     );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = (dataAtual.user || "chatango") + ".json";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1500);
-  });
 
-  const initialUser = new URLSearchParams(location.search).get("user");
-  if (initialUser) {
-    $("username").value = initialUser;
-    $("searchForm").requestSubmit();
+    if (!response.ok) {
+      throw new Error("A API respondeu com HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!data || typeof data !== "object") {
+      throw new Error("Resposta inválida da API.");
+    }
+
+    renderProfile(data);
+
+    if (isUnknownProfile(data)) {
+      setStatus("O perfil não parece estar registrado no Chatango.");
+    } else {
+      setStatus("Consulta concluída com sucesso.");
+    }
+  } catch (error) {
+    setStatus(
+      "Erro ao consultar: " + (error.message || "falha desconhecida"),
+      true
+    );
+  } finally {
+    $("searchButton").disabled = false;
+    $("searchButton").textContent = "Pesquisar";
   }
-})();
+});
+
+$("copyJson").addEventListener("click", async () => {
+  if (!dadosAtuais) return;
+
+  try {
+    await navigator.clipboard.writeText(
+      JSON.stringify(dadosAtuais, null, 2)
+    );
+
+    $("copyJson").textContent = "Copiado!";
+
+    setTimeout(() => {
+      $("copyJson").textContent = "Copiar JSON";
+    }, 1500);
+  } catch {
+    setStatus("Não foi possível copiar. Selecione o JSON manualmente.", true);
+  }
+});
+
+$("downloadJson").addEventListener("click", () => {
+  if (!dadosAtuais) return;
+
+  const blob = new Blob(
+    [JSON.stringify(dadosAtuais, null, 2)],
+    { type: "application/json;charset=utf-8" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+
+  anchor.href = url;
+  anchor.download = (usuarioAtual || "chatango-profile") + ".json";
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+
+  URL.revokeObjectURL(url);
+});
 </script>
+
 </body>
 </html>
+```
