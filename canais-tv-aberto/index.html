@@ -1,0 +1,472 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09090f">
+  <title>KALIDADE-BR | TV Online</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #09090f;
+      --card: #14141e;
+      --border: #292938;
+      --text: #f5f5ff;
+      --muted: #9292a8;
+      --accent: #7657ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 25px 5%;
+      border-bottom: 1px solid var(--border);
+      background: #0e0e17;
+    }
+
+    .logo {
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      width: min(1200px, 92%);
+      margin: 30px auto;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      font-size: 22px;
+    }
+
+    #contador {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .search {
+      width: min(100%, 350px);
+    }
+
+    .search input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      background: var(--card);
+      color: var(--text);
+      font-size: 15px;
+      transition: border-color .2s;
+    }
+
+    .search input:focus {
+      border-color: var(--accent);
+    }
+
+    #canais {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 16px;
+    }
+
+    .canal {
+      min-width: 0;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+      cursor: pointer;
+      text-align: center;
+      transition: transform .2s, border-color .2s;
+    }
+
+    .canal:hover,
+    .canal:focus-visible {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .canal img {
+      width: 100%;
+      height: 95px;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+
+    .canal h3 {
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .assistir {
+      display: block;
+      margin-top: 12px;
+      padding: 9px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .mensagem {
+      grid-column: 1 / -1;
+      padding: 35px 15px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    /* Player */
+
+    .player-area {
+      display: none;
+      margin-top: 30px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+    }
+
+    .player-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    #tituloPlayer {
+      font-size: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: #292938;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--accent);
+    }
+
+    .video {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #000;
+    }
+
+    .video iframe,
+    .video video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    footer {
+      padding: 30px 15px;
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 22px 4%;
+      }
+
+      main {
+        width: 92%;
+        margin-top: 22px;
+      }
+
+      #canais {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .canal {
+        padding: 12px 8px;
+      }
+
+      .canal img {
+        height: 75px;
+      }
+
+      .player-area {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">KALIDADE<span>-BR</span></div>
+    <p class="subtitle">Sua televisão online em um só lugar.</p>
+  </header>
+
+  <main>
+    <section class="top">
+      <div>
+        <h2>Canais disponíveis</h2>
+        <p id="contador">Carregando canais...</p>
+      </div>
+
+      <div class="search">
+        <input
+          type="search"
+          id="busca"
+          placeholder="Buscar canal..."
+          aria-label="Buscar canal pelo nome"
+          autocomplete="off"
+        >
+      </div>
+    </section>
+
+    <section id="canais" aria-live="polite">
+      <div class="mensagem">Carregando lista de canais...</div>
+    </section>
+
+    <section class="player-area" id="playerArea">
+      <div class="player-top">
+        <h2 id="tituloPlayer">Assistindo</h2>
+        <button id="fecharPlayer" type="button">Fechar ✕</button>
+      </div>
+
+      <div class="video" id="videoContainer"></div>
+    </section>
+  </main>
+
+  <footer>
+    KALIDADE-BR © <span id="ano"></span> — TV Online
+  </footer>
+
+  <script>
+    const lista = document.getElementById("canais");
+    const busca = document.getElementById("busca");
+    const contador = document.getElementById("contador");
+    const playerArea = document.getElementById("playerArea");
+    const videoContainer = document.getElementById("videoContainer");
+    const tituloPlayer = document.getElementById("tituloPlayer");
+
+    let canais = [];
+
+    document.getElementById("ano").textContent =
+      new Date().getFullYear();
+
+    // Carrega os canais do arquivo JSON
+    async function carregarCanais() {
+      try {
+        const resposta = await fetch("./canais.json", {
+          cache: "no-cache"
+        });
+
+        if (!resposta.ok) {
+          throw new Error("HTTP " + resposta.status);
+        }
+
+        const dados = await resposta.json();
+
+        if (!Array.isArray(dados)) {
+          throw new Error("O JSON precisa conter uma lista de canais.");
+        }
+
+        canais = dados.filter(canal =>
+          canal &&
+          typeof canal.nome === "string" &&
+          typeof canal.iframe === "string" &&
+          typeof canal.logo === "string"
+        );
+
+        renderizarCanais();
+      } catch (erro) {
+        console.error("Erro ao carregar canais:", erro);
+
+        lista.innerHTML = `
+          <div class="mensagem">
+            <strong>Não foi possível carregar os canais.</strong><br>
+            Confira se o arquivo canais.json existe e se o servidor
+            está funcionando.<br><br>
+            <button onclick="carregarCanais()">Tentar novamente</button>
+          </div>
+        `;
+
+        contador.textContent = "Erro ao carregar a lista";
+      }
+    }
+
+    // Exibe os canais e aplica a pesquisa
+    function renderizarCanais() {
+      const termo = busca.value.trim().toLocaleLowerCase("pt-BR");
+
+      const filtrados = canais.filter(canal =>
+        canal.nome.toLocaleLowerCase("pt-BR").includes(termo)
+      );
+
+      contador.textContent =
+        `${filtrados.length} canal${filtrados.length !== 1 ? "is" : ""}`;
+
+      lista.replaceChildren();
+
+      if (!filtrados.length) {
+        const mensagem = document.createElement("div");
+        mensagem.className = "mensagem";
+        mensagem.textContent = canais.length
+          ? "Nenhum canal encontrado para essa pesquisa."
+          : "Nenhum canal válido foi encontrado no JSON.";
+
+        lista.appendChild(mensagem);
+        return;
+      }
+
+      filtrados.forEach(canal => {
+        const cartao = document.createElement("article");
+        cartao.className = "canal";
+        cartao.tabIndex = 0;
+        cartao.setAttribute("role", "button");
+        cartao.setAttribute("aria-label", "Assistir " + canal.nome);
+
+        const imagem = document.createElement("img");
+        imagem.src = canal.logo;
+        imagem.alt = "Logo " + canal.nome;
+        imagem.loading = "lazy";
+        imagem.onerror = () => {
+          imagem.style.display = "none";
+        };
+
+        const nome = document.createElement("h3");
+        nome.textContent = canal.nome;
+
+        const acao = document.createElement("span");
+        acao.className = "assistir";
+        acao.textContent = "▶ ASSISTIR";
+
+        cartao.append(imagem, nome, acao);
+
+        cartao.addEventListener("click", () => abrirCanal(canal));
+
+        cartao.addEventListener("keydown", evento => {
+          if (evento.key === "Enter" || evento.key === " ") {
+            evento.preventDefault();
+            abrirCanal(canal);
+          }
+        });
+
+        lista.appendChild(cartao);
+      });
+    }
+
+    // Abre o canal selecionado
+    function abrirCanal(canal) {
+      videoContainer.replaceChildren();
+      tituloPlayer.textContent = canal.nome;
+
+      const endereco = canal.iframe.trim();
+
+      let url;
+
+      try {
+        url = new URL(endereco);
+      } catch {
+        alert("O endereço deste canal é inválido.");
+        return;
+      }
+
+      if (!["https:", "http:"].includes(url.protocol)) {
+        alert("O endereço deste canal não é permitido.");
+        return;
+      }
+
+      // Links .m3u8 precisam de um player de vídeo compatível.
+      if (/\.m3u8(?:$)/i.test(url.pathname)) {
+        const video = document.createElement("video");
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+
+        const fonte = document.createElement("source");
+        fonte.src = url.href;
+        fonte.type = "application/vnd.apple.mpegurl";
+        video.appendChild(fonte);
+
+        videoContainer.appendChild(video);
+      } else {
+        const iframe = document.createElement("iframe");
+        iframe.src = url.href;
+        iframe.title = "Canal " + canal.nome;
+        iframe.allow =
+          "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+
+        videoContainer.appendChild(iframe);
+      }
+
+      playerArea.style.display = "block";
+      playerArea.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function fecharPlayer() {
+      videoContainer.replaceChildren();
+      playerArea.style.display = "none";
+    }
+
+    busca.addEventListener("input", renderizarCanais);
+    document.getElementById("fecharPlayer")
+      .addEventListener("click", fecharPlayer);
+
+    carregarCanais();
+  </script>
+</body>
+</html>
