@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KALIDADE TV</title>
+<meta name="description" content="KALIDADE TV: jogos de hoje, horários e canais ao vivo num só lugar.">
+<meta name="theme-color" content="#0D1220">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FFC93C'/%3E%3Ctext x='50' y='70' font-size='62' font-weight='900' text-anchor='middle' font-family='Arial' fill='%230D1220'%3EK%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#0D1220; --surface:#151C2F; --surface2:#1D2744; --line:#29345A;
+  --text:#E8EDFB; --muted:#8E9AC0; --signal:#FFC93C; --signal-ink:#1A1400; --live:#FF4A5A;
+  --radius:14px;
+  --head:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:150px;color-scheme:dark}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.45;min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+img{display:block}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:6px}
+
+/* Topo */
+.top{position:sticky;top:0;z-index:30;background:rgba(13,18,32,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top-row{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:12px 20px}
+.logo{font-family:var(--head);font-weight:800;font-size:30px;letter-spacing:.5px;line-height:1;display:flex;align-items:center;gap:7px;white-space:nowrap;text-decoration:none;color:var(--text)}
+.logo b{background:var(--signal);color:var(--signal-ink);padding:2px 8px 3px;border-radius:7px;font-weight:800}
+.search{flex:1;max-width:560px;margin-left:auto;position:relative}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted);pointer-events:none}
+.search input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 16px 11px 42px;font-size:15px}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{outline:none;border-color:var(--signal);box-shadow:0 0 0 3px rgba(255,201,60,.18)}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);flex:none;transition:.15s}
+.icon-btn:hover{color:var(--signal);border-color:var(--signal)}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn.spin svg{animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.chips{max-width:1400px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:0 20px 12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:7px 14px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:500;font-size:14px;transition:.15s;white-space:nowrap}
+.chip:hover{color:var(--text);border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--signal);border-color:var(--signal);color:var(--signal-ink);font-weight:600}
+.chip small{opacity:.65;margin-left:5px;font-size:12px}
+
+main{max-width:1400px;margin:0 auto;padding:22px 20px 70px}
+
+.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:6px;min-height:20px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:#3DDC84}.dot.warn{background:var(--signal)}.dot.err{background:var(--live)}
+
+/* Secoes */
+.sec{margin-top:34px}
+.sec[hidden]{display:none}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.sec-head h2{font-family:var(--head);font-weight:700;font-size:30px;letter-spacing:.3px;line-height:1.1}
+.sec-head .n{color:var(--muted);font-size:14px}
+.sec-tools{margin-left:auto;display:flex;gap:8px;align-items:center}
+.sec-tools .more{font-size:13px;color:var(--muted);padding:6px 12px;border:1px solid var(--line);border-radius:999px}
+.sec-tools .more:hover{color:var(--signal);border-color:var(--signal)}
+.arrow{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted)}
+.arrow:hover:not(:disabled){color:var(--signal);border-color:var(--signal)}
+.arrow:disabled{opacity:.3;cursor:default}
+.arrow svg{width:16px;height:16px}
+
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px;scrollbar-width:none;margin:0 -20px;padding-left:20px;padding-right:20px;scroll-padding-left:20px}
+.rail::-webkit-scrollbar{display:none}
+.rail > *{flex:none;scroll-snap-align:start}
+.rail.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));overflow:visible;margin:0;padding:0}
+
+/* Jogos */
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.game{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s}
+.game:hover{border-color:#43538a}
+.game.is-live{border-color:rgba(255,74,90,.6)}
+.game-top{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.when{font-family:var(--head);font-weight:700;font-size:20px;color:var(--text);letter-spacing:.3px;white-space:nowrap}
+.league{margin-left:auto;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.live{display:inline-flex;align-items:center;gap:6px;background:var(--live);color:#fff;font-weight:600;font-size:12px;padding:2px 9px 2px 8px;border-radius:999px;white-space:nowrap}
+.live i{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:22px 14px}
+.team{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;min-width:0}
+.team img{width:56px;height:56px;object-fit:contain}
+.team span{font-family:var(--head);font-weight:600;font-size:20px;line-height:1.1;overflow-wrap:anywhere}
+.vs{font-family:var(--head);font-weight:700;font-size:16px;color:var(--muted)}
+.game-foot{display:flex;border-top:1px solid var(--line)}
+.btn-play{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--signal);color:var(--signal-ink);font-weight:600;padding:12px;transition:filter .15s}
+.btn-play:hover{filter:brightness(1.08)}
+.btn-play svg{width:16px;height:16px}
+.btn-copy{display:flex;align-items:center;gap:7px;padding:0 18px;color:var(--muted);border-left:1px solid var(--line);font-size:14px;transition:.15s}
+.btn-copy:hover{color:var(--signal);background:var(--surface2)}
+.btn-copy svg{width:16px;height:16px}
+
+/* Canais */
+.ch{width:230px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s}
+.rail.grid .ch{width:auto}
+.ch:hover{border-color:#43538a}
+.thumb{position:relative;aspect-ratio:16/9;background:var(--surface2);overflow:hidden;width:100%;display:block}
+.thumb .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.4)}
+.thumb .lg{position:absolute;inset:0;margin:auto;width:42%;max-height:62%;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,.5));transition:transform .2s}
+.thumb:hover .lg{transform:scale(1.07)}
+.thumb .fallback{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:22px;padding:10px;text-align:center}
+.thumb .pl{position:absolute;right:10px;bottom:10px;width:30px;height:30px;border-radius:50%;background:var(--signal);color:var(--signal-ink);display:grid;place-items:center;opacity:0;transform:translateY(4px);transition:.18s}
+.thumb:hover .pl,.thumb:focus-visible .pl{opacity:1;transform:none}
+.thumb .pl svg{width:13px;height:13px}
+.ch-foot{display:flex;align-items:center;gap:6px;padding:9px 6px 9px 12px;border-top:1px solid var(--line)}
+.ch-name{flex:1;font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--muted);flex:none}
+.mini:hover{color:var(--signal);background:var(--surface2)}
+.mini svg{width:16px;height:16px}
+
+/* Estados */
+.skel{background:linear-gradient(100deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);background-size:300% 100%;animation:sh 1.4s linear infinite;border-radius:var(--radius);border:1px solid var(--line)}
+@keyframes sh{to{background-position:-300% 0}}
+.skel.g{height:196px}.skel.c{width:230px;height:166px}
+.box{margin-top:40px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;max-width:640px}
+.box h3{font-family:var(--head);font-size:26px;font-weight:700;margin-bottom:8px}
+.box p{color:var(--muted);margin-bottom:14px}
+.box .row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{padding:10px 18px;border-radius:10px;font-weight:600;border:1px solid var(--line);transition:.15s}
+.btn.pri{background:var(--signal);border-color:var(--signal);color:var(--signal-ink)}
+.btn:hover{filter:brightness(1.1)}
+.empty{margin-top:50px;text-align:center;color:var(--muted)}
+
+/* Player */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(5,8,16,.88);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none}
+.modal-in{width:100%;max-width:1040px}
+.modal-bar{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.modal-bar h3{font-family:var(--head);font-size:24px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.close{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:14px;color:var(--text)}
+.close:hover{border-color:var(--signal);color:var(--signal)}
+.close svg{width:14px;height:14px}
+.frame{aspect-ratio:16/9;background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line)}
+.frame iframe{width:100%;height:100%;border:0}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--surface2);border:1px solid var(--line);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:80}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+footer{max-width:1400px;margin:0 auto;padding:0 20px 36px;color:var(--muted);font-size:13px}
+
+@media (max-width:640px){
+  .top-row{flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .search{order:3;flex-basis:100%;max-width:none;margin:0}
+  .icon-btn{margin-left:auto}
+  .chips{padding:0 14px 10px}
+  main{padding:16px 14px 60px}
+  .games{grid-template-columns:1fr}
+  .rail{margin:0 -14px;padding-left:14px;padding-right:14px}
+  .ch{width:200px}
+  .sec-head h2{font-size:26px}
+  .arrow{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-row">
+    <a class="logo" href="./" aria-label="KALIDADE TV">KALIDADE <b>TV</b></a>
+    <label class="search">
+      <span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Buscar</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="search" autocomplete="off" placeholder="Buscar jogos, times, ligas ou canais">
+    </label>
+    <button class="icon-btn" id="refresh" aria-label="Atualizar lista" title="Atualizar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+    </button>
+  </div>
+  <nav class="chips" id="chips" aria-label="Categorias"></nav>
+</header>
+
+<main>
+  <div class="status" id="status" aria-live="polite"></div>
+  <div id="app"></div>
+</main>
+
+<footer>KALIDADE TV · Lista atualizada automaticamente a cada 5 minutos.</footer>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="Player">
+  <div class="modal-in">
+    <div class="modal-bar">
+      <h3 id="modal-title"></h3>
+      <button class="close" id="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Fechar</button>
+    </div>
+    <div class="frame"><iframe id="frame" title="Transmissão" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="no-referrer"></iframe></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+
+var SOURCE   = 'https://embedtv.lat/';
+var PLAYER   = 'https://w7.embedtv.lat/';
+var CACHE_KEY= 'kalidade_tv_cache_v1';
+var REFRESH_MS = 5 * 60 * 1000;
+
+// Tenta direto; se o navegador bloquear (CORS), passa por proxies públicos.
+var ROUTES = [
+  { nome:'direto',     url:function(u){return u;} },
+  { nome:'corsproxy',  url:function(u){return 'https://corsproxy.io/?' + encodeURIComponent(u);} },
+  { nome:'allorigins', url:function(u){return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u);} },
+  { nome:'codetabs',   url:function(u){return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u);} }
+];
+
+var $ = function(s,r){return (r||document).querySelector(s);};
+var app = $('#app'), chipsEl = $('#chips'), statusEl = $('#status'), qEl = $('#q');
+var state = { sections:[], filtro:'all', busca:'', expandidas:{} };
+
+var ICON = {
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+  left:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  right:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>'
+};
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function abs(u){ if(!u) return ''; try{ return new URL(u, SOURCE).href; }catch(e){ return ''; } }
+function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function slug(s){ return norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function clean(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+
+/* ---------- Busca da página ---------- */
+function withTimeout(ms){ var c = new AbortController(); setTimeout(function(){c.abort();}, ms); return c.signal; }
+
+async function baixar(){
+  var erros = [];
+  for (var i=0;i<ROUTES.length;i++){
+    try{
+      var r = await fetch(ROUTES[i].url(SOURCE), { signal: withTimeout(14000), cache:'no-store' });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var html = await r.text();
+      if (html.indexOf('data-id=') < 0) throw new Error('resposta sem dados');
+      return { html:html, via:ROUTES[i].nome };
+    }catch(e){ erros.push(ROUTES[i].nome+': '+(e.name==='AbortError'?'tempo esgotado':e.message)); }
+  }
+  var err = new Error('Nenhuma rota respondeu'); err.detalhes = erros; throw err;
+}
+
+/* ---------- Leitura do HTML original ---------- */
+function parse(html){
+  var doc = new DOMParser().parseFromString(html,'text/html');
+  var out = [];
+  doc.querySelectorAll('h2').forEach(function(h){
+    var sec = h.closest('section'); if(!sec) return;
+    var titulo = clean(h.textContent); if(!titulo) return;
+    var itens = [];
+    sec.querySelectorAll('article[data-id]').forEach(function(a){
+      var it = parseCard(a); if(it) itens.push(it);
+    });
+    if(!itens.length) return;
+    var evento = itens.every(function(i){return i.tipo==='jogo';});
+    if(evento) itens.sort(function(a,b){ return (a.dia-b.dia) || (a.min-b.min); });
+    out.push({ id:slug(titulo)||('s'+out.length), titulo:titulo, tipo: evento?'jogos':'canais', itens:itens });
+  });
+  return out;
+}
+
+function parseCard(a){
+  var id = a.getAttribute('data-id'); if(!id) return null;
+  var busca = clean(a.getAttribute('data-busca'));
+  var thumb = a.querySelector('.aspect-video');
+  if (thumb){
+    var imgs = thumb.querySelectorAll('img');
+    var nome = clean(imgs[0] && imgs[0].getAttribute('alt')) || busca || id;
+    return { tipo:'canal', id:id, nome:nome, busca:busca||nome,
+      prev: abs(imgs[0] && imgs[0].getAttribute('src')),
+      logo: abs(imgs[1] && imgs[1].getAttribute('src')) };
+  }
+  // jogo
+  var spans = a.querySelectorAll('span');
+  var quando = '', liga = '';
+  var topo = a.querySelector('div');
+  if (topo){
+    var s = topo.querySelectorAll(':scope > span');
+    if(s[0]) quando = clean(s[0].textContent);
+    if(s[1]) liga   = clean(s[1].textContent);
+  }
+  var times = [];
+  a.querySelectorAll('div.flex-col').forEach(function(d){
+    var im = d.querySelector('img'), sp = d.querySelector('span');
+    if(sp) times.push({ nome:clean(sp.textContent), img: abs(im && im.getAttribute('src')) });
+  });
+  if(times.length < 2) return null;
+  var m = quando.match(/(\d{1,2}):(\d{2})/);
+  var min = m ? (+m[1])*60 + (+m[2]) : 0;
+  var dia = /hoje/i.test(quando) ? 0 : /amanh/i.test(quando) ? 1 : (/ontem/i.test(quando) ? -1 : 2);
+  return { tipo:'jogo', id:id, quando:quando, liga:liga, casa:times[0], fora:times[1], busca:busca||(liga+' '+times[0].nome+' '+times[1].nome), min:min, dia:dia };
+}
+
+/* ---------- Ao vivo (horário de Brasília) ---------- */
+function agoraMin(){
+  try{
+    var p = new Intl.DateTimeFormat('en-GB',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+    var h = +p.find(function(x){return x.type==='hour';}).value % 24, m = +p.find(function(x){return x.type==='minute';}).value;
+    return h*60+m;
+  }catch(e){ var d=new Date(); return d.getHours()*60+d.getMinutes(); }
+}
+function aoVivo(j){ if(j.dia!==0) return false; var d = agoraMin()-j.min; return d>=0 && d<=150; }
+
+/* ---------- Renderização ---------- */
+function gameHTML(j){
+  var live = aoVivo(j);
+  function t(x){ return '<div class="team"><img src="'+esc(x.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'"><span>'+esc(x.nome)+'</span></div>'; }
+  return '<article class="game'+(live?' is-live':'')+'">'+
+    '<div class="game-top">'+(live?'<span class="live"><i></i>Ao vivo</span>':'')+
+      '<span class="when">'+esc(j.quando)+'</span><span class="league" title="'+esc(j.liga)+'">'+esc(j.liga)+'</span></div>'+
+    '<div class="teams">'+t(j.casa)+'<span class="vs">x</span>'+t(j.fora)+'</div>'+
+    '<div class="game-foot"><button class="btn-play" data-play="'+esc(j.id)+'" data-title="'+esc(j.casa.nome+' x '+j.fora.nome)+'">'+ICON.play+'Assistir</button>'+
+    '<button class="btn-copy" data-copy="'+esc(j.id)+'" aria-label="Copiar link">'+ICON.copy+'Copiar</button></div>'+
+  '</article>';
+}
+
+function chanHTML(c){
+  var inicial = esc(c.nome);
+  return '<article class="ch">'+
+    '<button class="thumb" data-play="'+esc(c.id)+'" data-title="'+esc(c.nome)+'" aria-label="Assistir '+esc(c.nome)+'">'+
+      '<span class="fallback">'+inicial+'</span>'+
+      (c.prev?'<img class="bg" src="'+esc(c.prev)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+
+      (c.logo?'<img class="lg" src="'+esc(c.logo)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'')+
+      '<span class="pl">'+ICON.play+'</span>'+
+    '</button>'+
+    '<div class="ch-foot"><span class="ch-name" title="'+esc(c.nome)+'">'+esc(c.nome)+'</span>'+
+    '<button class="mini" data-copy="'+esc(c.id)+'" aria-label="Copiar link de '+esc(c.nome)+'" title="Copiar link">'+ICON.copy+'</button></div>'+
+  '</article>';
+}
+
+function visiveis(sec){
+  var q = norm(state.busca.trim());
+  if(!q) return sec.itens;
+  return sec.itens.filter(function(i){ return norm(i.busca).indexOf(q) >= 0; });
+}
+
+function render(){
+  var total = 0, html = '';
+  state.sections.forEach(function(sec){
+    if(state.filtro!=='all' && state.filtro!==sec.id) return;
+    var lista = visiveis(sec); if(!lista.length) return;
+    total += lista.length;
+    var grid = !!state.expandidas[sec.id];
+    var corpo;
+    if(sec.tipo==='jogos'){
+      corpo = '<div class="games">'+lista.map(gameHTML).join('')+'</div>';
+    }else{
+      corpo = '<div class="rail'+(grid?' grid':'')+'" data-rail="'+esc(sec.id)+'">'+lista.map(chanHTML).join('')+'</div>';
+    }
+    var ferr = '';
+    if(sec.tipo==='canais'){
+      ferr = '<div class="sec-tools">'+
+        (grid?'':'<button class="arrow" data-scroll="-1" data-for="'+esc(sec.id)+'" aria-label="Voltar">'+ICON.left+'</button><button class="arrow" data-scroll="1" data-for="'+esc(sec.id)+'" aria-label="Avançar">'+ICON.right+'</button>')+
+        '<button class="more" data-expand="'+esc(sec.id)+'">'+(grid?'Recolher':'Ver todos')+'</button></div>';
+    }
+    html += '<section class="sec" id="s-'+esc(sec.id)+'"><div class="sec-head"><h2>'+esc(sec.titulo)+'</h2><span class="n">'+lista.length+(sec.tipo==='jogos'?(lista.length===1?' jogo':' jogos'):(lista.length===1?' canal':' canais'))+'</span>'+ferr+'</div>'+corpo+'</section>';
+  });
+  app.innerHTML = html || '<p class="empty">Nada encontrado para “'+esc(state.busca)+'”. Tente outro nome de time, liga ou canal.</p>';
+}
+
+function renderChips(){
+  var h = '<button class="chip" data-filtro="all" aria-pressed="'+(state.filtro==='all')+'">Tudo</button>';
+  state.sections.forEach(function(s){
+    h += '<button class="chip" data-filtro="'+esc(s.id)+'" aria-pressed="'+(state.filtro===s.id)+'">'+esc(s.titulo)+'<small>'+s.itens.length+'</small></button>';
+  });
+  chipsEl.innerHTML = h;
+}
+
+function skeleton(){
+  chipsEl.innerHTML = '';
+  app.innerHTML = '<section class="sec"><div class="sec-head"><h2>Jogos de hoje</h2></div><div class="games">'+
+    '<div class="skel g"></div><div class="skel g"></div><div class="skel g"></div></div></section>'+
+    '<section class="sec"><div class="sec-head"><h2>Canais</h2></div><div class="rail"><div class="skel c"></div><div class="skel c"></div><div class="skel c"></div><div class="skel c"></div><div class="skel c"></div></div></section>';
+}
+
+function setStatus(tipo, txt){ statusEl.innerHTML = '<span class="dot '+tipo+'"></span><span>'+esc(txt)+'</span>'; }
+function hora(ts){ return new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+
+/* ---------- Cache ---------- */
+function salvar(sections){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(), sections:sections})); }catch(e){} }
+function ler(){ try{ var c = JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); return c && c.sections && c.sections.length ? c : null; }catch(e){ return null; } }
+
+/* ---------- Carga ---------- */
+function aplicar(sections){
+  state.sections = sections;
+  if(state.filtro!=='all' && !sections.some(function(s){return s.id===state.filtro;})) state.filtro='all';
+  renderChips(); render();
+}
+
+var carregando = false;
+async function carregar(manual){
+  if(carregando) return; carregando = true;
+  var btn = $('#refresh'); btn.classList.add('spin');
+  var cache = ler();
+  if(!state.sections.length){
+    if(cache){ aplicar(cache.sections); setStatus('warn','Mostrando lista salva às '+hora(cache.ts)+'. Atualizando…'); }
+    else { skeleton(); setStatus('warn','Buscando jogos e canais…'); }
+  } else if(manual){ setStatus('warn','Atualizando…'); }
+
+  try{
+    var r = await baixar();
+    var secs = parse(r.html);
+    if(!secs.length) throw new Error('Não foi possível ler a página');
+    salvar(secs); aplicar(secs);
+    var jogos = secs.filter(function(s){return s.tipo==='jogos';}).reduce(function(n,s){return n+s.itens.length;},0);
+    var canais = secs.filter(function(s){return s.tipo==='canais';}).reduce(function(n,s){return n+s.itens.length;},0);
+    setStatus('ok', jogos+' jogos e '+canais+' canais · atualizado às '+hora(Date.now())+(r.via!=='direto'?' (via '+r.via+')':''));
+  }catch(e){
+    if(state.sections.length){
+      var c2 = ler();
+      setStatus('err','Não consegui atualizar agora. Mostrando a última lista'+(c2?' salva às '+hora(c2.ts):'')+'.');
+    }else{
+      chipsEl.innerHTML=''; statusEl.innerHTML='';
+      app.innerHTML = '<div class="box"><h3>Não foi possível carregar a lista</h3>'+
+        '<p>O navegador bloqueou o acesso a embedtv.lat e os proxies públicos não responderam. Tente de novo em instantes, ou escolha o arquivo HTML salvo do site para carregar a lista offline.</p>'+
+        (e.detalhes?'<p style="font-size:12px">'+esc(e.detalhes.join(' · '))+'</p>':'')+
+        '<div class="row"><button class="btn pri" id="retry">Tentar de novo</button>'+
+        '<label class="btn" style="cursor:pointer">Escolher arquivo HTML<input type="file" id="arquivo" accept=".html,.htm,text/html" hidden></label></div></div>';
+    }
+  }finally{ carregando=false; btn.classList.remove('spin'); }
+}
+
+/* ---------- Player ---------- */
+var modal = $('#modal'), frame = $('#frame');
+function abrir(id, titulo){
+  $('#modal-title').textContent = titulo || id;
+  frame.src = PLAYER + encodeURIComponent(id);
+  modal.hidden = false; document.body.style.overflow='hidden';
+  $('#close').focus();
+}
+function fechar(){
+  if(modal.hidden) return;
+  modal.hidden = true; frame.src = 'about:blank'; document.body.style.overflow='';
+}
+
+var toastT;
+function toast(msg){ var t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('on');},1800); }
+function copiar(txt){
+  if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt);
+  return new Promise(function(ok,no){
+    var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy')?ok():no(); }catch(e){ no(e); } ta.remove();
+  });
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click', function(e){
+  var el;
+  if((el = e.target.closest('[data-play]'))){ abrir(el.dataset.play, el.dataset.title); return; }
+  if((el = e.target.closest('[data-copy]'))){
+    copiar(PLAYER + el.dataset.copy).then(function(){toast('Link copiado');}, function(){toast('Não foi possível copiar');}); return;
+  }
+  if((el = e.target.closest('[data-filtro]'))){ state.filtro = el.dataset.filtro; renderChips(); render(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  if((el = e.target.closest('[data-expand]'))){ var k = el.dataset.expand; state.expandidas[k] = !state.expandidas[k]; render(); return; }
+  if((el = e.target.closest('[data-scroll]'))){
+    var rail = document.querySelector('[data-rail="'+el.dataset.for+'"]');
+    if(rail) rail.scrollBy({left: (+el.dataset.scroll) * rail.clientWidth * 0.85, behavior:'smooth'}); return;
+  }
+  if(e.target === modal || e.target.closest('#close')){ fechar(); return; }
+  if(e.target.closest('#retry')){ carregar(true); return; }
+});
+document.addEventListener('change', function(e){
+  if(e.target.id !== 'arquivo' || !e.target.files[0]) return;
+  e.target.files[0].text().then(function(txt){
+    var secs = parse(txt);
+    if(!secs.length){ toast('Arquivo sem jogos ou canais reconhecíveis'); return; }
+    salvar(secs); aplicar(secs); setStatus('warn','Lista carregada do arquivo local.');
+  });
+});
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') fechar(); });
+qEl.addEventListener('input', function(){ state.busca = qEl.value; render(); });
+$('#refresh').addEventListener('click', function(){ carregar(true); });
+
+carregar(false);
+setInterval(function(){ if(!document.hidden) carregar(false); }, REFRESH_MS);
+setInterval(function(){ if(!document.hidden && state.sections.length && !state.busca) render(); }, 60000); // atualiza selo "Ao vivo"
+})();
+</script>
+</body>
+</html>
