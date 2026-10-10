@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101010">
+  <title>Filmes e Séries | KALIDADE-BR</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #101010;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 35px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #191919, #300909);
+      border-bottom: 1px solid #292929;
+    }
+
+    header h1 {
+      font-size: clamp(25px, 5vw, 38px);
+      margin-bottom: 10px;
+    }
+
+    header h1 span {
+      color: #ff3030;
+    }
+
+    header p {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      padding: 25px 16px;
+    }
+
+    .busca {
+      margin-bottom: 25px;
+    }
+
+    .busca input {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid #333;
+      border-radius: 12px;
+      background: #1b1b1b;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .busca input:focus {
+      border-color: #ff3030;
+    }
+
+    .busca input::placeholder {
+      color: #888;
+    }
+
+    .contador {
+      color: #999;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: #1b1b1b;
+      border: 1px solid #292929;
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: transform .2s, border-color .2s;
+      min-width: 0;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #ff3030;
+    }
+
+    .logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 15px;
+      background: #292929;
+      margin-bottom: 15px;
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 18px;
+    }
+
+    .acoes {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .botao {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #e52525;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 8px;
+      transition: background .2s;
+    }
+
+    .botao:hover {
+      background: #ff4141;
+    }
+
+    .alternativo {
+      background: #303030;
+    }
+
+    .alternativo:hover {
+      background: #444;
+    }
+
+    .mensagem {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #999;
+      padding: 35px 10px;
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px 15px;
+      color: #777;
+      font-size: 12px;
+      border-top: 1px solid #292929;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .card {
+        padding: 14px 10px;
+      }
+
+      .logo {
+        width: 70px;
+        height: 70px;
+      }
+
+      .card h2 {
+        font-size: 15px;
+      }
+
+      .card p {
+        font-size: 11px;
+      }
+
+      .botao {
+        font-size: 12px;
+        padding: 11px 5px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🎬 <span>KALIDADE-BR</span></h1>
+    <p>Encontre sites para assistir filmes e séries</p>
+  </header>
+
+  <main class="container">
+    <div class="busca">
+      <input
+        type="search"
+        id="pesquisa"
+        placeholder="🔎 Buscar site pelo nome..."
+        autocomplete="off"
+        aria-label="Buscar sites de filmes e séries"
+      >
+    </div>
+
+    <p class="contador" id="contador">Carregando sites...</p>
+
+    <section class="grid" id="lista" aria-live="polite">
+      <p class="mensagem">Carregando catálogo...</p>
+    </section>
+  </main>
+
+  <footer>
+    KALIDADE-BR &copy; <span id="ano"></span> — Catálogo de sites
+  </footer>
+
+  <script>
+    const lista = document.getElementById("lista");
+    const pesquisa = document.getElementById("pesquisa");
+    const contador = document.getElementById("contador");
+
+    let sites = [];
+
+    document.getElementById("ano").textContent =
+      new Date().getFullYear();
+
+    function escapar(texto) {
+      return String(texto ?? "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[caractere]);
+    }
+
+    function enderecoSeguro(url) {
+      try {
+        const endereco = new URL(url);
+        return ["http:", "https:"].includes(endereco.protocol)
+          ? endereco.href
+          : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function renderizar() {
+      const termo = pesquisa.value.trim().toLocaleLowerCase("pt-BR");
+
+      const filtrados = sites.filter(site =>
+        String(site.nome || "")
+          .toLocaleLowerCase("pt-BR")
+          .includes(termo)
+      );
+
+      contador.textContent =
+        `${filtrados.length} ${filtrados.length === 1 ? "site encontrado" : "sites encontrados"}`;
+
+      if (!filtrados.length) {
+        lista.innerHTML =
+          '<p class="mensagem">Nenhum site encontrado.<br>Tente outro nome.</p>';
+        return;
+      }
+
+      lista.innerHTML = filtrados.map(site => {
+        const nome = escapar(site.nome || "Site");
+        const logo = enderecoSeguro(site.logo);
+        const link = enderecoSeguro(site.link);
+
+        const imagem = logo
+          ? `<img class="logo" src="${escapar(logo)}" alt="Logo ${nome}" loading="lazy" onerror="this.style.visibility='hidden'">`
+          : `<div class="logo"></div>`;
+
+        const alternativos = Array.isArray(site.links_alternativos)
+          ? site.links_alternativos
+          : [];
+
+        const botoesAlternativos = alternativos
+          .map((url, indice) => {
+            const seguro = enderecoSeguro(url);
+            if (!seguro) return "";
+
+            return `<a class="botao alternativo"
+              href="${escapar(seguro)}"
+              target="_blank"
+              rel="noopener noreferrer">Alternativo ${indice + 1}</a>`;
+          })
+          .join("");
+
+        const botaoPrincipal = link
+          ? `<a class="botao" href="${escapar(link)}"
+              target="_blank" rel="noopener noreferrer">Acessar site ↗</a>`
+          : "";
+
+        return `
+          <article class="card">
+            ${imagem}
+            <h2>${nome}</h2>
+            <p>Filmes e séries</p>
+            <div class="acoes">
+              ${botaoPrincipal}
+              ${botoesAlternativos}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function carregarSites() {
+      try {
+        const resposta = await fetch("./list.json", {
+          cache: "no-cache"
+        });
+
+        if (!resposta.ok) {
+          throw new Error("Não foi possível carregar canais.json");
+        }
+
+        const dados = await resposta.json();
+
+        if (!Array.isArray(dados)) {
+          throw new Error("O JSON precisa conter uma lista de sites");
+        }
+
+        sites = dados;
+        renderizar();
+      } catch (erro) {
+        contador.textContent = "Erro ao carregar o catálogo";
+
+        lista.innerHTML = `
+          <p class="mensagem">
+            Não foi possível carregar os sites.<br>
+            Confira se o arquivo <strong>list.json</strong>
+            está na mesma pasta deste HTML e se o site está hospedado
+            em um servidor HTTP/HTTPS.
+          </p>
+        `;
+
+        console.error(erro);
+      }
+    }
+
+    pesquisa.addEventListener("input", renderizar);
+
+    carregarSites();
+  </script>
+
+</body>
+</html>
