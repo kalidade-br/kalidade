@@ -48,5 +48,15 @@ h1{font-size:clamp(40px,7vw,68px);line-height:1;letter-spacing:-3px}.hero p{marg
 const input=document.getElementById("search"),cards=[...document.querySelectorAll(".card")],empty=document.getElementById("empty");
 input.addEventListener("input",()=>{let q=input.value.toLowerCase().trim(),n=0;cards.forEach(c=>{let ok=c.dataset.s.includes(q);c.style.display=ok?"":"none";if(ok)n++});empty.style.display=n?"none":"block"});
 </script>
+  <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body>
 </html>
