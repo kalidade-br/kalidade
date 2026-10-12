@@ -573,5 +573,15 @@ setInterval(function(){ if(!document.hidden) carregar(false); }, REFRESH_MS);
 setInterval(function(){ if(!document.hidden && state.sections.length && !state.busca) render(); }, 60000); // atualiza selo "Ao vivo"
 })();
 </script>
+  <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body>
 </html>
