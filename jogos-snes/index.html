@@ -382,5 +382,15 @@ main{max-width:1200px;margin:0 auto;padding:16px}
   carregar();
 })();
 </script>
+  <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body>
 </html>
