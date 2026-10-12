@@ -286,5 +286,15 @@ document.getElementById("fileStatus").textContent="Nenhum arquivo selecionado.";
 updateStats("f",0,0);
 }
 </script>
+  <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body>
 </html>
