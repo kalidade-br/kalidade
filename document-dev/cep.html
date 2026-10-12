@@ -401,4 +401,14 @@
 
 <script> function copyText(text) { navigator.clipboard.writeText(text); alert("Copiado!"); } function copyEndpoint() { const endpoint = document.getElementById("endpoint") .textContent .trim(); copyText(endpoint); } function copyCode(id) { const element = document.getElementById(id); copyText(element.textContent); } </script>
 
+    <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body> </html>
