@@ -202,5 +202,15 @@ form.addEventListener("submit", (e) => { e.preventDefault(); search(input.value)
 const initial = new URLSearchParams(location.search).get("user");
 if (initial) search(initial);
 </script>
+  <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body>
 </html>
