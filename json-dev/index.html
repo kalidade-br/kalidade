@@ -64,5 +64,15 @@ function copyPreview(){const t=document.getElementById("preview").textContent;na
 function escapeAttr(v){return String(v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 addField("nome","text","KALIDADE");addField("versao","number","1");addField("ativo","boolean","true");
 </script>
+  <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body>
 </html>
