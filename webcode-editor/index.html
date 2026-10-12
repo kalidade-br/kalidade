@@ -146,4 +146,15 @@ $('#fj').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileRea
 document.addEventListener('keydown',e=>{if(e.key=='Escape'){$('#mo').classList.remove('on');$('#cm').classList.remove('on');$('#iv').classList.remove('on')}});
 if(!Object.keys(fs).length){fs['/Bem-vindo.txt']={t:'f',c:'Bem-vindo ao KALIDADE WEBCODE EDITOR! Suas anotações ficam salvas neste navegador.\nUse Exportar backup de vez em quando.',m:Date.now()};fs['/site']={t:'d',c:'',m:Date.now()};fs['/site/index.html']={t:'f',c:'<link rel="stylesheet" href="style.css">\n<h1>Olá!</h1><p>Toque em ▶ Executar.</p>\n<script src="app.js"><\/script>',m:Date.now()};fs['/site/style.css']={t:'f',c:'body{font-family:sans-serif;background:#e8f5e9;padding:20px}h1{color:#2e7d32}',m:Date.now()};fs['/site/app.js']={t:'f',c:'document.body.insertAdjacentHTML("beforeend","<p>JS carregado do localStorage ✔</p>")',m:Date.now()};save()}
 render();
-</script></body></html>
+</script>
+<script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
+</body></html>
