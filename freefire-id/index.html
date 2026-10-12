@@ -224,5 +224,15 @@ async function copyId(){const id=currentData?.id;if(!id)return;try{await navigat
 function scrollToItems(){$("itemsSection").scrollIntoView({behavior:"smooth"})}
 input.value="54934696";
 </script>
+  <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
 </body>
 </html>
