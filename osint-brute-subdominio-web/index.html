@@ -1,1 +1,257 @@
-1
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KALIDADE OSINT</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d16;color:#e5edf8;font:15px Arial,sans-serif}
+main{max-width:1000px;margin:auto;padding:25px 15px}
+header{padding:20px 0}
+.brand{color:#67e8f9;font-weight:bold;letter-spacing:4px}
+h1{font-size:32px;margin-bottom:8px}
+p,.muted{color:#94a3b8;line-height:1.6}
+.panel{background:#111827;border:1px solid #293548;border-radius:14px;padding:18px;margin:15px 0}
+form{display:flex;gap:10px;flex-wrap:wrap}
+input{flex:1;min-width:180px;padding:14px;background:#080d16;border:1px solid #334155;border-radius:9px;color:white;font-size:16px}
+button{padding:13px 17px;background:#67e8f9;color:#08212a;border:0;border-radius:9px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{padding:13px;background:#080d16;border-radius:9px;border:1px solid #293548}
+.stat b{display:block;font-size:25px;margin-bottom:5px}
+.stat span{font-size:12px;color:#94a3b8}
+#status{font-size:13px;color:#67e8f9;margin-top:12px}
+#results{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.result{padding:14px;background:#080d16;border:1px solid #293548;border-radius:10px;overflow-wrap:anywhere}
+.result h3{margin:0 0 10px;font-size:16px}
+.result a{color:#67e8f9}
+.ok{color:#86efac;font-weight:bold;margin-top:10px}
+.empty{padding:20px;text-align:center;color:#94a3b8}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.secondary{background:#263449;color:white}
+@media(max-width:500px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}h1{font-size:27px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="brand">KALIDADE / OSINT</div>
+<h1>Buscador de sites</h1>
+<p>Pesquise nomes em diferentes domínios de hospedagem e visualize os sites que responderem HTTP 200.</p>
+</header>
+
+<section class="panel">
+<form id="searchForm">
+<input id="term" placeholder="Digite: kalidade" minlength="2" maxlength="50" required>
+<button id="searchBtn" disabled>Buscar sites</button>
+</form>
+<div id="status">Carregando list.json...</div>
+</section>
+
+<section class="panel stats">
+<div class="stat"><b id="tested">0</b><span>Testados</span></div>
+<div class="stat"><b id="found">0</b><span>Encontrados (200)</span></div>
+<div class="stat"><b id="errors">0</b><span>Não verificáveis</span></div>
+</section>
+
+<section class="panel">
+<div class="toolbar">
+<h2>Resultados</h2>
+<button id="exportBtn" class="secondary" disabled>Exportar JSON</button>
+</div>
+<div id="results"><div class="empty">Digite um nome para começar.</div></div>
+</section>
+
+<p class="muted">A busca depende das permissões CORS de cada domínio. Um erro de CORS não significa que o site não existe. HTTP 200 também não comprova que o site pertence à pessoa pesquisada.</p>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let domains = [];
+let foundSites = [];
+const concurrency = 8;
+const timeout = 6000;
+
+async function loadDomains(){
+  try{
+    const response = await fetch('./list.json', {cache:'no-store'});
+    if(!response.ok) throw new Error('HTTP '+response.status);
+
+    const data = await response.json();
+    domains = (data.domains || []).filter(d =>
+      d.active !== false && d.pattern
+    );
+
+    $('status').textContent =
+      domains.length+' padrões carregados de list.json.';
+    $('searchBtn').disabled = false;
+  }catch(error){
+    $('status').textContent =
+      'Erro ao carregar list.json. Publique os dois arquivos na mesma pasta usando HTTPS.';
+  }
+}
+
+function cleanTerm(value){
+  return value.trim().toLowerCase()
+    .replace(/^https?:\/\//,'')
+    .split(/[/?#\s]/)[0]
+    .replace(/[^a-z0-9-]/g,'')
+    .replace(/^-+|-+$/g,'')
+    .slice(0,50);
+}
+
+async function checkSite(item){
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(),timeout);
+
+  try{
+    const response = await fetch(item.url,{
+      method:'GET',
+      mode:'cors',
+      redirect:'follow',
+      cache:'no-store',
+      signal:controller.signal
+    });
+
+    if(response.status !== 200) return {miss:true};
+
+    let title = '(título indisponível)';
+    const type = response.headers.get('content-type') || '';
+
+    if(type.includes('text/html')){
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html,'text/html');
+      title = (doc.querySelector('title')?.textContent || '').trim();
+      if(!title) title = new URL(response.url || item.url).hostname;
+    }
+
+    return {
+      url:response.url || item.url,
+      title:title.slice(0,180),
+      status:200,
+      provider:item.name
+    };
+  }catch(error){
+    return {miss:true,unreadable:true};
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+function addResult(site){
+  const card = document.createElement('article');
+  card.className='result';
+
+  const title=document.createElement('h3');
+  title.textContent=site.title;
+
+  const link=document.createElement('a');
+  link.href=site.url;
+  link.textContent=site.url;
+  link.target='_blank';
+  link.rel='noopener noreferrer';
+
+  const status=document.createElement('div');
+  status.className='ok';
+  status.textContent='200 OK';
+
+  const provider=document.createElement('div');
+  provider.className='muted';
+  provider.textContent=site.provider;
+
+  card.append(title,link,status,provider);
+  $('results').appendChild(card);
+}
+
+$('searchForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+
+  const term=cleanTerm($('term').value);
+  if(term.length<2){
+    $('status').textContent='Digite pelo menos 2 caracteres válidos.';
+    return;
+  }
+
+  const urls=domains.map(d=>({
+    name:d.name || 'Hospedagem',
+    url:'https://'+d.pattern.replaceAll('{query}',term)
+  }));
+
+  foundSites=[];
+  $('results').replaceChildren();
+  $('tested').textContent='0';
+  $('found').textContent='0';
+  $('errors').textContent='0';
+  $('searchBtn').disabled=true;
+  $('exportBtn').disabled=true;
+
+  let completed=0;
+  let errors=0;
+  let cursor=0;
+
+  $('status').textContent='Iniciando busca em '+urls.length+' endereços...';
+
+  async function worker(){
+    while(cursor<urls.length){
+      const item=urls[cursor++];
+      const result=await checkSite(item);
+
+      completed++;
+      if(result.unreadable) errors++;
+
+      if(result.status===200 &&
+        !foundSites.some(site=>site.url===result.url)){
+        foundSites.push(result);
+        addResult(result);
+      }
+
+      $('tested').textContent=completed;
+      $('found').textContent=foundSites.length;
+      $('errors').textContent=errors;
+      $('status').textContent=
+        'Verificados '+completed+'/'+urls.length+
+        ' · encontrados '+foundSites.length;
+    }
+  }
+
+  await Promise.all(
+    Array.from(
+      {length:Math.min(concurrency,urls.length)},
+      ()=>worker()
+    )
+  );
+
+  if(!foundSites.length){
+    const empty=document.createElement('div');
+    empty.className='empty';
+    empty.textContent=
+      'Nenhum HTTP 200 legível encontrado. Alguns sites podem bloquear CORS ou não usar esse padrão.';
+    $('results').appendChild(empty);
+  }
+
+  $('status').textContent=
+    'Busca concluída: '+foundSites.length+
+    ' site(s) com HTTP 200 legível em '+urls.length+' tentativas.';
+
+  $('searchBtn').disabled=false;
+  $('exportBtn').disabled=foundSites.length===0;
+});
+
+$('exportBtn').addEventListener('click',()=>{
+  const blob=new Blob(
+    [JSON.stringify(foundSites,null,2)],
+    {type:'application/json'}
+  );
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='kalidade-osint.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+
+loadDomains();
+</script>
+</body>
+</html>
