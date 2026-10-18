@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KALIDADE FF ID</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --term: #11151c;
+    --bar: #1b212c;
+    --line: #263041;
+    --text: #d6e2f0;
+    --muted: #7d8aa0;
+    --blue: #367bf0;
+    --green: #3fe08a;
+    --red: #ff5d6c;
+    --mono: "JetBrains Mono", "Fira Code", "Cascadia Mono", Consolas, "DejaVu Sans Mono", "Noto Sans KR", "Noto Sans JP", monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; margin: 0; }
+  body {
+    background:
+      radial-gradient(900px 500px at 50% -10%, rgba(54,123,240,.18), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    display: grid; place-items: center;
+    padding: 20px;
+  }
+  .window {
+    width: 100%; max-width: 520px;
+    background: var(--term);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(54,123,240,.15), 0 20px 60px rgba(0,0,0,.6);
+  }
+  .bar {
+    background: var(--bar);
+    padding: 10px 14px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; background: #3a4558; }
+  .dot:nth-child(1) { background: var(--red); }
+  .dot:nth-child(2) { background: #ffc14d; }
+  .dot:nth-child(3) { background: var(--green); }
+  .bar span { margin-left: 8px; color: var(--muted); font-size: .8rem; }
+  .body { padding: 22px 20px 24px; }
+  h1 {
+    margin: 0 0 4px;
+    font-size: 1.7rem;
+    letter-spacing: .04em;
+    color: var(--blue);
+    text-shadow: 0 0 18px rgba(54,123,240,.55);
+  }
+  .sub { margin: 0 0 20px; color: var(--muted); font-size: .85rem; }
+  form { display: flex; align-items: center; gap: 8px; }
+  .prompt { color: var(--green); white-space: nowrap; font-size: .85rem; }
+  .prompt b { color: var(--blue); font-weight: 400; }
+  input {
+    flex: 1; min-width: 0;
+    background: #0b0f15; color: var(--text);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 12px; font: inherit; font-size: .95rem;
+  }
+  input::placeholder { color: #4b586d; }
+  button {
+    background: var(--blue); color: #fff;
+    border: 0; border-radius: 6px;
+    padding: 12px 16px; font: inherit; font-weight: 700; cursor: pointer;
+  }
+  button:hover { filter: brightness(1.1); }
+  button:disabled { opacity: .6; cursor: wait; }
+  input:focus-visible, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  #result { margin-top: 20px; font-size: .9rem; }
+  .line { margin: 0 0 6px; color: var(--muted); }
+  .line.error { color: var(--red); }
+  .line.ok { color: var(--green); }
+  .card {
+    margin-top: 10px;
+    background: #0b0f15;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--blue);
+    border-radius: 6px;
+    padding: 16px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .flag {
+    width: 64px; height: 44px; flex: none;
+    border-radius: 4px; object-fit: cover;
+    border: 1px solid var(--line);
+    display: grid; place-items: center;
+    background: var(--bar); color: var(--muted); font-weight: 700;
+  }
+  .info { min-width: 0; }
+  .nick { font-size: 1.2rem; font-weight: 700; color: #fff; overflow-wrap: anywhere; }
+  .meta { margin-top: 4px; color: var(--muted); }
+  .meta b { color: var(--green); font-weight: 700; font-variant-numeric: tabular-nums; }
+  @media (max-width: 420px) { .prompt { display: none; } }
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="bar">
+    <i class="dot"></i><i class="dot"></i><i class="dot"></i>
+    <span>root@kalidade: ~</span>
+  </div>
+  <div class="body">
+    <h1>KALIDADE FF ID</h1>
+    <p class="sub">Digite o ID do jogador para ver região e nick.</p>
+
+    <form id="form">
+      <span class="prompt">root@kalidade<b>:~#</b></span>
+      <input id="id" inputmode="numeric" autocomplete="off" placeholder="54934696" aria-label="ID do jogador" required>
+      <button id="btn" type="submit">Buscar</button>
+    </form>
+
+    <div id="result" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+  const API = 'https://api-kalidade.vercel.app/api/ff-id.js';
+  const form = document.getElementById('form');
+  const input = document.getElementById('id');
+  const btn = document.getElementById('btn');
+  const result = document.getElementById('result');
+
+  function showMessage(text, type) {
+    result.replaceChildren();
+    const p = document.createElement('p');
+    p.className = 'line' + (type ? ' ' + type : '');
+    p.textContent = text;
+    result.appendChild(p);
+  }
+
+  function showPlayer(data) {
+    const code = String(data.region || '').toLowerCase().replace(/[^a-z]/g, '');
+
+    const ok = document.createElement('p');
+    ok.className = 'line ok';
+    ok.textContent = '[+] jogador encontrado';
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    let flag;
+    if (code.length === 2) {
+      flag = document.createElement('img');
+      flag.className = 'flag';
+      flag.src = 'https://flagcdn.com/w160/' + code + '.png';
+      flag.alt = 'Bandeira ' + data.region;
+      flag.onerror = () => {
+        const fb = document.createElement('div');
+        fb.className = 'flag';
+        fb.textContent = data.region;
+        flag.replaceWith(fb);
+      };
+    } else {
+      flag = document.createElement('div');
+      flag.className = 'flag';
+      flag.textContent = data.region || '?';
+    }
+
+    const info = document.createElement('div');
+    info.className = 'info';
+
+    const nick = document.createElement('div');
+    nick.className = 'nick';
+    nick.textContent = data.nickname;
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.append('id: ');
+    const b = document.createElement('b');
+    b.textContent = data.id;
+    meta.appendChild(b);
+
+    info.append(nick, meta);
+    card.append(flag, info);
+    result.replaceChildren(ok, card);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = input.value.trim();
+
+    if (!/^\d{5,15}$/.test(id)) {
+      showMessage('[!] ID inválido. Use só números.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    showMessage('[*] consultando ' + id + ' ...');
+
+    try {
+      const res = await fetch(API + '?id=' + encodeURIComponent(id));
+      const data = await res.json();
+
+      if (!res.ok || !data.nickname) {
+        showMessage('[-] jogador não encontrado. Confira o ID.', 'error');
+      } else {
+        showPlayer(data);
+      }
+    } catch (err) {
+      showMessage('[!] falha na consulta. Tente de novo em instantes.', 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

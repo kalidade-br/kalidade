@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KALIDADE - Consulta CPF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:Poppins,sans-serif;min-height:100vh;color:#fff;
+    background:
+      radial-gradient(circle at 15% 20%,rgba(0,255,255,.13),transparent 30%),
+      radial-gradient(circle at 85% 80%,rgba(160,0,255,.16),transparent 35%),
+      linear-gradient(135deg,#050510,#0b0620 50%,#03040b);
+    overflow-x:hidden;
+}
+.particles{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.particle{position:absolute;width:3px;height:3px;background:#00ffff;border-radius:50%;opacity:.45;animation:float 7s infinite ease-in-out}
+@keyframes float{0%,100%{transform:translateY(0);opacity:.15}50%{transform:translateY(-40px);opacity:.8}}
+.container{width:min(92%,620px);margin:0 auto;padding:55px 0}
+.logo{text-align:center;font-size:38px;font-weight:800;letter-spacing:4px;
+background:linear-gradient(90deg,#00ffff,#9d4dff);-webkit-background-clip:text;color:transparent}
+.subtitle{text-align:center;color:#aeb8d5;font-size:14px;margin-top:4px;margin-bottom:28px}
+.card{
+background:rgba(255,255,255,.055);border:1px solid rgba(0,255,255,.18);
+border-radius:24px;padding:28px;backdrop-filter:blur(18px);
+box-shadow:0 0 35px rgba(0,255,255,.08),inset 0 0 25px rgba(255,255,255,.02)
+}
+.label{font-size:13px;color:#aeb8d5;margin-bottom:9px;display:block}
+.input-wrap{position:relative}
+input{
+width:100%;height:56px;border-radius:14px;border:1px solid rgba(255,255,255,.13);
+outline:none;background:rgba(0,0,0,.25);color:white;padding:0 16px;font-size:16px;
+font-family:inherit;transition:.2s
+}
+input:focus{border-color:#00ffff;box-shadow:0 0 18px rgba(0,255,255,.12)}
+button{
+width:100%;height:54px;margin-top:14px;border:0;border-radius:14px;
+font-family:inherit;font-weight:700;font-size:15px;color:#050510;cursor:pointer;
+background:linear-gradient(90deg,#00ffff,#a855f7);transition:.2s
+}
+button:hover{transform:translateY(-1px);box-shadow:0 10px 25px rgba(0,255,255,.16)}
+button:disabled{opacity:.6;cursor:wait;transform:none}
+.status{text-align:center;min-height:22px;margin-top:16px;font-size:13px;color:#9eabc9}
+.status.error{color:#ff6b81}
+.result{
+display:none;margin-top:24px;padding:20px;border-radius:18px;
+background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.09)
+}
+.result.show{display:block}
+.result-title{font-size:16px;font-weight:700;margin-bottom:15px;color:#fff}
+.row{
+display:flex;justify-content:space-between;gap:20px;padding:12px 0;
+border-bottom:1px solid rgba(255,255,255,.07);font-size:13px
+}
+.row:last-child{border-bottom:0}
+.row span:first-child{color:#8996b6}.value{text-align:right;color:#fff;font-weight:500}
+.footer{text-align:center;margin-top:22px;color:#68738f;font-size:11px;letter-spacing:1px}
+.badge{
+display:inline-block;margin-bottom:16px;padding:5px 10px;border-radius:999px;
+font-size:10px;color:#00ffff;border:1px solid rgba(0,255,255,.2);
+background:rgba(0,255,255,.04)
+}
+@media(max-width:480px){
+.container{padding:35px 0}.card{padding:20px}.logo{font-size:31px}
+.row{flex-direction:column;gap:3px}.value{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<main class="container">
+    <div class="logo">KALIDADE</div>
+    <div class="subtitle">Consulta de CPF</div>
+
+    <section class="card">
+        <div class="badge">CONSULTA CPF</div>
+
+        <label class="label" for="cpf">Digite o CPF</label>
+        <div class="input-wrap">
+            <input id="cpf" type="text" inputmode="numeric"
+                   maxlength="14" placeholder="000.000.000-00"
+                   autocomplete="off">
+        </div>
+
+        <button id="btn" onclick="consultarCPF()">CONSULTAR CPF</button>
+
+        <div class="status" id="status"></div>
+
+        <div class="result" id="result">
+            <div class="result-title">Resultado da consulta</div>
+
+            <div class="row">
+                <span>Nome</span>
+                <span class="value" id="nome">—</span>
+            </div>
+
+            <div class="row">
+                <span>CPF</span>
+                <span class="value" id="cpfResult">—</span>
+            </div>
+
+            <div class="row">
+                <span>Gênero</span>
+                <span class="value" id="genero">—</span>
+            </div>
+
+            <div class="row">
+                <span>Data de nascimento</span>
+                <span class="value" id="nascimento">—</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer">KALIDADE.VERCEL.APP</div>
+</main>
+
+<script>
+const cpfInput = document.getElementById("cpf");
+const btn = document.getElementById("btn");
+const statusEl = document.getElementById("status");
+const result = document.getElementById("result");
+
+// Máscara dinâmica de CPF
+cpfInput.addEventListener("input", function () {
+    let v = this.value.replace(/\D/g, "").slice(0, 11);
+
+    if (v.length > 9)
+        v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, "$1.$2.$3-$4");
+    else if (v.length > 6)
+        v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+    else if (v.length > 3)
+        v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+
+    this.value = v;
+});
+
+// Suporte ao Enter no input
+cpfInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        consultarCPF();
+    }
+});
+
+function limparCPF(v) {
+    return v.replace(/\D/g, "");
+}
+
+function formatarCPF(v) {
+    const limpo = limparCPF(v || "");
+    if (limpo.length === 11) {
+        return limpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    }
+    return v || "—";
+}
+
+function formatarData(data) {
+    if (!data) return "Não informado";
+
+    const partes = data.split("-");
+    if (partes.length !== 3) return data;
+
+    const [ano, mes, dia] = partes;
+    return `${dia}/${mes}/${ano}`;
+}
+
+function formatarGenero(genero) {
+    if (genero === "M") return "Masculino";
+    if (genero === "F") return "Feminino";
+    return genero || "Não informado";
+}
+
+async function consultarCPF() {
+    const cpf = limparCPF(cpfInput.value);
+
+    if (cpf.length !== 11) {
+        statusEl.textContent = "Digite um CPF válido com 11 números.";
+        statusEl.className = "status error";
+        result.classList.remove("show");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "CONSULTANDO...";
+    statusEl.textContent = "Consultando API Kalidade...";
+    statusEl.className = "status";
+    result.classList.remove("show");
+
+    try {
+        const response = await fetch(`https://api-kalidade.vercel.app/api/cpf.js?cpf=${encodeURIComponent(cpf)}`);
+
+        if (!response.ok) {
+            throw new Error(`Erro na requisição (${response.status})`);
+        }
+
+        const resData = await response.json();
+
+        if (resData.code === 200 && resData.data) {
+            const dados = resData.data;
+
+            document.getElementById("nome").textContent = dados.nome || "Não informado";
+            document.getElementById("cpfResult").textContent = formatarCPF(dados.cpf || cpf);
+            document.getElementById("genero").textContent = formatarGenero(dados.genero);
+            document.getElementById("nascimento").textContent = formatarData(dados.data_nascimento);
+
+            statusEl.textContent = "";
+            result.classList.add("show");
+        } else {
+            statusEl.textContent = resData.message || resData.erro || "CPF não encontrado.";
+            statusEl.className = "status error";
+        }
+    } catch (err) {
+        statusEl.textContent = "Falha ao conectar com a API: " + (err.message || "Erro de rede");
+        statusEl.className = "status error";
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "CONSULTAR CPF";
+    }
+}
+
+// Inicialização das partículas de fundo
+for (let i = 0; i < 35; i++) {
+    const p = document.createElement("span");
+    p.className = "particle";
+    p.style.left = Math.random() * 100 + "%";
+    p.style.top = Math.random() * 100 + "%";
+    p.style.animationDelay = Math.random() * 7 + "s";
+    p.style.animationDuration = (5 + Math.random() * 6) + "s";
+    document.getElementById("particles").appendChild(p);
+}
+</script>
+    <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
+</body>
+</html>
