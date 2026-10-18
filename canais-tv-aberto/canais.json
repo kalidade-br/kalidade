@@ -1,0 +1,18 @@
+
+[
+  {
+    "nome": "TV CULTURA",
+    "iframe": "https://player-tvcultura.stream.uol.com.br/live/tvcultura_lsd.m3u8",
+    "logo": "https://e7.pngegg.com/pngimages/352/517/png-clipart-tv-cultura-logo-culture-brazil-television-cultura-television-angle.png"
+  },
+  {
+    "nome": "SBT",
+    "iframe": "https://youtube-player.sbtlab.io/?videoID=R0ZJ4uevOd4",
+    "logo": "https://upload.wikimedia.org/wikipedia/pt/4/41/Logotipo_do_SBT.svg"
+  },
+  {
+    "nome": "BAND",
+    "iframe": "https://beyond.spalla.io/player/?live=019a797e-eeb8-7eda-9518-132403ccb160&muted=1&autoplay=1",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/2/21/Rede_Bandeirantes_logo_2011.svg"
+  }
+]
