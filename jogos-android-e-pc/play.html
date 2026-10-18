@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>KALIDADE ANDROID PLAY</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+.game {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100dvh;
+    border: 0;
+    display: block;
+}
+
+.barra {
+    position: fixed;
+    top: max(8px, env(safe-area-inset-top));
+    left: max(8px, env(safe-area-inset-left));
+    z-index: 10;
+    display: flex;
+    gap: 6px;
+}
+
+.btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, .55);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 8px;
+    cursor: pointer;
+    opacity: .45;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.btn:hover,
+.btn:focus-visible,
+.btn:active {
+    opacity: 1;
+}
+
+#tela .sair { display: none; }
+#tela.cheia .entrar { display: none; }
+#tela.cheia .sair { display: block; }
+
+.erro {
+    color: #ddd;
+    font: 16px "Trebuchet MS", system-ui, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+.erro a {
+    color: #8fb0ff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="barra">
+<button class="btn" id="voltar" type="button" aria-label="Voltar para a lista" title="Voltar">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+</button>
+
+<button class="btn" id="tela" type="button" aria-label="Tela cheia" title="Tela cheia">
+    <svg class="entrar" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <svg class="sair" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+</button>
+</div>
+
+<div class="game" id="game"></div>
+
+<script>
+(() => {
+    "use strict";
+
+    const params = new URLSearchParams(location.search);
+    const embed = params.get("embed");
+    const nome = params.get("nome");
+    const game = document.getElementById("game");
+
+    // Aceita qualquer domínio (só bloqueia protocolos perigosos como javascript:)
+    function embedValido(valor) {
+        try {
+            const u = new URL(valor);
+            return u.protocol === "https:" || u.protocol === "http:";
+        } catch {
+            return false;
+        }
+    }
+
+    const btnTela = document.getElementById("tela");
+    const raiz = document.documentElement;
+
+    const emTelaCheia = () => document.fullscreenElement || document.webkitFullscreenElement;
+
+    function alternarTelaCheia() {
+        if (emTelaCheia()) {
+            (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        } else {
+            const pedir = raiz.requestFullscreen || raiz.webkitRequestFullscreen;
+            if (pedir) pedir.call(raiz);
+        }
+    }
+
+    function atualizarIcone() {
+        const ativo = !!emTelaCheia();
+        btnTela.classList.toggle("cheia", ativo);
+        btnTela.setAttribute("aria-label", ativo ? "Sair da tela cheia" : "Tela cheia");
+        btnTela.title = ativo ? "Sair da tela cheia" : "Tela cheia";
+    }
+
+    // iPhone não permite tela cheia em páginas: esconde o botão nesse caso
+    if (!(raiz.requestFullscreen || raiz.webkitRequestFullscreen)) {
+        btnTela.style.display = "none";
+    }
+    btnTela.onclick = alternarTelaCheia;
+    document.addEventListener("fullscreenchange", atualizarIcone);
+    document.addEventListener("webkitfullscreenchange", atualizarIcone);
+
+    document.getElementById("voltar").onclick = () => {
+        if (history.length > 1) {
+            history.back();
+        } else {
+            location.href = "./";
+        }
+    };
+
+    if (embed && embedValido(embed)) {
+        if (nome) document.title = nome + " - KALIDADE ANDROID";
+
+        const iframe = document.createElement("iframe");
+        iframe.src = embed;
+        iframe.setAttribute("frameborder", "0");
+        iframe.setAttribute("scrolling", "no");
+        iframe.setAttribute("allowfullscreen", "");
+        iframe.setAttribute("webkitallowfullscreen", "");
+        iframe.setAttribute("mozallowfullscreen", "");
+        iframe.setAttribute("allow", "fullscreen; autoplay; gamepad; accelerometer; gyroscope; payment; cross-origin-isolated");
+        if (nome) iframe.title = nome;
+
+        game.appendChild(iframe);
+    } else {
+        game.innerHTML =
+            '<div class="erro">Jogo não encontrado.<br><a href="./">Voltar para a lista</a></div>';
+    }
+})();
+</script>
+<script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
+</body>
+</html>
