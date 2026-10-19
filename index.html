@@ -396,5 +396,115 @@ fetch("https://kalidade.netlify.app").catch(() => {});
   });
 })();
   </script>
+ <script>
+(function () {
+  "use strict";
+
+  var KEY = "kalidade_vpn_notice_hidden";
+  var VPN_URL = "https://one.one.one.one/";
+  var LOGO = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp9asNgTqKWaXd_8kgBXGnX5UcgbR9QB4CkwZHNht5yA&s=10";
+  var DELAY = 600; // ms até aparecer
+
+  try { if (localStorage.getItem(KEY) === "1") return; } catch (e) {}
+  if (document.getElementById("kvpn-modal")) return;
+
+  var css = `
+#kvpn-modal,#kvpn-modal *{box-sizing:border-box}
+#kvpn-modal{
+  position:fixed;inset:0;z-index:2147483000;display:none;place-items:center;padding:20px;
+  background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif
+}
+#kvpn-modal.kvpn-show{display:grid}
+#kvpn-modal .kvpn-box{
+  position:relative;width:min(410px,100%);padding:28px;text-align:left;color:#f5f7ff;
+  border:1px solid rgba(255,184,77,.28);border-radius:22px;
+  background:linear-gradient(150deg,#0c1322,#070b14);box-shadow:0 30px 90px rgba(0,0,0,.55)
+}
+#kvpn-modal .kvpn-x{
+  position:absolute;top:14px;right:14px;width:32px;height:32px;display:grid;place-items:center;padding:0;
+  border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:#cbd5e5;
+  border-radius:10px;cursor:pointer;transition:.2s
+}
+#kvpn-modal .kvpn-x:hover{color:#fff;border-color:rgba(255,85,119,.5);background:rgba(255,85,119,.1)}
+#kvpn-modal .kvpn-ico{
+  width:52px;height:52px;border-radius:15px;margin-bottom:16px;overflow:hidden;display:grid;place-items:center;
+  color:#ffc266;background:rgba(255,184,77,.1);border:1px solid rgba(255,184,77,.22)
+}
+#kvpn-modal .kvpn-ico img{width:100%;height:100%;object-fit:cover;display:block}
+#kvpn-modal h3{margin:0 0 7px;padding-right:34px;font:700 21px "Space Grotesk",Inter,system-ui,sans-serif;color:#f5f7ff}
+#kvpn-modal p{margin:0;color:#8e99ad;font-size:13px;line-height:1.6}
+#kvpn-modal strong{color:#dce5f5}
+#kvpn-modal .kvpn-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;padding:12px 14px;
+  border-radius:12px;font-weight:700;font-size:14px;color:#05070d;text-decoration:none;
+  background:linear-gradient(135deg,#4f8cff,#27d8ff);transition:.2s
+}
+#kvpn-modal .kvpn-btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(39,216,255,.25)}
+#kvpn-modal .kvpn-check{display:flex;align-items:center;gap:9px;margin-top:16px;color:#8e99ad;font-size:12.5px;cursor:pointer;user-select:none}
+#kvpn-modal .kvpn-check input{accent-color:#27d8ff;width:16px;height:16px;margin:0;cursor:pointer}
+#kvpn-modal .kvpn-close{
+  width:100%;margin-top:14px;padding:9px 14px;border-radius:10px;cursor:pointer;font:inherit;
+  border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:#cbd5e5
+}
+`;
+
+  var shield = '<svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/><path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg>';
+  var xIcon = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>';
+  var dlIcon = '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/></svg>';
+
+  function init() {
+    var style = document.createElement("style");
+    style.id = "kvpn-style";
+    style.textContent = css;
+    document.head.appendChild(style);
+
+    var modal = document.createElement("div");
+    modal.id = "kvpn-modal";
+    modal.setAttribute("role", "alertdialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "kvpn-title");
+    modal.innerHTML =
+      '<div class="kvpn-box">' +
+        '<button type="button" class="kvpn-x" aria-label="Fechar">' + xIcon + '</button>' +
+        '<div class="kvpn-ico"><img alt="1.1.1.1" referrerpolicy="no-referrer"></div>' +
+        '<h3 id="kvpn-title">Aviso importante</h3>' +
+        '<p>Se você não conseguir acessar alguma parte do site, como <strong>canais-iptv</strong> e outras páginas, o bloqueio pode ser da sua operadora. Baixe a VPN gratuita <strong>1.1.1.1</strong> e tente novamente.</p>' +
+        '<a class="kvpn-btn" href="' + VPN_URL + '" target="_blank" rel="noopener noreferrer">' + dlIcon + ' Baixar VPN 1.1.1.1</a>' +
+        '<label class="kvpn-check"><input type="checkbox" id="kvpn-hide"> Não mostrar novamente</label>' +
+        '<button type="button" class="kvpn-close">Entendi</button>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    var img = modal.querySelector(".kvpn-ico img");
+    img.onerror = function () { img.parentNode.innerHTML = shield; };
+    img.src = LOGO;
+
+    function close() {
+      var hide = document.getElementById("kvpn-hide");
+      if (hide && hide.checked) {
+        try { localStorage.setItem(KEY, "1"); } catch (e) {}
+      }
+      modal.classList.remove("kvpn-show");
+      document.removeEventListener("keydown", onKey);
+    }
+    function onKey(e) { if (e.key === "Escape") close(); }
+
+    modal.querySelector(".kvpn-x").addEventListener("click", close);
+    modal.querySelector(".kvpn-close").addEventListener("click", close);
+    modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
+    document.addEventListener("keydown", onKey);
+
+    setTimeout(function () { modal.classList.add("kvpn-show"); }, DELAY);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+ </script>
+  
 </body>
 </html>
