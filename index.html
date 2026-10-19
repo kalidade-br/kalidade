@@ -229,6 +229,32 @@ function getFolders(data){
     .sort((a,b) => a.title.localeCompare(b.title, "pt-BR"));
 }
 
+function parseList(data){
+  let items = [];
+  if(Array.isArray(data)) items = data;
+  else if(data && Array.isArray(data.projects)) items = data.projects;
+  else if(data && data.files) return getFolders(data);
+
+  return items
+    .map(i => typeof i === "string" ? i : (i && i.name))
+    .filter(n => n && String(n).toLowerCase() !== "document-dev")
+    .map(n => ({ name:String(n), title:prettyName(n), path:String(n) }))
+    .sort((a,b) => a.title.localeCompare(b.title, "pt-BR"));
+}
+
+async function loadFromList(){
+  const urls = ["list.json", "/list.json", BASE_URL + "list.json"];
+  for(const url of urls){
+    try{
+      const r = await fetch(url, {cache:"no-store", headers:{Accept:"application/json"}});
+      if(!r.ok) continue;
+      const list = parseList(await r.json());
+      if(list.length) return list;
+    }catch(e){}
+  }
+  return [];
+}
+
 function saveCache(list){
   try{
     localStorage.setItem(CACHE_KEY, JSON.stringify({
@@ -309,8 +335,18 @@ async function loadProjects(){
   }catch(error){
     if(!projects.length){
       projects = loadCache();
-      render();
     }
+    if(!projects.length){
+      const fallback = await loadFromList();
+      if(fallback.length){
+        projects = fallback;
+        saveCache(fallback);
+        render();
+        document.getElementById("status").textContent = "API indisponível • lista carregada de list.json";
+        return;
+      }
+    }
+    render();
     document.getElementById("status").textContent =
       projects.length ? "API indisponível • usando última lista salva" : "Não foi possível carregar os projetos";
   }
