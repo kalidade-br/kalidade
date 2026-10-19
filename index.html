@@ -396,7 +396,8 @@ fetch("https://kalidade.netlify.app").catch(() => {});
   });
 })();
   </script>
- <script>
+
+  <script>
 (function () {
   "use strict";
 
@@ -486,14 +487,10 @@ fetch("https://kalidade.netlify.app").catch(() => {});
         try { localStorage.setItem(KEY, "1"); } catch (e) {}
       }
       modal.classList.remove("kvpn-show");
-      document.removeEventListener("keydown", onKey);
     }
-    function onKey(e) { if (e.key === "Escape") close(); }
 
     modal.querySelector(".kvpn-x").addEventListener("click", close);
     modal.querySelector(".kvpn-close").addEventListener("click", close);
-    modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
-    document.addEventListener("keydown", onKey);
 
     setTimeout(function () { modal.classList.add("kvpn-show"); }, DELAY);
   }
@@ -504,7 +501,6 @@ fetch("https://kalidade.netlify.app").catch(() => {});
     init();
   }
 })();
- </script>
-  
+  </script>
 </body>
 </html>
