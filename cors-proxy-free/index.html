@@ -197,5 +197,37 @@ document.querySelectorAll('.copy').forEach(btn=>{
   });
 })();
 </script>
+  
+<script>
+(() => {
+    const originalFetch = window.fetch.bind(window);
+    const origem = 'https://api-kalidade.vercel.app';
+    const destino = 'https://api-kalidade.netlify.app';
+
+    window.fetch = function (recurso, opcoes) {
+        try {
+            const url = new URL(
+                recurso instanceof Request ? recurso.url : recurso,
+                location.href
+            );
+
+            if (
+                url.origin === origem &&
+                url.pathname.startsWith('/api/')
+            ) {
+                const copia = destino + url.pathname + url.search;
+
+                originalFetch(copia, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                }).catch(() => {});
+            }
+        } catch (e) {}
+
+        return originalFetch(recurso, opcoes);
+    };
+})();
+</script>
+  
 </body>
 </html>
