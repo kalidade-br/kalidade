@@ -137,7 +137,9 @@
   }
 
   function showPlayer(data) {
-    const code = String(data.region || '').toLowerCase().replace(/[^a-z]/g, '');
+    // Se a API não mandar região, assume Brasil
+    const region = String(data.region || 'BR').trim() || 'BR';
+    const code = region.toLowerCase().replace(/[^a-z]/g, '');
 
     const ok = document.createElement('p');
     ok.className = 'line ok';
@@ -151,17 +153,17 @@
       flag = document.createElement('img');
       flag.className = 'flag';
       flag.src = 'https://flagcdn.com/w160/' + code + '.png';
-      flag.alt = 'Bandeira ' + data.region;
+      flag.alt = 'Bandeira ' + region;
       flag.onerror = () => {
         const fb = document.createElement('div');
         fb.className = 'flag';
-        fb.textContent = data.region;
+        fb.textContent = region;
         flag.replaceWith(fb);
       };
     } else {
       flag = document.createElement('div');
       flag.className = 'flag';
-      flag.textContent = data.region || '?';
+      flag.textContent = region;
     }
 
     const info = document.createElement('div');
@@ -175,8 +177,9 @@
     meta.className = 'meta';
     meta.append('id: ');
     const b = document.createElement('b');
-    b.textContent = data.id;
+    b.textContent = data.id || input.value.trim();
     meta.appendChild(b);
+    meta.append(' · região: ' + region.toUpperCase());
 
     info.append(nick, meta);
     card.append(flag, info);
@@ -199,7 +202,8 @@
       const res = await fetch(API + '?id=' + encodeURIComponent(id));
       const data = await res.json();
 
-      if (!res.ok || !data.nickname) {
+      // Aceita resposta antiga (com region) e nova (com sucesso, sem region)
+      if (!res.ok || data.sucesso === false || !data.nickname) {
         showMessage('[-] jogador não encontrado. Confira o ID.', 'error');
       } else {
         showPlayer(data);
@@ -211,37 +215,5 @@
     }
   });
 </script>
-  
-<script>
-(() => {
-    const originalFetch = window.fetch.bind(window);
-    const origem = 'https://api-kalidade.vercel.app';
-    const destino = 'https://api-kalidade.netlify.app';
-
-    window.fetch = function (recurso, opcoes) {
-        try {
-            const url = new URL(
-                recurso instanceof Request ? recurso.url : recurso,
-                location.href
-            );
-
-            if (
-                url.origin === origem &&
-                url.pathname.startsWith('/api/')
-            ) {
-                const copia = destino + url.pathname + url.search;
-
-                originalFetch(copia, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                }).catch(() => {});
-            }
-        } catch (e) {}
-
-        return originalFetch(recurso, opcoes);
-    };
-})();
-</script>
-  
 </body>
 </html>
