@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <title>KALIDADE CDN-STAR</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
+
+    .fullscreen-frame {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      border: none;
+      display: block;
+      background: #000;
+    }
+
+    /* Painel de créditos */
+    .credits-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(10px);
+    }
+
+    .credits-panel {
+      width: 100%;
+      max-width: 360px;
+      padding: 28px 22px;
+      border: 1px solid #00ff99;
+      border-radius: 18px;
+      background: #0b0b0b;
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 255, 153, 0.15);
+      animation: appear 0.35s ease;
+    }
+
+    .credits-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .credits-panel h1 {
+      color: #00ff99;
+      font-size: 24px;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+
+    .credits-panel p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #ccc;
+      margin-bottom: 12px;
+    }
+
+    .credits-panel .creator {
+      color: #00ff99;
+      font-weight: bold;
+    }
+
+    .credits-panel a {
+      color: #00ff99;
+      text-decoration: none;
+    }
+
+    .credits-panel button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #00ff99;
+      color: #000;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .credits-panel button:active {
+      transform: scale(0.97);
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <iframe
+    class="fullscreen-frame"
+    src="https://cdn-kali-js.vercel.app"
+    title="KALIDADE SCRIPTS"
+    allow="fullscreen; clipboard-read; clipboard-write"
+    allowfullscreen>
+  </iframe>
+
+  <div class="credits-overlay" id="credits">
+    <div class="credits-panel">
+      <div class="credits-icon">⚡</div>
+
+      <h1>KALIDADE</h1>
+
+      <p>
+        Bem-vindo ao <strong>CDN-STAR</strong>!
+      </p>
+
+      <p>
+        <strong>Créditos ao criador original:</strong><br>
+        <a class="creator"
+           href="https://github.com/egwebcode"
+           target="_blank"
+           rel="noopener noreferrer">@egwebcode</a>
+      </p>
+
+      <p>
+        Este projeto foi criado a partir de um
+        <strong>repositório clonado do GitHub</strong>.
+        Reconhecemos e agradecemos o trabalho do desenvolvedor original.
+      </p>
+
+      <button onclick="document.getElementById('credits').remove()">
+        CONTINUAR →
+      </button>
+    </div>
+  </div>
+
+</body>
+  </html>
