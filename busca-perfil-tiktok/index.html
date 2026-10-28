@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090909">
+<title>TikTok Profile — KALIDADE</title>
+
+<style>
+:root {
+  --bg: #090909;
+  --card: #171717;
+  --text: #f8f8f8;
+  --muted: #999;
+  --pink: #fe2c55;
+  --cyan: #25f4ee;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6%;
+  border-bottom: 1px solid #252525;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: var(--pink);
+}
+
+.brand {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+main {
+  width: 100%;
+  max-width: 760px;
+  margin: 45px auto;
+  padding: 0 18px;
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 27px;
+}
+
+.heading h1 {
+  font-size: clamp(25px, 5vw, 36px);
+  margin-bottom: 10px;
+}
+
+.heading p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.search {
+  display: flex;
+  gap: 9px;
+  padding: 7px;
+  border: 1px solid #333;
+  background: #151515;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+
+.search:focus-within {
+  border-color: var(--pink);
+}
+
+.search input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  padding: 12px;
+  background: transparent;
+  color: white;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+.search button {
+  padding: 0 19px;
+  border: none;
+  border-radius: 9px;
+  background: var(--pink);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.search button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.status {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  padding: 18px 5px;
+  font-size: 14px;
+}
+
+.status.show {
+  display: block;
+}
+
+.status.error {
+  color: #ff667e;
+}
+
+.spinner {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  vertical-align: middle;
+  border: 2px solid #555;
+  border-top-color: var(--pink);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.profile {
+  display: none;
+  overflow: hidden;
+  border: 1px solid #292929;
+  border-radius: 18px;
+  background: var(--card);
+  animation: appear .3s ease;
+}
+
+.profile.show {
+  display: block;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cover {
+  height: 115px;
+  background:
+    radial-gradient(ellipse at 20% 0%, #fe2c5540, transparent 60%),
+    radial-gradient(ellipse at 90% 30%, #25f4ee35, transparent 55%),
+    #202020;
+}
+
+.profile-content {
+  padding: 0 24px 25px;
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 19px;
+  margin-top: -48px;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 104px;
+  height: 104px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid var(--card);
+  background: #292929;
+}
+
+.identity {
+  min-width: 0;
+  padding-top: 42px;
+}
+
+.identity h2 {
+  font-size: 21px;
+  overflow-wrap: anywhere;
+  margin-bottom: 6px;
+}
+
+.username {
+  color: var(--muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.bio {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  font-size: 14px;
+  margin: 20px 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid #303030;
+  border-bottom: 1px solid #303030;
+  padding: 21px 0;
+  gap: 6px;
+}
+
+.stat {
+  text-align: center;
+  min-width: 0;
+}
+
+.stat strong {
+  display: block;
+  font-size: clamp(15px, 3.6vw, 22px);
+  margin-bottom: 7px;
+  overflow-wrap: anywhere;
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 45px;
+  border-radius: 9px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.open-tiktok {
+  background: var(--pink);
+  color: white;
+}
+
+.copy-link {
+  background: #292929;
+  border: 1px solid #383838;
+  color: white;
+}
+
+.action:active {
+  transform: scale(.98);
+}
+
+footer {
+  padding: 24px 10px;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+}
+
+footer b {
+  color: #aaa;
+}
+
+@media (max-width: 430px) {
+  main {
+    margin-top: 30px;
+    padding: 0 12px;
+  }
+
+  .profile-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .profile-top {
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 88px;
+    height: 88px;
+  }
+
+  .profile-top {
+    margin-top: -40px;
+  }
+
+  .identity {
+    padding-top: 35px;
+  }
+
+  .identity h2 {
+    font-size: 18px;
+  }
+
+  .stat span {
+    font-size: 10px;
+  }
+
+  .search button {
+    padding: 0 13px;
+  }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">TikTok<span>Profile</span></div>
+  <div class="brand">KALIDADE</div>
+</header>
+
+<main>
+  <section class="heading">
+    <h1>Consulta de perfil</h1>
+    <p>Descubra as estatísticas de uma conta do TikTok.</p>
+  </section>
+
+  <form class="search" id="searchForm">
+    <input
+      id="username"
+      type="text"
+      placeholder="Digite o @usuário..."
+      value="tiktokbrasil"
+      autocomplete="off"
+      maxlength="100"
+      aria-label="Usuário do TikTok"
+      required
+    >
+    <button id="searchButton" type="submit">Consultar</button>
+  </form>
+
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <section class="profile" id="profile">
+    <div class="cover"></div>
+
+    <div class="profile-content">
+      <div class="profile-top">
+        <img class="avatar" id="photo" alt="Foto de perfil">
+        <div class="identity">
+          <h2 id="name">—</h2>
+          <div class="username" id="handle">@—</div>
+        </div>
+      </div>
+
+      <p class="bio" id="bio"></p>
+
+      <div class="stats">
+        <div class="stat">
+          <strong id="followers">—</strong>
+          <span>Seguidores</span>
+        </div>
+        <div class="stat">
+          <strong id="following">—</strong>
+          <span>Seguindo</span>
+        </div>
+        <div class="stat">
+          <strong id="likes">—</strong>
+          <span>Curtidas</span>
+        </div>
+        <div class="stat">
+          <strong id="videos">—</strong>
+          <span>Vídeos</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a
+          class="action open-tiktok"
+          id="openProfile"
+          href="https://www.tiktok.com/@tiktokbrasil"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Abrir no TikTok ↗</a>
+
+        <button class="action copy-link" id="copyLink" type="button">
+          Copiar perfil
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Consulta de perfis · <b>KALIDADE</b>
+</footer>
+
+<script>
+const API = "https://api-kalidade.vercel.app/api/perfil.js?ttk=";
+
+const form = document.getElementById("searchForm");
+const input = document.getElementById("username");
+const button = document.getElementById("searchButton");
+const statusBox = document.getElementById("status");
+const profile = document.getElementById("profile");
+
+let currentProfileUrl = "";
+
+function formatNumber(value) {
+  const number = Number(value ?? 0);
+
+  if (!Number.isFinite(number)) return "0";
+
+  return new Intl.NumberFormat("pt-BR", {
+    notation: "compact",
+    maximumFractionDigits: 1
+  }).format(number);
+}
+
+function showStatus(message, error = false, loading = false) {
+  statusBox.className = "status show" + (error ? " error" : "");
+  statusBox.replaceChildren();
+
+  if (loading) {
+    const spinner = document.createElement("span");
+    spinner.className = "spinner";
+    statusBox.appendChild(spinner);
+  }
+
+  statusBox.appendChild(document.createTextNode(message));
+}
+
+function hideStatus() {
+  statusBox.className = "status";
+  statusBox.textContent = "";
+}
+
+function setText(id, value) {
+  document.getElementById(id).textContent = value ?? "";
+}
+
+async function consult(username) {
+  const cleanUsername = username.trim().replace(/^@+/, "");
+
+  if (!cleanUsername) {
+    showStatus("Digite um nome de usuário válido.", true);
+    return;
+  }
+
+  if (cleanUsername.length > 100) {
+    showStatus("O nome de usuário é muito longo.", true);
+    return;
+  }
+
+  profile.classList.remove("show");
+  showStatus("Buscando informações do perfil...", false, true);
+  button.disabled = true;
+  button.textContent = "Buscando...";
+
+  try {
+    const response = await fetch(
+      API + encodeURIComponent(cleanUsername),
+      { method: "GET" }
+    );
+
+    if (!response.ok) {
+      throw new Error("A API respondeu com erro HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (data.sucesso !== true || !data.usuario) {
+      throw new Error("Perfil não encontrado ou resposta inválida.");
+    }
+
+    setText("name", data.nome || data.usuario);
+    setText("handle", "@" + String(data.usuario).replace(/^@+/, ""));
+    setText("bio", data.bio || "Nenhuma biografia informada.");
+
+    setText("followers", formatNumber(data.seguidores));
+    setText("following", formatNumber(data.seguindo));
+    setText("likes", formatNumber(data.curtidas));
+    setText("videos", formatNumber(data.videos));
+
+    const photo = document.getElementById("photo");
+    photo.onerror = () => {
+      photo.onerror = null;
+      photo.removeAttribute("src");
+      photo.alt = "Foto indisponível";
+    };
+
+    if (data.foto) {
+      photo.src = data.foto;
+      photo.alt = "Foto de " + (data.nome || data.usuario);
+    } else {
+      photo.removeAttribute("src");
+      photo.alt = "Foto indisponível";
+    }
+
+    currentProfileUrl =
+      typeof data.perfil === "string" &&
+      /^https:\/\/www\.tiktok\.com\/@[\w.-]+\/?$/i.test(data.perfil)
+        ? data.perfil
+        : "https://www.tiktok.com/@" +
+          encodeURIComponent(String(data.usuario).replace(/^@+/, ""));
+
+    document.getElementById("openProfile").href = currentProfileUrl;
+
+    hideStatus();
+    profile.classList.add("show");
+  } catch (error) {
+    showStatus(
+      "Não foi possível consultar o perfil. Verifique o usuário e tente novamente. " +
+      (error instanceof TypeError
+        ? "Pode haver um problema de conexão ou CORS na API."
+        : ""),
+      true
+    );
+    console.error("Erro na consulta:", error);
+  } finally {
+    button.disabled = false;
+    button.textContent = "Consultar";
+  }
+}
+
+form.addEventListener("submit", event => {
+  event.preventDefault();
+  consult(input.value);
+});
+
+document.getElementById("copyLink").addEventListener("click", async () => {
+  if (!currentProfileUrl) return;
+
+  const copyButton = document.getElementById("copyLink");
+
+  try {
+    await navigator.clipboard.writeText(currentProfileUrl);
+    copyButton.textContent = "Copiado!";
+    setTimeout(() => {
+      copyButton.textContent = "Copiar perfil";
+    }, 1600);
+  } catch {
+    window.prompt("Copie o link do perfil:", currentProfileUrl);
+  }
+});
+
+// Consulta automática do exemplo ao abrir a página.
+consult("tiktokbrasil");
+</script>
+</body>
+</html>
