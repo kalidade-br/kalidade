@@ -1,0 +1,26 @@
+[
+  {
+    "nome": "SHTTPS Free",
+    "link": "appstore/SHTTPS_FREE.apk",
+    "plataforma": "android",
+    "icon": ""
+  },
+  {
+    "nome": "APK Editor Pro",
+    "link": "appstore/apk-editor-pro-v4.2.apk",
+    "plataforma": "android",
+    "icon": ""
+  },
+  {
+    "nome": "Snaptube",
+    "link": "appstore/snaptube.7z",
+    "plataforma": "android",
+    "icon": ""
+  },
+  {
+    "nome": "ZArchiver",
+    "link": "appstore/zarchiver.apk",
+    "plataforma": "android",
+    "icon": ""
+  }
+]
