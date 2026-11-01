@@ -119,6 +119,25 @@
             header h1 { font-size: 2rem; }
             .apps-grid { grid-template-columns: 1fr; }
         }
+
+        .sync {
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+            gap: 10px; margin: -8px 0 24px; font-size: 0.8rem; color: var(--text-muted);
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); }
+        .dot.ok { background: #3ddc84; }
+        .dot.off { background: #f59e0b; }
+        .dot.load { background: var(--accent); animation: pulse 1s infinite; }
+        @keyframes pulse { 50% { opacity: 0.3; } }
+        .sync button {
+            background: none; border: 1px solid var(--border); color: var(--text);
+            border-radius: 20px; padding: 4px 12px; font: inherit; cursor: pointer;
+        }
+        .sync button:hover { border-color: var(--accent); }
+        .sync button:disabled { opacity: 0.5; cursor: default; }
+        .sync button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .badge.arquivo { background: rgba(138,138,181,0.15); color: var(--text-muted); }
+        @media (prefers-reduced-motion: reduce) { .dot.load { animation: none; } }
     </style>
 </head>
 <body>
@@ -133,6 +152,7 @@
             <input type="text" id="searchInput" placeholder="Buscar aplicativos..." autocomplete="off">
         </div>
         <div class="count" id="countText">Carregando...</div>
+        <div class="sync"><span class="dot" id="syncDot"></span><span id="syncText">Conectando…</span><button type="button" id="refreshBtn">Atualizar</button></div>
         <div class="apps-grid" id="appsGrid"></div>
         <div class="no-results" id="noResults">
             <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -141,59 +161,154 @@
         </div>
     </div>
     <script>
-        const BASE_URL = 'https://kalidade-br.github.io/kalidade/appstore';
-        let apps = [];
-        async function loadApps() {
-            try {
-                const res = await fetch('app.json');
-                apps = await res.json();
-                renderApps(apps);
-            } catch (e) {
-                document.getElementById('countText').textContent = 'Erro ao carregar apps';
-            }
-        }
-        function renderApps(list) {
-            const grid = document.getElementById('appsGrid');
-            const noResults = document.getElementById('noResults');
-            const countText = document.getElementById('countText');
-            grid.innerHTML = '';
-            if (list.length === 0) {
-                noResults.classList.add('show');
-                countText.textContent = '0 apps encontrados';
-                return;
-            }
-            noResults.classList.remove('show');
-            countText.textContent = `${list.length} app${list.length > 1 ? 's' : ''} encontrado${list.length > 1 ? 's' : ''}`;
-            list.forEach(app => {
-                const fullLink = app.link.startsWith('http') ? app.link : BASE_URL + '/' + app.link;
-                const card = document.createElement('a');
-                card.className = 'app-card';
-                card.href = fullLink;
-                card.target = '_blank';
-                card.innerHTML = `
-                    <img src="${app.icon}" alt="${app.nome}" class="app-icon" loading="lazy">
-                    <div class="app-info">
-                        <div class="app-name">${app.nome}</div>
-                        <div class="app-platform">
-                            ${app.plataforma === 'android' ? '<span class="badge android">Android</span>' : ''}
-                            ${app.plataforma === 'windows' ? '<span class="badge windows">Windows</span>' : ''}
-                            ${app.plataforma === 'ambos' ? '<span class="badge android">Android</span><span class="badge windows">Windows</span>' : ''}
-                        </div>
-                    </div>
-                    <div class="download-btn" title="Baixar">
-                        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const q = this.value.toLowerCase().trim();
-            const filtered = apps.filter(a => a.nome.toLowerCase().includes(q));
-            renderApps(filtered);
+(() => {
+    const BASE_URL = 'https://kalidade-br.github.io/kalidade/appstore';
+    const API = 'https://api-kalidade.vercel.app/api/github.js?repo=kalidade-br/kalidade';
+    const PASTA = 'appstore';             // pasta do repositório que vira lista de apps
+    const CHAVE = 'appstore_lista_v1';    // chave do localStorage
+    const IGNORAR = ['html','htm','json','js','css','md','txt','png','jpg','jpeg','gif','webp','svg','ico'];
+
+    const $ = id => document.getElementById(id);
+    const grid = $('appsGrid'), noRes = $('noResults'), count = $('countText');
+    const dot = $('syncDot'), syncText = $('syncText'), btn = $('refreshBtn');
+    let apps = [], q = '', salvoEm = 0;
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const abs = l => /^https?:/.test(l) ? l : BASE_URL + '/' + l;
+    const chaveArq = l => {
+        const f = String(l).split(/[?#]/)[0].split('/').pop();
+        try { return decodeURIComponent(f).toLowerCase(); } catch (e) { return f.toLowerCase(); }
+    };
+    const bonito = f => f.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\b[a-z]/g, c => c.toUpperCase());
+    const plataforma = e => ['apk','xapk','apks','aab'].includes(e) ? 'android' : ['exe','msi'].includes(e) ? 'windows' : 'arquivo';
+    const hora = t => new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const dia = t => new Date(t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const setStatus = (k, t) => { dot.className = 'dot ' + k; syncText.textContent = t; };
+
+    // ícone de letra colorida para apps sem ícone (ou quando a imagem não carrega)
+    const avatar = nome => {
+        let h = 0;
+        for (const c of nome) h = (h * 31 + c.charCodeAt(0)) % 360;
+        const l = (nome.match(/[a-z0-9]/i) || ['?'])[0].toUpperCase();
+        return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="hsl(${h} 55% 42%)"/><text x="32" y="43" font-family="sans-serif" font-size="30" font-weight="700" fill="#fff" text-anchor="middle">${l}</text></svg>`);
+    };
+
+    const badges = a => a.plataforma === 'android' ? '<span class="badge android">Android</span>'
+        : a.plataforma === 'windows' ? '<span class="badge windows">Windows</span>'
+        : a.plataforma === 'ambos' ? '<span class="badge android">Android</span><span class="badge windows">Windows</span>'
+        : `<span class="badge arquivo">${esc(a.ext || 'Arquivo')}</span>`;
+
+    // ---------- localStorage ----------
+    function lerSalvo() {
+        try {
+            const c = JSON.parse(localStorage.getItem(CHAVE));
+            return c && Array.isArray(c.apps) && c.apps.length ? c : null;
+        } catch (e) { return null; }
+    }
+    function salvar(lista) {
+        salvoEm = Date.now();
+        try { localStorage.setItem(CHAVE, JSON.stringify({ t: salvoEm, apps: lista })); } catch (e) {}
+    }
+
+    // ---------- monta a lista a partir da resposta da API ----------
+    function daArvore(files) {
+        const out = [];
+        const andar = no => Object.values(no).forEach(f => {
+            if (f.type === 'folder') return andar(f.children || {});
+            const arq = f.path.split('/').pop();
+            const ext = arq.includes('.') ? arq.split('.').pop().toLowerCase() : '';
+            if (!ext || IGNORAR.includes(ext)) return;
+            out.push({ nome: bonito(arq), link: f.raw, plataforma: plataforma(ext), ext: ext.toUpperCase() });
         });
-        loadApps();
-    </script>
+        andar((files[PASTA] || {}).children || {});
+        return out;
+    }
+    // app.json só complementa: ícone, nome e plataforma; entradas que não estão na pasta continuam na lista
+    function juntar(tree, man) {
+        const m = new Map(man.filter(a => a && a.link && a.nome).map(a => [chaveArq(a.link), a]));
+        const out = tree.map(t => {
+            const k = chaveArq(t.link), a = m.get(k);
+            m.delete(k);
+            return a ? { ...t, ...a, link: abs(a.link) } : t;
+        });
+        m.forEach(a => out.push({ ...a, link: abs(a.link) }));
+        return out.sort((x, y) => x.nome.localeCompare(y.nome, 'pt-BR', { sensitivity: 'base' }));
+    }
+
+    // ---------- tela ----------
+    function render() {
+        grid.innerHTML = '';
+        if (!apps.length) { noRes.classList.remove('show'); return; }
+        const lista = q ? apps.filter(a => a.nome.toLowerCase().includes(q)) : apps;
+        noRes.classList.toggle('show', !lista.length);
+        count.textContent = `${lista.length} app${lista.length !== 1 ? 's' : ''} encontrado${lista.length !== 1 ? 's' : ''}`;
+        lista.forEach(a => {
+            const fb = avatar(a.nome);
+            const card = document.createElement('a');
+            card.className = 'app-card';
+            card.href = a.link;
+            card.target = '_blank';
+            card.rel = 'noopener';
+            card.innerHTML = `
+                <img src="${esc(a.icon || fb)}" data-fb="${fb}" alt="${esc(a.nome)}" class="app-icon" loading="lazy" onerror="this.onerror=null;this.src=this.dataset.fb">
+                <div class="app-info">
+                    <div class="app-name">${esc(a.nome)}</div>
+                    <div class="app-platform">${badges(a)}</div>
+                </div>
+                <div class="download-btn" title="Baixar">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                </div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    // ---------- API ----------
+    const pegar = (url, ms = 15000) => {
+        const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
+        return fetch(url, { signal: c.signal, cache: 'no-store' })
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .finally(() => clearTimeout(t));
+    };
+
+    async function sincronizar() {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        setStatus('load', 'Atualizando pela API…');
+        try {
+            const r = await pegar(API);
+            if (!r || !r.success || !r.files) throw new Error('Resposta inválida da API');
+            let man;
+            try { man = await pegar((r.files['app.json'] || {}).raw || 'app.json'); } catch (e) {}
+            if (!Array.isArray(man)) man = apps;   // sem app.json: reaproveita a lista salva
+            const lista = juntar(daArvore(r.files), man);
+            if (!lista.length) throw new Error('Lista vazia');
+            apps = lista;
+            salvar(lista);
+            render();
+            setStatus('ok', 'Atualizado pela API às ' + hora(salvoEm));
+        } catch (e) {
+            if (apps.length) {
+                setStatus('off', 'Sem conexão com a API — mostrando a lista salva em ' + dia(salvoEm));
+            } else {
+                count.textContent = 'Não foi possível carregar os apps';
+                setStatus('off', 'Sem conexão com a API e nenhuma lista salva ainda');
+            }
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // ---------- início ----------
+    const salvo = lerSalvo();
+    if (salvo) { apps = salvo.apps; salvoEm = salvo.t; render(); }   // mostra a lista salva na hora
+    $('searchInput').addEventListener('input', e => { q = e.target.value.toLowerCase().trim(); render(); });
+    btn.addEventListener('click', sincronizar);
+    window.addEventListener('online', sincronizar);
+    // espera os outros scripts da página (espelho do fetch) serem instalados antes de chamar a API
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sincronizar);
+    else sincronizar();
+})();
+</script>
 <script>
 (() => {
   if (document.getElementById("webbr-watermark")) return;
