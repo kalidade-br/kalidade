@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d19">
+<title>KALIDADE | Consulta Subdomínios</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #080d19;
+  color: #e8efff;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 950px;
+  margin: auto;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 25px 0 35px;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg,#087cff,#00c6ff);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 0 25px #087cff55;
+}
+
+header h1 {
+  font-size: 19px;
+  letter-spacing: 1px;
+}
+
+header p {
+  color: #7386a7;
+  font-size: 11px;
+  margin-top: 5px;
+  letter-spacing: 2px;
+}
+
+.status {
+  margin-left: auto;
+  color: #35db9b;
+  font-size: 12px;
+}
+
+.panel {
+  background: #101827;
+  border: 1px solid #1c2b42;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 9px;
+}
+
+.subtitle {
+  color: #8292ad;
+  font-size: 13px;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: #9aacc8;
+  margin-bottom: 9px;
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+  background: #080f1d;
+  border: 1px solid #263b59;
+  padding: 15px;
+  color: white;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: #1688ff;
+  box-shadow: 0 0 0 3px #1688ff19;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 9px;
+  padding: 13px 18px;
+  font-weight: bold;
+  transition: .2s;
+  white-space: nowrap;
+}
+
+button:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+.primary {
+  background: linear-gradient(135deg,#087cff,#00aaff);
+  color: white;
+}
+
+.secondary {
+  background: #1c2b42;
+  color: #c5d8f5;
+}
+
+.search-btn {
+  min-width: 145px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.stat {
+  padding: 17px;
+  border: 1px solid #203149;
+  background: #0b1422;
+  border-radius: 12px;
+}
+
+.stat span {
+  display: block;
+  color: #8292ad;
+  font-size: 11px;
+  margin-bottom: 9px;
+}
+
+.stat strong {
+  font-size: 25px;
+  color: #42a5ff;
+}
+
+.progress {
+  width: 100%;
+  height: 5px;
+  background: #1b2a40;
+  border-radius: 10px;
+  margin-top: 20px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress div {
+  height: 100%;
+  width: 0%;
+  background: #168cff;
+  transition: width .3s;
+}
+
+.message {
+  margin-top: 14px;
+  color: #8292ad;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.results-header h2 {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  font-size: 11px;
+  padding: 10px 12px;
+}
+
+.filter {
+  margin-bottom: 15px;
+}
+
+.result-list {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px;
+  background: #0b1422;
+  border: 1px solid #1b2a40;
+  border-radius: 9px;
+  margin-bottom: 8px;
+  animation: appear .2s ease;
+}
+
+.result code {
+  font-size: 13px;
+  color: #75baff;
+  overflow-wrap: anywhere;
+}
+
+.result button {
+  padding: 8px 11px;
+  font-size: 11px;
+  background: #183353;
+  color: white;
+}
+
+@keyframes appear {
+  from {opacity:0;transform:translateY(5px)}
+  to {opacity:1;transform:translateY(0)}
+}
+
+.empty {
+  text-align: center;
+  color: #71839e;
+  padding: 45px 10px;
+  font-size: 13px;
+}
+
+footer {
+  text-align: center;
+  color: #53647d;
+  font-size: 11px;
+  padding: 20px;
+}
+
+@media(max-width:600px) {
+  body {padding: 13px}
+  .panel {padding: 18px}
+  .input-area {flex-direction: column}
+  .search-btn {width: 100%}
+  .stats {gap: 7px}
+  .stat {padding: 12px}
+  .stat strong {font-size: 21px}
+  .result {align-items: flex-start}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <div class="logo">K</div>
+  <div>
+    <h1>KALIDADE</h1>
+    <p>CONSULTA SUBDOMÍNIOS</p>
+  </div>
+  <div class="status">● SISTEMA ONLINE</div>
+</header>
+
+<section class="panel">
+  <h2>Consulta de domínio</h2>
+  <p class="subtitle">
+    Encontre subdomínios através de registros públicos
+    de certificados SSL.
+  </p>
+
+  <label for="domain">DOMÍNIO ALVO</label>
+
+  <div class="input-area">
+    <input
+      id="domain"
+      type="text"
+      placeholder="exemplo.com"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button class="primary search-btn" id="searchBtn">
+      🔎 CONSULTAR
+    </button>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span>ENCONTRADOS</span>
+      <strong id="total">0</strong>
+    </div>
+    <div class="stat">
+      <span>EXIBIDOS</span>
+      <strong id="visible">0</strong>
+    </div>
+    <div class="stat">
+      <span>STATUS</span>
+      <strong id="status" style="font-size:15px">AGUARDANDO</strong>
+    </div>
+  </div>
+
+  <div class="progress" id="progress">
+    <div id="progressBar"></div>
+  </div>
+
+  <p class="message" id="message">
+    Aguardando um domínio para iniciar.
+  </p>
+</section>
+
+<section class="panel">
+  <div class="results-header">
+    <h2>Subdomínios encontrados</h2>
+
+    <div class="actions">
+      <button class="secondary" id="copyAll">
+        📋 COPIAR
+      </button>
+      <button class="secondary" id="export">
+        ↓ TXT
+      </button>
+      <button class="secondary" id="clear">
+        LIMPAR
+      </button>
+    </div>
+  </div>
+
+  <input
+    class="filter"
+    id="filter"
+    placeholder="⌕ Filtrar subdomínios..."
+    autocomplete="off"
+  >
+
+  <div class="result-list" id="results">
+    <div class="empty">
+      <div style="font-size:32px;margin-bottom:12px">🌐</div>
+      Nenhum resultado encontrado ainda.
+      <br>Digite um domínio para começar.
+    </div>
+  </div>
+</section>
+
+<footer>
+  KALIDADE CONSULTA SUBDOMÍNIOS © 2026
+  <br><br>
+  Pesquisa passiva baseada em Certificate Transparency.
+</footer>
+
+</div>
+
+<script>
+const API = "https://crt.live/txt/";
+
+const $ = id => document.getElementById(id);
+
+let subdomains = [];
+let controller = null;
+
+function setStatus(text) {
+  $("status").textContent = text;
+}
+
+function setMessage(text) {
+  $("message").textContent = text;
+}
+
+function normalizeDomain(value) {
+  let domain = value.trim().toLowerCase();
+
+  domain = domain.replace(/^https?:\/\//, "");
+  domain = domain.split("/")[0].split("?")[0].split("#")[0];
+  domain = domain.replace(/\.$/, "");
+
+  if (
+    domain.length > 253 ||
+    !/^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(domain)
+  ) {
+    throw new Error("Digite um domínio válido. Exemplo: exemplo.com");
+  }
+
+  return domain;
+}
+
+function render() {
+  const filter = $("filter").value.toLowerCase().trim();
+
+  const filtered = subdomains.filter(item =>
+    item.toLowerCase().includes(filter)
+  );
+
+  $("total").textContent = subdomains.length;
+  $("visible").textContent = filtered.length;
+
+  const container = $("results");
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty">
+        Nenhum subdomínio corresponde ao filtro.
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = "";
+
+  const fragment = document.createDocumentFragment();
+
+  filtered.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "result";
+
+    const code = document.createElement("code");
+    code.textContent = item;
+
+    const button = document.createElement("button");
+    button.textContent = "COPIAR";
+
+    button.addEventListener("click", () => copyText(item));
+
+    row.append(code, button);
+    fragment.appendChild(row);
+  });
+
+  container.appendChild(fragment);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    setMessage("Copiado com sucesso!");
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+    setMessage("Copiado!");
+  }
+}
+
+async function consult() {
+  let domain;
+
+  try {
+    domain = normalizeDomain($("domain").value);
+  } catch (error) {
+    setMessage(error.message);
+    return;
+  }
+
+  if (controller) controller.abort();
+
+  controller = new AbortController();
+
+  subdomains = [];
+  render();
+
+  $("progress").style.display = "block";
+  $("progressBar").style.width = "15%";
+
+  $("searchBtn").disabled = true;
+  $("searchBtn").textContent = "CONSULTANDO...";
+
+  setStatus("BUSCANDO");
+  setMessage("Conectando à API crt.live...");
+
+  try {
+    const url = API + encodeURIComponent(domain);
+
+    const response = await fetch(url, {
+      method: "GET",
+      signal: controller.signal,
+      headers: {
+        "Accept": "text/plain"
+      }
+    });
+
+    $("progressBar").style.width = "65%";
+
+    if (!response.ok) {
+      throw new Error("Erro HTTP: " + response.status);
+    }
+
+    const data = await response.text();
+
+    $("progressBar").style.width = "85%";
+
+    const unique = new Set();
+
+    data.split(/\r?\n/).forEach(line => {
+      const host = line.trim().toLowerCase();
+
+      if (!host) return;
+
+      // Aceita somente o domínio consultado e seus subdomínios.
+      const clean = host.replace(/^\*\./, "");
+
+      if (
+        clean === domain ||
+        clean.endsWith("." + domain)
+      ) {
+        unique.add(host);
+      }
+    });
+
+    subdomains = [...unique].sort();
+
+    render();
+
+    $("progressBar").style.width = "100%";
+
+    setStatus("CONCLUÍDO");
+
+    setMessage(
+      subdomains.length +
+      " resultado(s) encontrado(s) para " + domain + "."
+    );
+
+    if (!subdomains.length) {
+      setMessage("A consulta terminou, mas nenhum resultado foi encontrado.");
+    }
+
+  } catch (error) {
+    if (error.name === "AbortError") return;
+
+    console.error(error);
+
+    setStatus("ERRO");
+
+    setMessage(
+      "Não foi possível realizar a consulta. " +
+      "Verifique sua conexão ou se a API permite acesso CORS."
+    );
+
+  } finally {
+    $("searchBtn").disabled = false;
+    $("searchBtn").textContent = "🔎 CONSULTAR";
+
+    if (controller && controller.signal.aborted) {
+      $("progress").style.display = "none";
+    }
+  }
+}
+
+$("searchBtn").addEventListener("click", consult);
+
+$("domain").addEventListener("keydown", event => {
+  if (event.key === "Enter") consult();
+});
+
+$("filter").addEventListener("input", render);
+
+$("copyAll").addEventListener("click", () => {
+  if (!subdomains.length) {
+    setMessage("Não existem resultados para copiar.");
+    return;
+  }
+
+  copyText(subdomains.join("\n"));
+});
+
+$("export").addEventListener("click", () => {
+  if (!subdomains.length) {
+    setMessage("Não existem resultados para exportar.");
+    return;
+  }
+
+  const blob = new Blob(
+    [subdomains.join("\n")],
+    {type: "text/plain;charset=utf-8"}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "kalidade-subdominios.txt";
+  a.click();
+
+  URL.revokeObjectURL(url);
+});
+
+$("clear").addEventListener("click", () => {
+  if (controller) controller.abort();
+
+  subdomains = [];
+  $("filter").value = "";
+  $("domain").value = "";
+
+  render();
+
+  $("progress").style.display = "none";
+  $("progressBar").style.width = "0%";
+
+  setStatus("AGUARDANDO");
+  setMessage("Resultados removidos. Pronto para nova consulta.");
+});
+</script>
+
+</body>
+</html>
