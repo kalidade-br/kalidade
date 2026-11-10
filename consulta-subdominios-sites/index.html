@@ -1,637 +1,326 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080d19">
-<title>KALIDADE | Consulta Subdomínios</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>consulta-subdominios-sites</title>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background: #080d19;
-  color: #e8efff;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.container {
-  max-width: 950px;
-  margin: auto;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin: 25px 0 35px;
-}
-
-.logo {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg,#087cff,#00c6ff);
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  font-size: 23px;
-  font-weight: bold;
-  color: white;
-  box-shadow: 0 0 25px #087cff55;
-}
-
-header h1 {
-  font-size: 19px;
-  letter-spacing: 1px;
-}
-
-header p {
-  color: #7386a7;
-  font-size: 11px;
-  margin-top: 5px;
-  letter-spacing: 2px;
-}
-
-.status {
-  margin-left: auto;
-  color: #35db9b;
-  font-size: 12px;
-}
-
-.panel {
-  background: #101827;
-  border: 1px solid #1c2b42;
-  border-radius: 16px;
-  padding: 25px;
-  margin-bottom: 20px;
-}
-
-h2 {
-  font-size: 20px;
-  margin-bottom: 9px;
-}
-
-.subtitle {
-  color: #8292ad;
-  font-size: 13px;
-  margin-bottom: 25px;
-  line-height: 1.6;
-}
-
-label {
-  display: block;
-  font-size: 12px;
-  color: #9aacc8;
-  margin-bottom: 9px;
-}
-
-.input-area {
-  display: flex;
-  gap: 10px;
-}
-
-input {
-  width: 100%;
-  min-width: 0;
-  background: #080f1d;
-  border: 1px solid #263b59;
-  padding: 15px;
-  color: white;
-  border-radius: 10px;
-  outline: none;
-  font-size: 14px;
-}
-
-input:focus {
-  border-color: #1688ff;
-  box-shadow: 0 0 0 3px #1688ff19;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: 9px;
-  padding: 13px 18px;
-  font-weight: bold;
-  transition: .2s;
-  white-space: nowrap;
-}
-
-button:hover {
-  filter: brightness(1.2);
-  transform: translateY(-1px);
-}
-
-.primary {
-  background: linear-gradient(135deg,#087cff,#00aaff);
-  color: white;
-}
-
-.secondary {
-  background: #1c2b42;
-  color: #c5d8f5;
-}
-
-.search-btn {
-  min-width: 145px;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 12px;
-  margin-top: 22px;
-}
-
-.stat {
-  padding: 17px;
-  border: 1px solid #203149;
-  background: #0b1422;
-  border-radius: 12px;
-}
-
-.stat span {
-  display: block;
-  color: #8292ad;
-  font-size: 11px;
-  margin-bottom: 9px;
-}
-
-.stat strong {
-  font-size: 25px;
-  color: #42a5ff;
-}
-
-.progress {
-  width: 100%;
-  height: 5px;
-  background: #1b2a40;
-  border-radius: 10px;
-  margin-top: 20px;
-  overflow: hidden;
-  display: none;
-}
-
-.progress div {
-  height: 100%;
-  width: 0%;
-  background: #168cff;
-  transition: width .3s;
-}
-
-.message {
-  margin-top: 14px;
-  color: #8292ad;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.results-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.results-header h2 {
-  margin: 0;
-}
-
-.actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.actions button {
-  font-size: 11px;
-  padding: 10px 12px;
-}
-
-.filter {
-  margin-bottom: 15px;
-}
-
-.result-list {
-  max-height: 480px;
-  overflow-y: auto;
-}
-
-.result {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 13px;
-  background: #0b1422;
-  border: 1px solid #1b2a40;
-  border-radius: 9px;
-  margin-bottom: 8px;
-  animation: appear .2s ease;
-}
-
-.result code {
-  font-size: 13px;
-  color: #75baff;
-  overflow-wrap: anywhere;
-}
-
-.result button {
-  padding: 8px 11px;
-  font-size: 11px;
-  background: #183353;
-  color: white;
-}
-
-@keyframes appear {
-  from {opacity:0;transform:translateY(5px)}
-  to {opacity:1;transform:translateY(0)}
-}
-
-.empty {
-  text-align: center;
-  color: #71839e;
-  padding: 45px 10px;
-  font-size: 13px;
-}
-
-footer {
-  text-align: center;
-  color: #53647d;
-  font-size: 11px;
-  padding: 20px;
-}
-
-@media(max-width:600px) {
-  body {padding: 13px}
-  .panel {padding: 18px}
-  .input-area {flex-direction: column}
-  .search-btn {width: 100%}
-  .stats {gap: 7px}
-  .stat {padding: 12px}
-  .stat strong {font-size: 21px}
-  .result {align-items: flex-start}
-}
+*{box-sizing:border-box}
+body{margin:0;background:#080b12;color:#e7eaf2;font-family:Arial,sans-serif}
+header{padding:22px;background:#101725;border-bottom:1px solid #26334a}
+h2{margin:0;color:#55a5ff;font-size:19px}
+small{color:#8493a9}
+main{max-width:1100px;margin:auto;padding:18px}
+input,select,button{background:#111b2b;color:white;border:1px solid #293951;padding:12px;border-radius:8px}
+input{width:100%;margin:8px 0}
+button{cursor:pointer}
+button:hover{background:#1c3454}
+.primary{background:#1265c7;border:0}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.controls button{flex:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:15px 0}
+.stat{background:#111b2b;padding:15px;border-radius:10px}
+.stat b{display:block;font-size:22px;color:#55a5ff}
+#results{display:grid;gap:8px;margin-top:15px}
+.item{background:#111b2b;padding:13px;border:1px solid #293951;border-radius:9px;min-width:0}
+.item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.domain{overflow-wrap:anywhere;font-size:14px}
+.status{font-size:11px;padding:5px 8px;border-radius:5px;background:#293951}
+.ok{color:#55df9a}.bad{color:#ff7474}.unknown{color:#ffc76b}
+.item button{font-size:11px;padding:8px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+#more{width:100%;margin-top:15px}
+#preview{display:none;position:fixed;inset:0;background:#000d;z-index:10;padding:15px}
+.modal{background:#101725;border:1px solid #34435a;border-radius:12px;height:100%;max-width:1000px;margin:auto;padding:15px;display:flex;flex-direction:column;gap:10px}
+.modal iframe{width:100%;flex:1;background:white;border:0}
+#source{width:100%;height:100%;background:#080b12;color:#a8d5ff;resize:none;font-family:monospace;font-size:12px}
+footer{text-align:center;padding:25px;color:#68788e;font-size:12px}
 </style>
 </head>
-
 <body>
-<div class="container">
 
 <header>
-  <div class="logo">K</div>
-  <div>
-    <h1>KALIDADE</h1>
-    <p>CONSULTA SUBDOMÍNIOS</p>
-  </div>
-  <div class="status">● SISTEMA ONLINE</div>
+<h2>consulta-subdominios-sites</h2>
+<small>Descoberta de subdomínios e verificação HTTP</small>
 </header>
 
-<section class="panel">
-  <h2>Consulta de domínio</h2>
-  <p class="subtitle">
-    Encontre subdomínios através de registros públicos
-    de certificados SSL.
-  </p>
+<main>
+<label>DOMÍNIO PRINCIPAL</label>
+<input id="domain" placeholder="example.com">
 
-  <label for="domain">DOMÍNIO ALVO</label>
-
-  <div class="input-area">
-    <input
-      id="domain"
-      type="text"
-      placeholder="exemplo.com"
-      autocomplete="off"
-      spellcheck="false"
-    >
-    <button class="primary search-btn" id="searchBtn">
-      🔎 CONSULTAR
-    </button>
-  </div>
-
-  <div class="stats">
-    <div class="stat">
-      <span>ENCONTRADOS</span>
-      <strong id="total">0</strong>
-    </div>
-    <div class="stat">
-      <span>EXIBIDOS</span>
-      <strong id="visible">0</strong>
-    </div>
-    <div class="stat">
-      <span>STATUS</span>
-      <strong id="status" style="font-size:15px">AGUARDANDO</strong>
-    </div>
-  </div>
-
-  <div class="progress" id="progress">
-    <div id="progressBar"></div>
-  </div>
-
-  <p class="message" id="message">
-    Aguardando um domínio para iniciar.
-  </p>
-</section>
-
-<section class="panel">
-  <div class="results-header">
-    <h2>Subdomínios encontrados</h2>
-
-    <div class="actions">
-      <button class="secondary" id="copyAll">
-        📋 COPIAR
-      </button>
-      <button class="secondary" id="export">
-        ↓ TXT
-      </button>
-      <button class="secondary" id="clear">
-        LIMPAR
-      </button>
-    </div>
-  </div>
-
-  <input
-    class="filter"
-    id="filter"
-    placeholder="⌕ Filtrar subdomínios..."
-    autocomplete="off"
-  >
-
-  <div class="result-list" id="results">
-    <div class="empty">
-      <div style="font-size:32px;margin-bottom:12px">🌐</div>
-      Nenhum resultado encontrado ainda.
-      <br>Digite um domínio para começar.
-    </div>
-  </div>
-</section>
-
-<footer>
-  KALIDADE CONSULTA SUBDOMÍNIOS © 2026
-  <br><br>
-  Pesquisa passiva baseada em Certificate Transparency.
-</footer>
-
+<div class="controls">
+<button class="primary" onclick="searchDomains()">CONSULTAR</button>
+<button onclick="clearAll()">LIMPAR</button>
 </div>
 
+<label>FILTRAR RESULTADOS</label>
+<input id="filter" placeholder="Pesquisar subdomínio..." oninput="render()">
+
+<label>MODO DE REQUISIÇÃO GET</label>
+<select id="mode" style="width:100%;margin:8px 0">
+<option value="proxy">Proxy CORS</option>
+<option value="cors">Fetch direto (CORS)</option>
+<option value="opaque">Direto sem CORS (opaco)</option>
+</select>
+
+<input id="proxy" value="https://api-kalidade.vercel.app/api/proxy.js?url=" placeholder="URL do proxy">
+
+<div class="stats">
+<div class="stat"><b id="total">0</b><small>Encontrados</small></div>
+<div class="stat"><b id="shown">0</b><small>Renderizados</small></div>
+<div class="stat"><b id="tested">0</b><small>Testados</small></div>
+</div>
+
+<div class="controls">
+<button onclick="testAll()">TESTAR TODOS</button>
+<button onclick="exportResults()">EXPORTAR TXT</button>
+</div>
+
+<div id="message"><small>Aguardando consulta...</small></div>
+<div id="results"></div>
+
+<button id="more" class="primary" onclick="loadMore()" style="display:none">
+CARREGAR MAIS 100
+</button>
+</main>
+
+<div id="preview">
+<div class="modal">
+<div class="item-top">
+<b id="previewTitle">Preview</b>
+<div class="actions">
+<button onclick="showSource()">CÓDIGO HTML</button>
+<button onclick="showVisual()">VISUALIZAR</button>
+<button onclick="closePreview()">FECHAR</button>
+</div>
+</div>
+<iframe id="frame" sandbox=""></iframe>
+<textarea id="source" style="display:none" readonly></textarea>
+</div>
+</div>
+
+<footer>KALIDADE CONSULTA SUBDOMÍNIOS</footer>
+
 <script>
-const API = "https://api-kalidade.vercel.app/api/proxy.js?url=https://crt.live/txt/";
+let domains=[];
+let visible=0;
+let results={};
+let tested=0;
+let testing=false;
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-let subdomains = [];
-let controller = null;
-
-function setStatus(text) {
-  $("status").textContent = text;
+function clearAll(){
+ domains=[];
+ visible=0;
+ results={};
+ tested=0;
+ $("results").innerHTML="";
+ $("total").textContent=0;
+ $("shown").textContent=0;
+ $("tested").textContent=0;
+ $("message").textContent="Aguardando consulta...";
+ $("more").style.display="none";
 }
 
-function setMessage(text) {
-  $("message").textContent = text;
+async function searchDomains(){
+ const domain=$("domain").value.trim()
+  .replace(/^https?:\/\//,"").replace(/\/.*$/,"");
+
+ if(!domain)return alert("Digite um domínio.");
+
+ clearAll();
+ $("message").textContent="Consultando crt.live...";
+
+ try{
+  const url="https://crt.live/txt/"+encodeURIComponent(domain);
+  const response=await fetch(url);
+  if(!response.ok)throw new Error("HTTP "+response.status);
+
+  const data=await response.text();
+
+  domains=[...new Set(
+   data.split(/\r?\n/)
+   .map(x=>x.trim().replace(/^\*\./,""))
+   .filter(x=>x && x.includes(".") && !x.includes("*"))
+  )];
+
+  $("total").textContent=domains.length;
+  $("message").textContent=domains.length+
+   " subdomínios encontrados.";
+
+  loadMore();
+ }catch(e){
+  $("message").textContent="Erro na consulta: "+e.message;
+ }
 }
 
-function normalizeDomain(value) {
-  let domain = value.trim().toLowerCase();
+function loadMore(){
+ const next=domains.slice(visible,visible+100);
+ visible+=next.length;
 
-  domain = domain.replace(/^https?:\/\//, "");
-  domain = domain.split("/")[0].split("?")[0].split("#")[0];
-  domain = domain.replace(/\.$/, "");
+ const fragment=document.createDocumentFragment();
 
-  if (
-    domain.length > 253 ||
-    !/^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(domain)
-  ) {
-    throw new Error("Digite um domínio válido. Exemplo: exemplo.com");
-  }
+ next.forEach(domain=>{
+  const div=document.createElement("div");
+  div.className="item";
 
-  return domain;
+  const top=document.createElement("div");
+  top.className="item-top";
+
+  const name=document.createElement("span");
+  name.className="domain";
+  name.textContent=domain;
+
+  const status=document.createElement("span");
+  status.className="status unknown";
+  status.textContent="NÃO TESTADO";
+
+  const actions=document.createElement("div");
+  actions.className="actions";
+
+  const btn=document.createElement("button");
+  btn.textContent="GET / TESTAR";
+  btn.onclick=()=>testSite(domain);
+
+  actions.appendChild(btn);
+  top.append(name,status);
+  div.append(top,actions);
+  fragment.appendChild(div);
+ });
+
+ $("results").appendChild(fragment);
+ $("shown").textContent=visible;
+ $("more").style.display=visible<domains.length?"block":"none";
 }
 
-function render() {
-  const filter = $("filter").value.toLowerCase().trim();
+function render(){
+ const term=$("filter").value.toLowerCase();
 
-  const filtered = subdomains.filter(item =>
-    item.toLowerCase().includes(filter)
-  );
+ document.querySelectorAll(".item").forEach(el=>{
+  const name=el.querySelector(".domain").textContent;
+  el.style.display=name.toLowerCase().includes(term)?"block":"none";
+ });
+}
 
-  $("total").textContent = subdomains.length;
-  $("visible").textContent = filtered.length;
+async function getURL(domain){
+ const mode=$("mode").value;
+ const target="https://"+domain+"/";
+ if(mode==="proxy"){
+  return $("proxy").value+encodeURIComponent(target);
+ }
+ return target;
+}
 
-  const container = $("results");
+async function testSite(domain){
+ const items=[...document.querySelectorAll(".item")];
+ const item=items.find(x=>x.querySelector(".domain").textContent===domain);
+ if(!item)return;
 
-  if (!filtered.length) {
-    container.innerHTML = `
-      <div class="empty">
-        Nenhum subdomínio corresponde ao filtro.
-      </div>`;
-    return;
-  }
+ const status=item.querySelector(".status");
+ status.className="status unknown";
+ status.textContent="TESTANDO...";
 
-  container.innerHTML = "";
+ const mode=$("mode").value;
 
-  const fragment = document.createDocumentFragment();
-
-  filtered.forEach(item => {
-    const row = document.createElement("div");
-    row.className = "result";
-
-    const code = document.createElement("code");
-    code.textContent = item;
-
-    const button = document.createElement("button");
-    button.textContent = "COPIAR";
-
-    button.addEventListener("click", () => copyText(item));
-
-    row.append(code, button);
-    fragment.appendChild(row);
+ try{
+  const url=await getURL(domain);
+  const response=await fetch(url,{
+   method:"GET",
+   mode:mode==="opaque"?"no-cors":"cors",
+   cache:"no-store",
+   redirect:"follow"
   });
 
-  container.appendChild(fragment);
+  tested++;
+  $("tested").textContent=tested;
+
+  if(response.type==="opaque"){
+   status.textContent="RESPOSTA OPACA";
+   status.className="status unknown";
+   results[domain]={status:"OPACO"};
+   return;
+  }
+
+  const body=await response.text();
+  const code=response.status;
+
+  results[domain]={
+   status:code,
+   html:body,
+   url:response.url
+  };
+
+  status.textContent=code+" "+response.statusText;
+  status.className="status "+(response.ok?"ok":"bad");
+
+  if(response.ok){
+   const previewBtn=document.createElement("button");
+   previewBtn.textContent="VER CÓDIGO / PREVIEW";
+   previewBtn.onclick=()=>openPreview(domain);
+   item.querySelector(".actions").appendChild(previewBtn);
+  }
+
+ }catch(e){
+  status.textContent="ERRO DE REDE / CORS";
+  status.className="status bad";
+  results[domain]={status:"ERRO",error:e.message};
+ }
 }
 
-async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    setMessage("Copiado com sucesso!");
-  } catch {
-    const area = document.createElement("textarea");
-    area.value = text;
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand("copy");
-    area.remove();
-    setMessage("Copiado!");
-  }
-}
+async function testAll(){
+ if(testing)return;
+ testing=true;
 
-async function consult() {
-  let domain;
+ const pending=domains.filter(d=>!results[d]);
 
-  try {
-    domain = normalizeDomain($("domain").value);
-  } catch (error) {
-    setMessage(error.message);
-    return;
-  }
-
-  if (controller) controller.abort();
-
-  controller = new AbortController();
-
-  subdomains = [];
-  render();
-
-  $("progress").style.display = "block";
-  $("progressBar").style.width = "15%";
-
-  $("searchBtn").disabled = true;
-  $("searchBtn").textContent = "CONSULTANDO...";
-
-  setStatus("BUSCANDO");
-  setMessage("Conectando à API crt.live...");
-
-  try {
-    const url = API + encodeURIComponent(domain);
-
-    const response = await fetch(url, {
-      method: "GET",
-      signal: controller.signal,
-      headers: {
-        "Accept": "text/plain"
-      }
-    });
-
-    $("progressBar").style.width = "65%";
-
-    if (!response.ok) {
-      throw new Error("Erro HTTP: " + response.status);
-    }
-
-    const data = await response.text();
-
-    $("progressBar").style.width = "85%";
-
-    const unique = new Set();
-
-    data.split(/\r?\n/).forEach(line => {
-      const host = line.trim().toLowerCase();
-
-      if (!host) return;
-
-      // Aceita somente o domínio consultado e seus subdomínios.
-      const clean = host.replace(/^\*\./, "");
-
-      if (
-        clean === domain ||
-        clean.endsWith("." + domain)
-      ) {
-        unique.add(host);
-      }
-    });
-
-    subdomains = [...unique].sort();
-
-    render();
-
-    $("progressBar").style.width = "100%";
-
-    setStatus("CONCLUÍDO");
-
-    setMessage(
-      subdomains.length +
-      " resultado(s) encontrado(s) para " + domain + "."
-    );
-
-    if (!subdomains.length) {
-      setMessage("A consulta terminou, mas nenhum resultado foi encontrado.");
-    }
-
-  } catch (error) {
-    if (error.name === "AbortError") return;
-
-    console.error(error);
-
-    setStatus("ERRO");
-
-    setMessage(
-      "Não foi possível realizar a consulta. " +
-      "Verifique sua conexão ou se a API permite acesso CORS."
-    );
-
-  } finally {
-    $("searchBtn").disabled = false;
-    $("searchBtn").textContent = "🔎 CONSULTAR";
-
-    if (controller && controller.signal.aborted) {
-      $("progress").style.display = "none";
-    }
-  }
-}
-
-$("searchBtn").addEventListener("click", consult);
-
-$("domain").addEventListener("keydown", event => {
-  if (event.key === "Enter") consult();
-});
-
-$("filter").addEventListener("input", render);
-
-$("copyAll").addEventListener("click", () => {
-  if (!subdomains.length) {
-    setMessage("Não existem resultados para copiar.");
-    return;
-  }
-
-  copyText(subdomains.join("\n"));
-});
-
-$("export").addEventListener("click", () => {
-  if (!subdomains.length) {
-    setMessage("Não existem resultados para exportar.");
-    return;
-  }
-
-  const blob = new Blob(
-    [subdomains.join("\n")],
-    {type: "text/plain;charset=utf-8"}
+ for(let i=0;i<pending.length;i+=5){
+  await Promise.all(
+   pending.slice(i,i+5).map(testSite)
   );
+ }
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+ testing=false;
+}
 
-  a.href = url;
-  a.download = "kalidade-subdominios.txt";
-  a.click();
+function openPreview(domain){
+ const result=results[domain];
+ if(!result || !result.html)return;
 
-  URL.revokeObjectURL(url);
-});
+ $("previewTitle").textContent=domain+" — 200 OK";
+ $("preview").style.display="block";
+ $("source").value=result.html;
+ showVisual();
+}
 
-$("clear").addEventListener("click", () => {
-  if (controller) controller.abort();
+function showSource(){
+ $("frame").style.display="none";
+ $("source").style.display="block";
+}
 
-  subdomains = [];
-  $("filter").value = "";
-  $("domain").value = "";
+function showVisual(){
+ $("source").style.display="none";
+ $("frame").style.display="block";
+ $("frame").srcdoc=$("source").value;
+}
 
-  render();
+function closePreview(){
+ $("preview").style.display="none";
+ $("frame").srcdoc="";
+}
 
-  $("progress").style.display = "none";
-  $("progressBar").style.width = "0%";
+function exportResults(){
+ const content=Object.entries(results)
+  .map(([domain,r])=>domain+" | "+r.status)
+  .join("\n");
 
-  setStatus("AGUARDANDO");
-  setMessage("Resultados removidos. Pronto para nova consulta.");
-});
+ const blob=new Blob([content],{type:"text/plain"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="resultados.txt";
+ a.click();
+ URL.revokeObjectURL(a.href);
+}
 </script>
-
 </body>
 </html>
