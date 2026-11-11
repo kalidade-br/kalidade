@@ -11,6 +11,12 @@
     "plataforma": "android",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqQSTwNiBSoDbB7huUexRCRF24Y2e2B8rJVikS1pJAdQ&s"
   },
+ {
+    "nome": "CPU-Z",
+    "link": "appstore/",
+    "plataforma": "windows",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqQSTwNiBSoDbB7huUexRCRF24Y2e2B8rJVikS1pJAdQ&s"
+  },
   {
     "nome": "ZArchiver",
     "link": "appstore/zarchiver.apk",
