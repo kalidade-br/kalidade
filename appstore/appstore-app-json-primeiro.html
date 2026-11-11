@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppStore Universal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #242442;
+            --text: #e0e0ff;
+            --text-muted: #8a8ab5;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --border: rgba(255,255,255,0.06);
+            --radius: 16px;
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .bg-gradient {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 90%, rgba(236,72,153,0.08) 0%, transparent 50%);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        header h1 {
+            font-size: 2.8rem; font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header p { color: var(--text-muted); margin-top: 8px; font-size: 1.1rem; }
+        .search-box {
+            position: relative; max-width: 600px; margin: 0 auto 40px;
+        }
+        .search-box input {
+            width: 100%; padding: 16px 24px 16px 52px;
+            border-radius: 50px; border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text);
+            font-size: 1rem; outline: none; transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow);
+        }
+        .search-box input::placeholder { color: var(--text-muted); }
+        .search-box svg {
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            width: 20px; height: 20px; color: var(--text-muted);
+        }
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            display: flex; align-items: center; gap: 18px;
+            transition: all 0.3s ease;
+            cursor: pointer; text-decoration: none;
+        }
+        .app-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            border-color: rgba(99,102,241,0.2);
+        }
+        .app-card.hidden { display: none; }
+        .app-icon {
+            width: 64px; height: 64px; border-radius: 16px;
+            object-fit: cover; flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        .app-info { flex: 1; min-width: 0; }
+        .app-name {
+            font-size: 1.1rem; font-weight: 600; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .app-platform {
+            font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;
+            display: flex; gap: 8px;
+        }
+        .badge {
+            padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 500;
+        }
+        .badge.android { background: rgba(61,220,132,0.15); color: #3ddc84; }
+        .badge.windows { background: rgba(0,164,239,0.15); color: #00a4ef; }
+        .download-btn {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: var(--accent); border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease; flex-shrink: 0;
+        }
+        .download-btn:hover { background: #818cf8; transform: scale(1.08); }
+        .download-btn svg { width: 18px; height: 18px; color: white; }
+        .no-results {
+            text-align: center; padding: 60px 20px; color: var(--text-muted);
+            display: none;
+        }
+        .no-results.show { display: block; }
+        .no-results svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.4; }
+        .no-results h3 { color: var(--text); margin-bottom: 8px; }
+        .count { text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; }
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .apps-grid { grid-template-columns: 1fr; }
+        }
+
+        .sync {
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+            gap: 10px; margin: -8px 0 24px; font-size: 0.8rem; color: var(--text-muted);
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); }
+        .dot.ok { background: #3ddc84; }
+        .dot.off { background: #f59e0b; }
+        .dot.load { background: var(--accent); animation: pulse 1s infinite; }
+        @keyframes pulse { 50% { opacity: 0.3; } }
+        .sync button {
+            background: none; border: 1px solid var(--border); color: var(--text);
+            border-radius: 20px; padding: 4px 12px; font: inherit; cursor: pointer;
+        }
+        .sync button:hover { border-color: var(--accent); }
+        .sync button:disabled { opacity: 0.5; cursor: default; }
+        .sync button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .badge.arquivo { background: rgba(138,138,181,0.15); color: var(--text-muted); }
+        @media (prefers-reduced-motion: reduce) { .dot.load { animation: none; } }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="container">
+        <header>
+            <h1>AppStore Universal</h1>
+            <p>Encontre e baixe seus aplicativos favoritos</p>
+        </header>
+        <div class="search-box">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar aplicativos..." autocomplete="off">
+        </div>
+        <div class="count" id="countText">Carregando...</div>
+        <div class="sync"><span class="dot" id="syncDot"></span><span id="syncText">Conectando…</span><button type="button" id="refreshBtn">Atualizar</button></div>
+        <div class="apps-grid" id="appsGrid"></div>
+        <div class="no-results" id="noResults">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <h3>Nenhum app encontrado</h3>
+            <p>Tente buscar com outro termo</p>
+        </div>
+    </div>
+    <script>
+(() => {
+    const BASE_URL = 'https://kalidade-br.github.io/kalidade/appstore';
+    const API = 'https://api-kalidade.vercel.app/api/github.js?repo=kalidade-br/kalidade';
+    const PASTA = 'appstore';
+    const CHAVE = 'appstore_lista_v2';
+    const IGNORAR = ['html','htm','json','js','css','md','txt','png','jpg','jpeg','gif','webp','svg','ico'];
+
+    const $ = id => document.getElementById(id);
+    const grid = $('appsGrid'), noRes = $('noResults'), count = $('countText');
+    const dot = $('syncDot'), syncText = $('syncText'), btn = $('refreshBtn');
+    let apps = [], q = '', salvoEm = 0;
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const abs = l => /^https?:\/\//i.test(String(l || '')) ? l : BASE_URL + '/' + String(l || '').replace(/^\.?\//, '');
+    const chaveArq = l => {
+        const f = String(l || '').split(/[?#]/)[0].split('/').pop();
+        try { return decodeURIComponent(f).toLowerCase(); } catch (e) { return f.toLowerCase(); }
+    };
+    const bonito = f => f.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\b[a-z]/g, c => c.toUpperCase());
+    const plataforma = e => ['apk','xapk','apks','aab'].includes(e) ? 'android' : ['exe','msi'].includes(e) ? 'windows' : 'arquivo';
+    const hora = t => new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const dia = t => new Date(t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const setStatus = (k, t) => { dot.className = 'dot ' + k; syncText.textContent = t; };
+
+    const avatar = nome => {
+        let h = 0;
+        for (const c of nome) h = (h * 31 + c.charCodeAt(0)) % 360;
+        const l = (nome.match(/[a-z0-9]/i) || ['?'])[0].toUpperCase();
+        return 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="hsl(${h} 55% 42%)"/><text x="32" y="43" font-family="sans-serif" font-size="30" font-weight="700" fill="#fff" text-anchor="middle">${l}</text></svg>`);
+    };
+
+    const badges = a => a.plataforma === 'android' ? '<span class="badge android">Android</span>'
+        : a.plataforma === 'windows' ? '<span class="badge windows">Windows</span>'
+        : a.plataforma === 'ambos' ? '<span class="badge android">Android</span><span class="badge windows">Windows</span>'
+        : `<span class="badge arquivo">${esc(a.ext || 'Arquivo')}</span>`;
+
+    function lerSalvo() {
+        try {
+            const c = JSON.parse(localStorage.getItem(CHAVE));
+            return c && Array.isArray(c.apps) && c.apps.length ? c : null;
+        } catch (e) { return null; }
+    }
+    function salvar(lista) {
+        salvoEm = Date.now();
+        try { localStorage.setItem(CHAVE, JSON.stringify({ t: salvoEm, apps: lista })); } catch (e) {}
+    }
+
+    // Normaliza o app.json. Ele é a primeira fonte carregada e exibida.
+    function normalizarManifest(man) {
+        if (!Array.isArray(man)) throw new Error('app.json não contém uma lista');
+        return man.filter(a => a && a.link && a.nome).map(a => ({
+            ...a,
+            link: abs(a.link),
+            plataforma: a.plataforma || plataforma((String(a.link).split(/[?#]/)[0].split('.').pop() || '').toLowerCase()),
+            ext: a.ext || (String(a.link).split(/[?#]/)[0].split('.').pop() || 'Arquivo').toUpperCase()
+        })).sort((x, y) => x.nome.localeCompare(y.nome, 'pt-BR', { sensitivity: 'base' }));
+    }
+
+    function daArvore(files) {
+        const out = [];
+        const andar = no => Object.values(no || {}).forEach(f => {
+            if (f.type === 'folder') return andar(f.children || {});
+            if (!f.path) return;
+            const arq = f.path.split('/').pop();
+            const ext = arq.includes('.') ? arq.split('.').pop().toLowerCase() : '';
+            if (!ext || IGNORAR.includes(ext)) return;
+            out.push({ nome: bonito(arq), link: f.raw || abs(f.path), plataforma: plataforma(ext), ext: ext.toUpperCase() });
+        });
+        andar((files[PASTA] || {}).children || {});
+        return out;
+    }
+
+    // A API entra depois do app.json: completa ícones/metadados e inclui arquivos novos.
+    function juntar(tree, man) {
+        const m = new Map((man || []).filter(a => a && a.link && a.nome).map(a => [chaveArq(a.link), a]));
+        const out = tree.map(t => {
+            const k = chaveArq(t.link), a = m.get(k);
+            m.delete(k);
+            return a ? { ...t, ...a, link: abs(a.link) } : t;
+        });
+        m.forEach(a => out.push({ ...a, link: abs(a.link) }));
+        return out.sort((x, y) => x.nome.localeCompare(y.nome, 'pt-BR', { sensitivity: 'base' }));
+    }
+
+    function render() {
+        grid.innerHTML = '';
+        const lista = q ? apps.filter(a => String(a.nome || '').toLowerCase().includes(q)) : apps;
+        noRes.classList.toggle('show', apps.length > 0 && !lista.length);
+        count.textContent = `${lista.length} app${lista.length !== 1 ? 's' : ''} encontrado${lista.length !== 1 ? 's' : ''}`;
+        lista.forEach(a => {
+            const fb = avatar(a.nome || 'App');
+            const card = document.createElement('a');
+            card.className = 'app-card';
+            card.href = a.link;
+            card.target = '_blank';
+            card.rel = 'noopener';
+            card.innerHTML = `
+                <img src="${esc(a.icon || fb)}" data-fb="${fb}" alt="${esc(a.nome)}" class="app-icon" loading="lazy" onerror="this.onerror=null;this.src=this.dataset.fb">
+                <div class="app-info">
+                    <div class="app-name">${esc(a.nome)}</div>
+                    <div class="app-platform">${badges(a)}</div>
+                </div>
+                <div class="download-btn" title="Baixar">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                </div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    const pegar = async (url, ms = 15000) => {
+        const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
+        try {
+            const r = await fetch(url, { signal: c.signal, cache: 'no-store' });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return await r.json();
+        } finally { clearTimeout(t); }
+    };
+
+    // Etapa 1: busca app.json diretamente e mostra a lista sem esperar a API.
+    async function carregarManifest() {
+        setStatus('load', 'Carregando app.json…');
+        const man = await pegar(BASE_URL + '/app.json');
+        const lista = normalizarManifest(man);
+        if (!lista.length) throw new Error('app.json está vazio');
+        apps = lista;
+        salvar(apps);
+        render();
+        setStatus('ok', 'Lista carregada pelo app.json às ' + hora(salvoEm));
+    }
+
+    // Etapa 2: depois consulta a API para descobrir arquivos e atualizar a lista.
+    async function sincronizarAPI() {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        setStatus('load', 'app.json carregado — consultando API…');
+        try {
+            const r = await pegar(API);
+            if (!r || !r.success || !r.files) throw new Error('Resposta inválida da API');
+
+            let man = apps;
+            // Se a API trouxer uma versão atualizada do app.json, usa-a como metadados.
+            const manifestRaw = (r.files['app.json'] || {}).raw;
+            if (manifestRaw) {
+                try {
+                    const remoto = await pegar(manifestRaw);
+                    if (Array.isArray(remoto)) man = normalizarManifest(remoto);
+                } catch (e) {}
+            }
+
+            const lista = juntar(daArvore(r.files), man);
+            if (!lista.length) throw new Error('Lista vazia');
+            apps = lista;
+            salvar(lista);
+            render();
+            setStatus('ok', 'Atualizado pela API às ' + hora(salvoEm));
+        } catch (e) {
+            if (apps.length) setStatus('off', 'app.json carregado — API indisponível; exibindo a lista do arquivo');
+            else setStatus('off', 'Não foi possível consultar a API');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function iniciar() {
+        const salvo = lerSalvo();
+        if (salvo) {
+            apps = salvo.apps;
+            salvoEm = salvo.t;
+            render();
+            setStatus('off', 'Exibindo lista salva enquanto carrega app.json…');
+        }
+        try {
+            await carregarManifest();
+        } catch (e) {
+            if (!apps.length) {
+                count.textContent = 'Não foi possível carregar app.json';
+                setStatus('off', 'app.json indisponível — tentando API…');
+            } else {
+                setStatus('off', 'app.json indisponível — mantendo lista salva');
+            }
+        }
+        // A API sempre é chamada somente depois da tentativa de carregar app.json.
+        await sincronizarAPI();
+    }
+
+    $('searchInput').addEventListener('input', e => { q = e.target.value.toLowerCase().trim(); render(); });
+    btn.addEventListener('click', async () => {
+        try { await carregarManifest(); } catch (e) {}
+        await sincronizarAPI();
+    });
+    window.addEventListener('online', iniciar);
+    iniciar();
+})();
+</script>
+
+    <script>
+(function () {
+  if (location.hostname !== "kalidade.vercel.app") return;
+
+  fetch("https://kalidade.netlify.app" + location.pathname + location.search, {
+    method: "GET",
+    mode: "no-cors"
+  });
+})();
+</script>
+    
+<script>
+(() => {
+    const originalFetch = window.fetch.bind(window);
+    const origem = 'https://api-kalidade.vercel.app';
+    const destino = 'https://api-kalidade.netlify.app';
+
+    window.fetch = function (recurso, opcoes) {
+        try {
+            const url = new URL(
+                recurso instanceof Request ? recurso.url : recurso,
+                location.href
+            );
+
+            if (
+                url.origin === origem &&
+                url.pathname.startsWith('/api/')
+            ) {
+                const copia = destino + url.pathname + url.search;
+
+                originalFetch(copia, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                }).catch(() => {});
+            }
+        } catch (e) {}
+
+        return originalFetch(recurso, opcoes);
+    };
+})();
+</script>
+    
+</body>
+</html>
