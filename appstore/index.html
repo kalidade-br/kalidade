@@ -309,78 +309,7 @@
     else sincronizar();
 })();
 </script>
-<script>
-(() => {
-  if (document.getElementById("webbr-watermark")) return;
 
-  const a = document.createElement("a");
-  a.id = "webbr-watermark";
-  a.href = "https://github.com/kalidade-br";
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
-
-  a.innerHTML = `
-    <style>
-      @keyframes webbrFloat {
-        0%,100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-      }
-
-      @keyframes webbrGlow {
-        0%,100% { box-shadow: 0 6px 18px rgba(0,0,0,.25); }
-        50% { box-shadow: 0 8px 24px rgba(255,255,255,.15); }
-      }
-
-      #webbr-watermark{
-        position:fixed;
-        right:16px;
-        bottom:16px;
-        display:flex;
-        align-items:center;
-        gap:7px;
-        padding:7px 10px;
-        border-radius:999px;
-        text-decoration:none;
-        background:rgba(25,25,25,.55);
-        backdrop-filter:blur(10px);
-        -webkit-backdrop-filter:blur(10px);
-        border:1px solid rgba(255,255,255,.12);
-        color:#fff;
-        font:600 13px system-ui,sans-serif;
-        z-index:2147483647;
-        opacity:.75;
-        animation:webbrFloat 3s ease-in-out infinite,
-                  webbrGlow 3s ease-in-out infinite;
-        transition:.25s;
-      }
-
-      #webbr-watermark:hover{
-        opacity:1;
-        transform:scale(1.06);
-      }
-
-      #webbr-watermark img.avatar{
-        width:26px;
-        height:26px;
-        border-radius:50%;
-      }
-
-      #webbr-watermark img.github{
-        width:16px;
-        height:16px;
-        filter:invert(1);
-        opacity:.9;
-      }
-    </style>
-
-    <img class="avatar" src="https://avatars.githubusercontent.com/u/286726470?v=4">
-    <span>@web-br</span>
-    <img class="github" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
-  `;
-
-  document.body.appendChild(a);
-})();
-</script>
     <script>
 (function () {
   if (location.hostname !== "kalidade.vercel.app") return;
