@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CONSULTA DE PROCESSOS</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#0b1020;
+ color:#e8edf7;
+ font-family:Arial,sans-serif;
+}
+header{
+ padding:25px 18px;
+ background:#111a30;
+ border-bottom:1px solid #26334d;
+}
+.container{max-width:1100px;margin:auto;padding:20px}
+h1{font-size:23px;margin:0 0 7px}
+.subtitle{color:#91a0bb;font-size:13px}
+.search{
+ display:flex;
+ gap:9px;
+ margin-top:22px;
+}
+input{
+ flex:1;
+ min-width:0;
+ padding:15px;
+ border-radius:10px;
+ border:1px solid #33425f;
+ background:#0b1427;
+ color:white;
+ outline:none;
+ font-size:15px;
+}
+button{
+ border:0;
+ border-radius:10px;
+ padding:13px 19px;
+ background:#3478f6;
+ color:white;
+ font-weight:bold;
+ cursor:pointer;
+}
+button:disabled{opacity:.5}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:12px;
+ margin:20px 0;
+}
+.stat,.processo{
+ background:#121c31;
+ border:1px solid #263650;
+ border-radius:12px;
+}
+.stat{padding:17px}
+.stat small{color:#92a2bf}
+.stat strong{display:block;font-size:23px;margin-top:8px}
+#resultado{display:grid;gap:14px}
+.processo{overflow:hidden}
+.proc-head{
+ padding:17px;
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+ border-bottom:1px solid #263650;
+}
+.numero{font-weight:bold;color:#75a9ff;font-size:16px}
+.tag{
+ font-size:11px;
+ padding:5px 9px;
+ background:#20385d;
+ border-radius:20px;
+ color:#a9ccff;
+}
+.proc-body{padding:17px}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:14px;
+}
+.field small{
+ display:block;
+ color:#8394b1;
+ font-size:11px;
+ margin-bottom:5px;
+}
+.field strong{font-size:13px;overflow-wrap:anywhere}
+.section{
+ margin-top:22px;
+ border-top:1px solid #293954;
+ padding-top:15px;
+}
+.section h3{font-size:13px;color:#8fb7ff;margin:0 0 12px}
+.parte{
+ background:#0c1528;
+ border:1px solid #263650;
+ border-radius:9px;
+ padding:13px;
+ margin-bottom:9px;
+}
+.parte strong{font-size:13px;overflow-wrap:anywhere}
+.parte p{font-size:12px;color:#a6b5ce;margin:7px 0}
+.advogado{color:#91baff!important}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.secondary{background:#263650}
+.loading,.empty,.error{
+ text-align:center;
+ padding:35px 15px;
+ background:#121c31;
+ border-radius:12px;
+ color:#aab8ce;
+}
+.error{color:#ff9999}
+footer{text-align:center;padding:25px;color:#65748e;font-size:11px}
+@media(max-width:600px){
+ .search{flex-direction:column}
+ .search button{width:100%}
+ .stats{gap:7px}
+ .stat{padding:12px}
+ .stat strong{font-size:19px}
+ .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="container">
+  <h1>⚖ CONSULTA DE PROCESSOS</h1>
+  <div class="subtitle">PESQUISA E VISUALIZAÇÃO DE DADOS PROCESSUAIS</div>
+
+  <form class="search" id="form">
+   <input id="busca" placeholder="DIGITE NOME, CPF, CNPJ OU PROCESSO..." required>
+   <button id="btn">PESQUISAR</button>
+  </form>
+ </div>
+</header>
+
+<main class="container">
+
+ <div class="stats">
+  <div class="stat">
+   <small>TOTAL DE PROCESSOS</small>
+   <strong id="total">0</strong>
+  </div>
+  <div class="stat">
+   <small>TIPO DE CONSULTA</small>
+   <strong id="tipo">—</strong>
+  </div>
+  <div class="stat">
+   <small>TEMPO DE RESPOSTA</small>
+   <strong id="tempo">—</strong>
+  </div>
+ </div>
+
+ <div id="info" class="subtitle" style="margin-bottom:15px"></div>
+ <div id="resultado">
+  <div class="empty">DIGITE UM NOME OU DOCUMENTO PARA COMEÇAR.</div>
+ </div>
+
+</main>
+
+<footer>CONSULTA PROCESSUAL • KALIDADE</footer>
+
+<script>
+const API = "https://api-kalidade.vercel.app/api/processos.js?busca=";
+
+const $ = id => document.getElementById(id);
+
+const upper = value =>
+ String(value ?? "").toLocaleUpperCase("pt-BR");
+
+const safe = value => {
+ const el = document.createElement("span");
+ el.textContent = upper(value || "NÃO INFORMADO");
+ return el.innerHTML;
+};
+
+function field(label,value){
+ return `
+ <div class="field">
+  <small>${safe(label)}</small>
+  <strong>${safe(value)}</strong>
+ </div>`;
+}
+
+function copiar(texto){
+ navigator.clipboard.writeText(texto)
+  .then(()=>alert("COPIADO COM SUCESSO!"))
+  .catch(()=>alert("NÃO FOI POSSÍVEL COPIAR."));
+}
+
+function renderParte(parte){
+ const advogados = Array.isArray(parte.advogados)
+  ? parte.advogados : [];
+
+ return `
+ <div class="parte">
+  <strong>${safe(parte.nome)}</strong>
+  <p>
+   TIPO: ${safe(parte.tipo)}<br>
+   POLO: ${safe(parte.polo)}<br>
+   CPF: ${safe(parte.cpf)}<br>
+   CNPJ: ${safe(parte.cnpj)}
+  </p>
+  ${advogados.length ? `
+   <p class="advogado">
+    ADVOGADOS:<br>
+    ${advogados.map(a=>safe(a.nome)).join("<br>")}
+   </p>` : ""}
+ </div>`;
+}
+
+function renderProcesso(p,index){
+ const partes = Array.isArray(p.partes) ? p.partes : [];
+ const autores = partes.filter(x=>x.polo==="ativo");
+ const reus = partes.filter(x=>x.polo==="passivo");
+ const outros = partes.filter(x=>x.polo!=="ativo" && x.polo!=="passivo");
+
+ return `
+ <article class="processo">
+  <div class="proc-head">
+   <div>
+    <div class="numero">${safe(p.numeroFormatado || p.numero)}</div>
+    <small style="color:#8294b2">
+     ${safe(p.tribunal)} • ${safe(p.estado)}
+    </small>
+   </div>
+   <span class="tag">PROCESSO ${index+1}</span>
+  </div>
+
+  <div class="proc-body">
+   <div class="grid">
+    ${field("TRIBUNAL",p.tribunalNome)}
+    ${field("ÓRGÃO JULGADOR",p.orgao)}
+    ${field("CLASSE",p.classe)}
+    ${field("ASSUNTO",p.assunto)}
+    ${field("GRAU",p.grau)}
+    ${field("STATUS",p.status)}
+    ${field("VALOR DA CAUSA",p.valor)}
+    ${field("DATA DE AJUIZAMENTO",p.dataAjuizamento)}
+    ${field("ESTADO",p.estado)}
+    ${field("NÍVEL DE SIGILO",p.nivelSigilo)}
+   </div>
+
+   ${autores.length ? `
+   <div class="section">
+    <h3>AUTORES / POLO ATIVO (${autores.length})</h3>
+    ${autores.map(renderParte).join("")}
+   </div>`:""}
+
+   ${reus.length ? `
+   <div class="section">
+    <h3>RÉUS / POLO PASSIVO (${reus.length})</h3>
+    ${reus.map(renderParte).join("")}
+   </div>`:""}
+
+   ${outros.length ? `
+   <div class="section">
+    <h3>OUTRAS PARTES (${outros.length})</h3>
+    ${outros.map(renderParte).join("")}
+   </div>`:""}
+
+   <div class="actions">
+    <button class="secondary" onclick="copiar('${safe(p.numero)}')">
+     COPIAR NÚMERO
+    </button>
+   </div>
+  </div>
+ </article>`;
+}
+
+$("form").addEventListener("submit",async e=>{
+ e.preventDefault();
+
+ const busca=$("busca").value.trim();
+ if(!busca)return;
+
+ $("btn").disabled=true;
+ $("btn").textContent="PESQUISANDO...";
+ $("resultado").innerHTML='<div class="loading">CONSULTANDO PROCESSOS...</div>';
+
+ $("total").textContent="...";
+ $("tipo").textContent="...";
+ $("tempo").textContent="...";
+ $("info").textContent="";
+
+ try{
+  const inicio=performance.now();
+  const response=await fetch(API+encodeURIComponent(busca));
+  const data=await response.json();
+  const duracao=((performance.now()-inicio)/1000).toFixed(2);
+
+  if(!response.ok){
+   throw new Error(data.erro || "ERRO NA CONSULTA");
+  }
+
+  if(!Array.isArray(data.processos)){
+   throw new Error(data.erro || "RESPOSTA JSON INVÁLIDA");
+  }
+
+  $("total").textContent=data.total ?? data.processos.length;
+  $("tipo").textContent=upper(data.tipo || "—");
+  $("tempo").textContent=duracao+"S";
+
+  $("info").textContent=
+   "NOME ENCONTRADO: "+upper(data.nomeEncontrado || "NÃO INFORMADO")+
+   (data.partial ? " • RESULTADO PARCIAL" : "");
+
+  $("resultado").innerHTML=data.processos.length
+   ? data.processos.map(renderProcesso).join("")
+   : '<div class="empty">NENHUM PROCESSO ENCONTRADO.</div>';
+
+ }catch(error){
+  $("resultado").innerHTML=
+   `<div class="error">ERRO: ${safe(error.message)}</div>`;
+  $("total").textContent="0";
+  $("tipo").textContent="—";
+  $("tempo").textContent="—";
+  $("info").textContent="";
+ }finally{
+  $("btn").disabled=false;
+  $("btn").textContent="PESQUISAR";
+ }
+});
+</script>
+
+</body>
+</html>
